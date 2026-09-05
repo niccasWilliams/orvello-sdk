@@ -1,0 +1,86 @@
+{
+  "name": "@orvello/sdk",
+  "version": "0.1.0",
+  "description": "Typed, zero-dependency SDK for integrating Node and Next.js applications with orvello — the accounting & invoicing platform.",
+  "keywords": [
+    "orvello",
+    "accounting",
+    "invoicing",
+    "bookkeeping",
+    "sdk",
+    "typescript",
+    "nextjs",
+    "nodejs"
+  ],
+  "license": "MIT",
+  "author": "Niccas Williams",
+  "homepage": "https://orvello.de",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niccasWilliams/orvello-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/niccasWilliams/orvello-sdk/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CONTRACT_SHA256"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./contract": {
+      "import": {
+        "types": "./dist/contract.d.ts",
+        "default": "./dist/contract.js"
+      },
+      "require": {
+        "types": "./dist/contract.d.cts",
+        "default": "./dist/contract.cjs"
+      }
+    },
+    "./openapi.json": "./dist/openapi.json",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup && cp src/generated/openapi.json dist/openapi.json",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "check": "npm run typecheck && npm run test && npm run build && npm run pack:check",
+    "sync:contract": "node scripts/sync-contract.mjs",
+    "sync:contract:check": "node scripts/sync-contract.mjs --check",
+    "pack:check": "node scripts/pack-check.mjs",
+    "prepublishOnly": "npm run check"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@vitest/coverage-v8": "^3.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
+}

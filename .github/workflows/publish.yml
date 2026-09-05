@@ -1,0 +1,102 @@
+name: Publish @orvello/sdk
+
+# Veröffentlicht das public Paket `@orvello/sdk`. Vorgeschichte: Die Vorversions-Reihe
+# (unter dem alten `@cronvello/bill-sdk`-Scope, restricted) ist bewusst beendet — dies ist
+# ein frischer, oeffentlicher Produktstart als `@orvello/sdk`. Deshalb sind `publishConfig`
+# und das CLI-Flag konsistent auf `access: public` (= oeffentlich fuer alle).
+#
+# Zwei Fehlschlaege der Vorgeschichte haben die Struktur gepraegt und bleiben deshalb:
+# (a) Das CLI-Flag `--access` schlaegt eine abweichende `publishConfig` — beide muessen
+#     also zusammenpassen (sie stehen jetzt beide auf `public`).
+# (b) Zwei gleichzeitige Laeufe gegen dasselbe, noch nicht existierende Paket verursachten
+#     `409 Failed to save packument` — dagegen die concurrency-Gruppe weiter unten.
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "sdk-v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Nur proben, nicht veroeffentlichen"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Zwei gleichzeitige Laeufe gegen dasselbe Paket sind die Ursache von `409`-Fehlschlaegen.
+# Sie warten aufeinander, statt sich zu ueberholen.
+concurrency:
+  group: publish-orvello-sdk
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      # Ohne Token waere der Fehler sonst ein kryptisches 401 mitten im publish.
+      # Hier steht er am Anfang und nennt die Ursache: die amp-Zuweisung fehlt.
+      #
+      # ⚠ Dieser Schritt beweist nur, dass ein Wert da ist — nicht, dass er darf. Genau
+      # deshalb war er bei allen drei Fehlschlaegen gruen. Wer hier sucht, sucht falsch.
+      - name: Verify npm token is present
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::Secret NPM_TOKEN fehlt in diesem Repo."
+            echo "::error::Es kommt aus node-amp (Secret NPM_TOKEN, github-Provider)."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install --no-package-lock --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack check
+        run: npm run pack:check
+
+      - name: Verify package.json version matches tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_RAW="${GITHUB_REF_NAME}"
+          TAG_VERSION="${TAG_RAW#sdk-v}"
+          TAG_VERSION="${TAG_VERSION#v}"
+          echo "package.json: $PKG_VERSION | tag: $TAG_VERSION (raw: $TAG_RAW)"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match tag ($TAG_VERSION)"
+            exit 1
+          fi
+
+      # Bewusst zwei Schritte statt eines mit einem `${{ }}` mitten in der Shell-Zeile:
+      # eine Ausdrucks-Einsetzung in `run:` ist genau das Muster, das der
+      # workflow-injection-guard in den uebrigen Repos rot faerbt.
+      - name: Rehearse package publication
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --dry-run
+
+      - name: Publish to npm
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
