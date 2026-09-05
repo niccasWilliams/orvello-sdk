@@ -11,6 +11,7 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   createOrvelloClient,
+  HEALTH_PATH,
   OrvelloApiError,
   OrvelloOperationError,
   resolveOperation,
@@ -218,7 +219,7 @@ describe("Probelauf", () => {
   const okFetch = (recorded: string[] = []) =>
     (async (url: string) => {
       recorded.push(String(url));
-      if (String(url).endsWith("/health")) {
+      if (String(url).includes("/app-info/health")) {
         return new Response(JSON.stringify({ status: "ok" }), {
           status: 200,
           headers: { "content-type": "application/json" },
@@ -315,7 +316,7 @@ describe("Probelauf", () => {
       managementApiKey: "falsch",
       maxRetries: 0,
       fetch: (async (url: string) => {
-        if (String(url).endsWith("/health")) {
+        if (String(url).includes("/app-info/health")) {
           return new Response(JSON.stringify({ status: "ok" }), {
             status: 200,
             headers: { "content-type": "application/json" },
@@ -399,5 +400,30 @@ describe("Vertragstreue der Operationsliste", () => {
     });
 
     await expect(client.oauthClients.list()).rejects.toBeInstanceOf(OrvelloApiError);
+  });
+});
+
+describe("Erreichbarkeits-Weg", () => {
+  it("nimmt die Vertrags-Route, nicht einen geratenen Pfad", async () => {
+    // `/health` gibt es bei node-bill, steht aber in keinem Vertrag. Eine andere
+    // orvello-Instanz muss es nicht haben -- ein 404 saehe dort aus wie ein toter
+    // Dienst. `capabilities().healthCheck` weist dieselbe Operation aus.
+    expect(HEALTH_PATH).toBe("/app-info/health");
+    expect(orvelloCapabilities().capabilities.healthCheck.operations).toContain("app_info_health");
+
+    const seen: string[] = [];
+    const client = createOrvelloClient({
+      baseUrl: "https://orvello.example.com",
+      fetch: (async (url: string) => {
+        seen.push(String(url));
+        return new Response(JSON.stringify({ status: "ok" }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      }) as unknown as typeof fetch,
+    });
+
+    await client.checkHealth();
+    expect(seen.at(-1)).toBe("https://orvello.example.com/app-info/health");
   });
 });

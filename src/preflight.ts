@@ -26,6 +26,9 @@ import {
   type OrvelloOperation,
 } from "./operations.js";
 
+/** Der oeffentliche Erreichbarkeits-Endpunkt, wie ihn der Vertrag fuehrt. */
+export const HEALTH_PATH = describeOperation("app_info_health")?.path ?? "/app-info/health";
+
 export type PreflightStepName =
   | "operation"
   | "path-parameters"
@@ -287,7 +290,12 @@ async function probeReachable(
 
   const started = Date.now();
   try {
-    const response = await doFetch(`${baseUrl}/health`, {
+    // ⭐ Die Vertrags-Route, nicht ein geratener Pfad. `/health` gibt es bei
+    // node-bill, aber es steht in keinem Vertrag -- eine andere orvello-Instanz
+    // muss es nicht haben, und ein 404 saehe dann aus wie "Dienst tot".
+    // `app_info_health` ist die Operation, die `capabilities()` als
+    // Erreichbarkeits-Weg ausweist; beide zeigen damit auf dasselbe.
+    const response = await doFetch(`${baseUrl}${HEALTH_PATH}`, {
       method: "GET",
       headers: { accept: "application/json" },
       signal: controller.signal,

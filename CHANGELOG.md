@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 - 2026-09-05
+
+- Erreichbarkeit wird ueber die **Vertrags-Route** `GET /app-info/health` geprueft
+  (exportiert als `HEALTH_PATH`), nicht mehr ueber `/health`. Den nackten Pfad gibt
+  es bei node-bill, aber in keinem Vertrag — eine andere orvello-Instanz muss ihn
+  nicht haben, und ein 404 dort saehe aus wie ein toter Dienst.
+  `capabilities().capabilities.healthCheck` weist dieselbe Operation aus; beide
+  zeigen jetzt nachweislich auf denselben Weg.
+
 ## 0.2.0 - 2026-09-05
 
 Die Fassung, mit der ein Verbindungs-Verwalter (node-amp) diesen Dienst wirklich

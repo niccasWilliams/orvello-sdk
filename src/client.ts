@@ -99,6 +99,7 @@ import {
 import { orvelloCapabilities, type OrvelloCapabilities } from "./capabilities.js";
 import {
   preflightOrvello,
+  HEALTH_PATH,
   type PreflightHost,
   type PreflightOptions,
   type PreflightReport,
@@ -752,7 +753,7 @@ export class OrvelloClient {
     const timer = setTimeout(() => controller.abort(new Error(`Health check timed out after ${timeoutMs}ms`)), timeoutMs);
 
     try {
-      const response = await this.doFetch(`${baseUrl}/health`, {
+      const response = await this.doFetch(`${baseUrl}${HEALTH_PATH}`, {
         method: "GET",
         headers: { accept: "application/json" },
         signal: controller.signal,
@@ -763,7 +764,7 @@ export class OrvelloClient {
           available: false,
           responseTimeMs: Date.now() - started,
           authenticated: null,
-          error: `orvello answered ${response.status} on /health`,
+          error: `orvello answered ${response.status} on ${HEALTH_PATH}`,
         };
       }
       this.recordSuccess();
