@@ -15,6 +15,16 @@ accounting, invoicing, bookkeeping, customer-company and payments platform.
   - Native PDF and binary blob streaming (`Blob`).
   - `Idempotency-Key` support for safe webhooks and financial mutations.
 - **Zero Runtime Dependencies**: Uses native Fetch and WebCrypto.
+- **The route picks the credential**: the contract carries `auth.type` per route, so business
+  routes go out as `Authorization: Bearer` and management routes as `x-api-key` — from the same
+  client, without the caller choosing.
+- **Preflight instead of guessing**: `preflight(operationId)` walks the entire path a real call
+  would take and stops before writing, so an edge can be re-verified at any time without touching
+  it.
+- **Capabilities as data**: `capabilities()` reports what this service can do, derived from the
+  contract and backed by the operations behind each claim.
+- **Circuit breaker**: opens on transport failures, deliberately not on 401/403 — a rejected
+  credential is not an outage.
 - **Flexible Auth**: Supports static API Keys, Bearer tokens, async token getters, and OAuth2
   Client Credentials with automatic token caching.
 - **Ergonomic Accounting Helpers**: Bank account caching (`getDefaultBankAccount`), base64 receipt
@@ -72,6 +82,10 @@ ORVELLO_OAUTH_CLIENT_SECRET=...
 ORVELLO_OAUTH_SCOPE=...
 # or instead of OAuth:
 ORVELLO_API_KEY=...
+
+# The management credential for /oauth/clients/external/* — a different value,
+# not another spelling of the one above.
+ORVELLO_MANAGEMENT_API_KEY=...
 ```
 
 ```typescript
@@ -81,6 +95,143 @@ const orvello = createOrvelloClient();
 
 If neither a `baseUrl` nor `ORVELLO_URL` is present, construction throws a clear error instead of
 silently pointing at a fixed host.
+
+---
+
+## Two credentials, and the route decides which one goes out
+
+orvello guards its endpoints in two different ways, and they are not
+interchangeable:
+
+| | Business routes | Management routes |
+|---|---|---|
+| Examples | `/invoices/external`, `/customer-companies/external`, `/bookkeeping/*` | `/oauth/clients/external/*` |
+| Header | `Authorization: Bearer …` | `x-api-key: …` |
+| Credential | an OAuth2 client (client_credentials) or a token | the service's management key |
+| Belongs to | the **calling app** | the **edge** between manager and service |
+| Configure with | `auth` / `ORVELLO_OAUTH_CLIENT_ID` + `ORVELLO_OAUTH_CLIENT_SECRET` | `managementApiKey` / `ORVELLO_MANAGEMENT_API_KEY` |
+
+You never pick. The generated contract carries `auth.type` on every single route,
+and the client reads it — so `client.invoices.getPending()` goes out as a bearer
+call and `client.oauthClients.create(…)` goes out with `x-api-key`, from the same
+client instance. A hand-built path through `client.request()` gets the same
+treatment, because it looks the route up too.
+
+```ts
+const orvello = createOrvelloClient({
+  baseUrl: () => resolveLiveBaseUrl("node-bill"),
+  auth: { clientId, clientSecret, scope: "invoices:read invoices:write" },
+  managementApiKey: process.env.ORVELLO_MANAGEMENT_API_KEY,
+});
+
+await orvello.invoices.getPending();                       // Bearer
+await orvello.oauthClients.create({ name: "shop", role: "editor" }); // x-api-key
+```
+
+Leaving `managementApiKey` out is a valid choice: a client that only writes
+invoices cannot then hand out access. Calling a management route without it
+fails **before** anything goes on the wire, with a message that names the missing
+setting — rather than earning a `403 Forbidden: Invalid API key`, which reads
+like a wrong key instead of an absent one.
+
+## Calling anything in the contract
+
+The typed namespaces cover the endpoints most integrations need. Everything else
+is reachable by its `operationId`, with method, path and credential taken from
+the contract:
+
+```ts
+const clients = await orvello.call("oauth2_external_clients_list", {
+  query: { pageSize: 50, isActive: true },
+});
+
+const rotated = await orvello.call("oauth2_external_clients_rotate", {
+  params: { idOrClientId: "nbill_oauth2_3Rxp…" },
+  body: { gracePeriodHours: 2 },
+});
+```
+
+An unknown `operationId` throws immediately, and so does a missing path
+parameter — instead of sending `/oauth/clients/external/:idOrClientId` to the
+service and getting a puzzling 404 back.
+
+## Preflight: would this call work, without making it
+
+Creating an OAuth2 client writes real data on both sides. That is a deliberate,
+approved step — but you still want to know, at any time and without an occasion,
+whether the path still holds.
+
+`preflight()` walks the whole way an actual call would take — same base URL, same
+credential channel, same contract — and stops before writing:
+
+```ts
+const report = await orvello.preflight("oauth2_external_clients_create", {
+  body: { name: "node-shop invoicing", role: "editor", scopes: ["invoices:write"] },
+});
+
+report.ok;           // true  → the path holds today
+report.sideEffects;  // "none" — always; a preflight never writes
+report.authChannel;  // "api_key"
+report.steps;        // operation → path-parameters → request-shape →
+                     // reachable → contract → credential-configured → credential-accepted
+```
+
+Every step carries its reason in plain words, and a skipped step is reported as
+skipped — never as passed. What a green report proves is **entitlement**, not
+**outcome**: the service accepts your credential for this route. It does not
+predict what the write would return. `capabilities().capabilities.serverSideDryRun`
+says so explicitly, because orvello offers no server-side rehearsal for client
+management.
+
+Use `skipCredentialProbe: true` to check many edges cheaply — it then only asks
+whether a credential is configured, and says so.
+
+## Capabilities: what this service can do, as data
+
+A connection manager can only establish, verify and repair an edge if it knows
+what the other side actually offers. `capabilities()` answers that from the
+bundled contract — no network, no credential, so it also works while the
+connection is down:
+
+```ts
+const report = orvello.capabilities();
+
+report.contractSha256;                                 // which contract this build speaks
+report.operationCount;                                 // how many operations it knows
+report.authChannels;                                   // { bearer, api_key, none }
+report.capabilities.clientManagement.supported;        // true
+report.capabilities.clientManagement.operations;       // the operations that back the claim
+report.capabilities.rotationGracePeriod.supported;     // retire + rollback exist
+report.capabilities.serverSideDryRun.reason;           // why it is false
+```
+
+A capability counts as present exactly when the operations behind it are in the
+contract, and every entry lists them — so a claim can be checked instead of
+believed. Drop a route in orvello and it disappears here on the next
+`sync:contract`, with nobody having to remember.
+
+## Health and the circuit breaker
+
+```ts
+const health = await orvello.checkHealth();
+health.available;      // does the service answer at all
+health.authenticated;  // was a credential actually accepted — null means "not asked"
+
+orvello.isAvailable(); // circuit-breaker state, no network
+orvello.circuitState();
+orvello.resetCircuit();
+```
+
+`available` and `authenticated` are two questions and stay apart. `authenticated:
+null` means no credential was configured, never "fine".
+
+The breaker opens after repeated **transport** failures — timeouts, refused
+connections, 5xx — and short-circuits further calls for a cooldown instead of
+letting each one burn its full timeout. It deliberately does **not** open on 401
+or 403: the service answered, it just said no. A breaker that trips on permission
+errors turns a wrong credential into an apparent outage and sends the search in
+the wrong direction. Configure with `circuitBreaker: { threshold, cooldownMs }`,
+or switch it off with `circuitBreaker: false`.
 
 ---
 

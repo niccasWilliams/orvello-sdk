@@ -7,6 +7,7 @@ import {
   calculateVat,
   isKleinunternehmer,
   formatAmount,
+  type OrvelloClientConfig,
 } from "../src/index";
 
 describe("OrvelloClient - Authentication & Configuration", () => {
@@ -430,7 +431,7 @@ describe("OrvelloClient - PDF & Binary Handling", () => {
 describe("OrvelloClient - Domain Modules & Endpoints", () => {
   let lastRequest: { url: string; method: string; headers: Headers; body?: string } | null = null;
 
-  const createMockedClient = (responseData: unknown = {}) => {
+  const createMockedClient = (responseData: unknown = {}, extra: Partial<OrvelloClientConfig> = {}) => {
     const mockFetch = vi.fn(async (url: string, init?: RequestInit) => {
       lastRequest = {
         url,
@@ -447,6 +448,7 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
     return createOrvelloClient({
       baseUrl: "https://bill.example.com",
       fetch: mockFetch as unknown as typeof fetch,
+      ...extra,
     });
   };
 
@@ -655,7 +657,13 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
   });
 
   it("oauthClients: full lifecycle management", async () => {
-    const client = createMockedClient({ id: 1, clientId: "client_abc" });
+    // Die Verwaltungsrouten verlangen den `x-api-key`-Header. Ohne diesen Wert
+    // ist der Namensraum vorhanden, aber nicht benutzbar - genau das war die
+    // Luecke bis 0.1.0.
+    const client = createMockedClient(
+      { id: 1, clientId: "client_abc" },
+      { managementApiKey: "mgmt-secret" }
+    );
 
     await client.oauthClients.list({ page: 1, pageSize: 10 });
     expect(lastRequest?.url).toContain("/oauth/clients/external/list?page=1&pageSize=10");
@@ -682,6 +690,10 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
     await client.oauthClients.delete("client_abc");
     expect(lastRequest?.url).toContain("/oauth/clients/external/client_abc");
     expect(lastRequest?.method).toBe("DELETE");
+
+    // Jeder dieser Aufrufe ging ueber die Schluessel-Bahn, keiner als Bearer.
+    expect(lastRequest?.headers.get("x-api-key")).toBe("mgmt-secret");
+    expect(lastRequest?.headers.get("authorization")).toBeNull();
   });
 });
 
