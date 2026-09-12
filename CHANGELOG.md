@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 - 2026-09-12
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- Vertragsinhalt geaendert, Oberflaeche gleich geblieben
+
 ## 0.2.1 - 2026-09-05
 
 - Erreichbarkeit wird ueber die **Vertrags-Route** `GET /app-info/health` geprueft

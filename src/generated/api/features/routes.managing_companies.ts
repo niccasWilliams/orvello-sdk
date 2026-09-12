@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:19.591Z
+// Generated at: 2026-09-12T14:36:48.399Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { CompanyCostCenter, CompanyUserAssignment, CompanyUserInvite, FullSelectedCompany, ManagingCompany, PaginatedResult, UnsensitiveCompanyApiKey, UserSelectedCompany, VatSettings } from "../../frontend-types";

@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:19.571Z
+// Generated at: 2026-09-12T14:36:48.383Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";

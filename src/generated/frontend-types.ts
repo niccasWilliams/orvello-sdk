@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:16.364Z
+// Generated at: 2026-09-12T14:36:43.962Z
 // Run `npm run types:generate` to regenerate this file
 
 // ============================================================================

@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:19.598Z
+// Generated at: 2026-09-12T14:36:48.405Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { NodeBillUser, UserWithStats } from "../../frontend-types";

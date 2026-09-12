@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:19.596Z
+// Generated at: 2026-09-12T14:36:48.403Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { PaginatedResult, UnsensitiveOAuth2Client } from "../../frontend-types";

@@ -1,6 +1,6 @@
 {
   "name": "@orvello/sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Typed, zero-dependency SDK for integrating Node and Next.js applications with orvello - the accounting & invoicing platform. Sends the credential each route demands, and can prove a call would work without making it.",
   "keywords": [
     "orvello",

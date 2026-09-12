@@ -53739,11 +53739,6 @@
         "in": "header",
         "name": "x-api-key"
       },
-      "cronJobBearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "CRON_SECRET"
-      },
       "frontendBearer": {
         "type": "http",
         "scheme": "bearer",

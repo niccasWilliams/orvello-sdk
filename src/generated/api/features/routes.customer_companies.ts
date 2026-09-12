@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-05T12:10:19.582Z
+// Generated at: 2026-09-12T14:36:48.390Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { CompanyEmployee, CompanyEmployeeAssignment, CustomerCompany, EmployeeSearchItem, FullCompany, PaginatedResult } from "../../frontend-types";
