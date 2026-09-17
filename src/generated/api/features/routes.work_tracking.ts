@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.405Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { PaginatedResult, WorkEntry, WorkEntryAssignment } from "../../frontend-types";
@@ -64,8 +63,8 @@ export type WorkTrackingGetByIdResponse = import("../types").ApiEnvelope<WorkTra
 export type WorkTrackingCreateParams = undefined;
 export type WorkTrackingCreateQuery = undefined;
 export type WorkTrackingCreateBody = {
-  start: string | any;
-  end?: string | any | null;
+  start: string | string;
+  end?: string | string | null;
   timeInMinutes?: number | null;
   entryType: "work" | "assistance" | "service" | "consultation" | "planning" | "administration" | "meeting" | "travel" | "maintenance" | "training" | "support" | "other";
   description?: string | null;
@@ -80,8 +79,8 @@ export type WorkTrackingUpdateParams = {
 };
 export type WorkTrackingUpdateQuery = undefined;
 export type WorkTrackingUpdateBody = {
-  start?: string | any;
-  end?: string | any | null;
+  start?: string | string;
+  end?: string | string | null;
   timeInMinutes?: number | null;
   entryType?: "work" | "assistance" | "service" | "consultation" | "planning" | "administration" | "meeting" | "travel" | "maintenance" | "training" | "support" | "other";
   description?: string | null;
@@ -125,8 +124,8 @@ export type WorkTrackingBillPreviewBody = {
   workEntryIds: Array<number>;
   companyId: number;
   hourlyRate: number;
-  invoiceDate?: string | any;
-  dueDate?: string | any;
+  invoiceDate?: string | string;
+  dueDate?: string | string;
   notes?: string;
   paymentAccountId?: number | null;
   bankFallbackAccountId?: number | null;
@@ -164,8 +163,8 @@ export type WorkTrackingBillBody = {
   workEntryIds: Array<number>;
   companyId: number;
   hourlyRate: number;
-  invoiceDate?: string | any;
-  dueDate?: string | any;
+  invoiceDate?: string | string;
+  dueDate?: string | string;
   notes?: string;
   paymentAccountId?: number | null;
   bankFallbackAccountId?: number | null;

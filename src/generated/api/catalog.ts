@@ -1,20 +1,24 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.407Z
 // Run `pnpm run api:generate` to regenerate
 
 export type RouteGroup = { key: string; module: string };
 
 export const apiMountPrefixes = {
   base: [
+  "/api-keys",
   "/api/amp-proxy",
   "/api/entitlements",
   "/app-info",
   "/app-logs",
+  "/auth",
+  "/docs",
   "/entitlements",
+  "/internal/users",
   "/oauth",
   "/permissions",
   "/role-assignments",
   "/roles",
+  "/security",
   "/settings",
   "/user-activity",
   "/users",
@@ -27,23 +31,35 @@ export const apiMountPrefixes = {
   "/bookkeeping",
   "/currency-rates",
   "/customer-companies",
-  "/docs",
   "/documents",
   "/exports",
   "/invoices",
-  "/managing-companies"
+  "/managing-companies",
+  "/oauth"
 ],
 } as const;
 
 export const apiGroups = {
   base: [
   {
-    "key": "api",
-    "module": "./routes.api"
+    "key": "api_keys",
+    "module": "./routes.api_keys"
+  },
+  {
+    "key": "app_info",
+    "module": "./routes.app_info"
+  },
+  {
+    "key": "auth",
+    "module": "./routes.auth"
   },
   {
     "key": "entitlements",
     "module": "./routes.entitlements"
+  },
+  {
+    "key": "internal",
+    "module": "./routes.internal"
   },
   {
     "key": "permissions",
@@ -54,8 +70,16 @@ export const apiGroups = {
     "module": "./routes.roles"
   },
   {
+    "key": "security",
+    "module": "./routes.security"
+  },
+  {
     "key": "settings",
     "module": "./routes.settings"
+  },
+  {
+    "key": "user_activity",
+    "module": "./routes.user_activity"
   },
   {
     "key": "users",
@@ -76,6 +100,14 @@ export const apiGroups = {
     "module": "./routes.bookkeeping"
   },
   {
+    "key": "currency_rates",
+    "module": "./routes.currency_rates"
+  },
+  {
+    "key": "customer_companies",
+    "module": "./routes.customer_companies"
+  },
+  {
     "key": "documents",
     "module": "./routes.documents"
   },
@@ -86,6 +118,10 @@ export const apiGroups = {
   {
     "key": "invoices",
     "module": "./routes.invoices"
+  },
+  {
+    "key": "managing_companies",
+    "module": "./routes.managing_companies"
   }
 ] as RouteGroup[],
   all: [
@@ -94,12 +130,16 @@ export const apiGroups = {
     "module": "./features/routes.admin"
   },
   {
-    "key": "api",
-    "module": "./base/routes.api"
+    "key": "api_keys",
+    "module": "./base/routes.api_keys"
   },
   {
     "key": "app_info",
     "module": "./base/routes.app_info"
+  },
+  {
+    "key": "auth",
+    "module": "./base/routes.auth"
   },
   {
     "key": "bookkeeping",
@@ -138,6 +178,10 @@ export const apiGroups = {
     "module": "./features/routes.exports"
   },
   {
+    "key": "internal",
+    "module": "./base/routes.internal"
+  },
+  {
     "key": "invoices",
     "module": "./features/routes.invoices"
   },
@@ -147,7 +191,7 @@ export const apiGroups = {
   },
   {
     "key": "logs",
-    "module": "./features/routes.logs"
+    "module": "./base/routes.logs"
   },
   {
     "key": "managing_companies",
@@ -163,11 +207,11 @@ export const apiGroups = {
   },
   {
     "key": "oauth2",
-    "module": "./features/routes.oauth2"
+    "module": "./base/routes.oauth2"
   },
   {
     "key": "oauth2_external",
-    "module": "./features/routes.oauth2_external"
+    "module": "./base/routes.oauth2_external"
   },
   {
     "key": "permissions",
@@ -176,6 +220,10 @@ export const apiGroups = {
   {
     "key": "roles",
     "module": "./base/routes.roles"
+  },
+  {
+    "key": "security",
+    "module": "./base/routes.security"
   },
   {
     "key": "settings",

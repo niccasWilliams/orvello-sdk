@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:43.962Z
 // Run `npm run types:generate` to regenerate this file
 
 // ============================================================================
@@ -14,6 +13,8 @@ export type EntitlementSyncType = 'role' | 'area';
 export type EntitlementSyncOperation = 'assign' | 'update' | 'revoke' | 'state_check';
 export type WorkflowQueueStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'canceled';
 export type WorkflowCreatedBy = 'user' | 'system';
+export type IdentityProvider = 'frontend' | 'direct';
+export type UserSyncAction = 'provision_created' | 'provision_linked' | 'provision_existing' | 'sync_updated' | 'sync_skipped_stale' | 'sync_not_found' | 'delete_executed' | 'delete_not_found' | 'conflict_email_taken';
 export type CreditConsumptionStatus = 'pending' | 'synced' | 'failed';
 export type Gender = 'male' | 'female' | 'other';
 export type CompanyStatus = 'pending' | 'active' | 'inactive' | 'suspended';
@@ -73,39 +74,217 @@ export type TaxParamCategory = 'afa' | 'vat' | 'threshold' | 'building' | 'est' 
 
 export type NodeBillUser = {
   id: number;
+  /** Wer den Nutzer fuehrt. "frontend": das Next-Frontend legt ihn ueber /internal/users an. */
+  identityProvider: IdentityProvider;
   externalUserId: string | null;
   email: string | null;
   firstName: string | null;
   lastName: string | null;
+  /** direct-auth fields (null bei identityProvider "frontend") */
+  passwordHash: string | null;
+  name: string | null;
+  emailVerifiedAt: Date | null;
+  /**
+   * Letzter Sync-Zeitpunkt vom Frontend. Vergleich gegen sourceUpdatedAt
+   * im /internal/users/sync schützt vor Out-of-order-Updates.
+   */
+  syncedAt: Date | null;
+  /**
+   * DSGVO-Loeschantrag: gesetzt, sobald der Nutzer die Loeschung bestaetigt hat. Frist,
+   * Wiederherstellen und endgueltiges Loeschen gehoeren der App (in node-qr 30 Tage).
+   */
+  deletionRequestedAt: Date | null;
+  /**
+   * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
+   * User?"). Nicht öffentlich, nicht in Audit-Exports.
+   */
+  deletionReason: string | null;
+  /**
+   * Systemkonten stehen fuer Dienste, die ohne menschliche Anmeldung handeln (gebunden ueber
+   * oauth2_clients.systemUserId). Sie erscheinen wie normale Nutzer (Zustaendige, Autor),
+   * bekommen aber keine Mails oder Benachrichtigungen und koennen sich nicht per Passwort anmelden.
+   */
+  isSystemAccount: boolean;
   createdAt: Date;
   updatedAt: Date | null;
 };
 
 export type UserInsert = {
+  /** Wer den Nutzer fuehrt. "frontend": das Next-Frontend legt ihn ueber /internal/users an. */
+  identityProvider?: IdentityProvider;
   externalUserId?: string | null;
   email?: string | null;
   firstName?: string | null;
   lastName?: string | null;
+  /** direct-auth fields (null bei identityProvider "frontend") */
+  passwordHash?: string | null;
+  name?: string | null;
+  emailVerifiedAt?: Date | null;
+  /**
+   * Letzter Sync-Zeitpunkt vom Frontend. Vergleich gegen sourceUpdatedAt
+   * im /internal/users/sync schützt vor Out-of-order-Updates.
+   */
+  syncedAt?: Date | null;
+  /**
+   * DSGVO-Loeschantrag: gesetzt, sobald der Nutzer die Loeschung bestaetigt hat. Frist,
+   * Wiederherstellen und endgueltiges Loeschen gehoeren der App (in node-qr 30 Tage).
+   */
+  deletionRequestedAt?: Date | null;
+  /**
+   * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
+   * User?"). Nicht öffentlich, nicht in Audit-Exports.
+   */
+  deletionReason?: string | null;
+  /**
+   * Systemkonten stehen fuer Dienste, die ohne menschliche Anmeldung handeln (gebunden ueber
+   * oauth2_clients.systemUserId). Sie erscheinen wie normale Nutzer (Zustaendige, Autor),
+   * bekommen aber keine Mails oder Benachrichtigungen und koennen sich nicht per Passwort anmelden.
+   */
+  isSystemAccount?: boolean;
   createdAt: Date;
   updatedAt?: Date | null;
 };
 
 export type NodeBillUserId = number;
 
+export type UserSyncAuditRow = {
+  id: number;
+  externalUserId: string;
+  action: UserSyncAction;
+  userId: number | null;
+  idempotencyKey: string | null;
+  details: any;
+  requestIp: string | null;
+  occurredAt: Date;
+};
+
+export type UserSyncAuditInsert = {
+  externalUserId: string;
+  action: UserSyncAction;
+  userId?: number | null;
+  idempotencyKey?: string | null;
+  details?: any;
+  requestIp?: string | null;
+  occurredAt?: Date;
+};
+
+export type AuthRefreshToken = {
+  id: number;
+  userId: number;
+  tokenHash: string;
+  expiresAt: Date;
+  revokedAt: Date | null;
+  replacedByTokenHash: string | null;
+  userAgent: string | null;
+  ipAddress: string | null;
+  createdAt: Date;
+};
+
+export type AuthRefreshTokenInsert = {
+  userId: number;
+  tokenHash: string;
+  expiresAt: Date;
+  revokedAt?: Date | null;
+  replacedByTokenHash?: string | null;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  createdAt: Date;
+};
+
+export type AuthPushToken = {
+  id: number;
+  userId: number;
+  token: string;
+  platform: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type AuthPushTokenInsert = {
+  userId: number;
+  token: string;
+  platform: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type AuthEmailVerificationToken = {
+  id: number;
+  userId: number;
+  tokenHash: string;
+  email: string;
+  expiresAt: Date;
+  consumedAt: Date | null;
+  createdAt: Date;
+};
+
+export type AuthEmailVerificationTokenInsert = {
+  userId: number;
+  tokenHash: string;
+  email: string;
+  expiresAt: Date;
+  consumedAt?: Date | null;
+  createdAt: Date;
+};
+
+export type DirectAuthUser = {
+  id: number;
+  email: string | null;
+  name: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  emailVerified: boolean;
+  emailVerifiedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
+export type DirectAuthRole = {
+  id: number;
+  name: string;
+};
+
+export type DirectAuthMe = DirectAuthUser & {
+  isAdmin: boolean;
+  roles: DirectAuthRole[];
+};
+
+export type DirectAuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type DirectAuthResponse = {
+  user: DirectAuthUser;
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type DirectAuthVerifyEmailResponse = {
+  ok: true;
+  user: DirectAuthUser;
+};
+
+export type DirectAuthRequestVerificationResponse = {
+  ok: true;
+  alreadyVerified?: boolean;
+};
+
 export type NodeBillUserActivity = {
   userId: number;
-  activityDate: string;
   /** Date of activity (YYYY-MM-DD) */
-  firstActivityAt: Date;
+  activityDate: string;
   /** First request of the day */
-  lastActivityAt: Date;
+  firstActivityAt: Date;
   /** Last request of the day (updated continuously) */
-  requestCount?: number;
+  lastActivityAt: Date;
   /** Total requests this day */
-  requests?: any;
+  requestCount?: number;
   /** Array of request details (max 50, FIFO) */
-  createdAt: Date;
+  requests?: any;
   /** When this daily record was created */
+  createdAt: Date;
+  /** When this daily record was last updated */
   updatedAt: Date;
 };
 
@@ -114,8 +293,8 @@ export type NodeBillUserActivityId = number;
 export type AppSettings = {
   key: string;
   value: string;
-  allowedValues?: string | null;
   /** Comma-separated list of allowed values (for enum-like settings) */
+  allowedValues?: string | null;
   type: AppSettingsType;
   description?: string | null;
   createdAt: Date;
@@ -124,8 +303,8 @@ export type AppSettings = {
 export type AppSettingsInsert = {
   key: string;
   value: string;
-  allowedValues?: string | null;
   /** Comma-separated list of allowed values (for enum-like settings) */
+  allowedValues?: string | null;
   type: AppSettingsType;
   description?: string | null;
   createdAt: Date;
@@ -145,24 +324,25 @@ export type AppLogId = number;
 
 export type Webhook = {
   id: number;
-  provider: string;
   /** z. B. "Stripe", "PayPal", "Printful" */
+  provider: string;
   eventType: string;
   externalId: string;
-  payload: any;
   /** Raw payload as received from the provider */
+  payload: any;
   processed: boolean;
   status: WebhookStatus;
   processMessage: string | null;
   originUrl: string | null;
   createdAt: Date;
   processedAt: Date | null;
-  userAgent: string | null;
   /** User-Agent Header */
-  signature: string | null;
+  userAgent: string | null;
   /** Webhook signature für Verifizierung */
-  retryCount: number;
+  signature: string | null;
   /** Anzahl der Retry-Versuche */
+  retryCount: number;
+  /** Letzter Retry-Versuch */
   lastRetryAt: Date | null;
 };
 
@@ -181,6 +361,7 @@ export type Role = {
   name: string;
   description: string | null;
   createdAt: Date;
+  /** Kann diese Rolle verkauft werden, oder ist die nur durch admin steuerbar? */
   isSellable: boolean;
 };
 
@@ -239,6 +420,8 @@ export type EntitlementSyncLink = {
   createdAt: Date;
   updatedAt: Date | null;
   lastSeenAt: Date;
+  /** Spalten der App (src/db/individual/base-table-columns.ts). */
+  accountId: number | null;
 };
 
 export type EntitlementSyncLinkId = number;
@@ -265,6 +448,8 @@ export type UsageOverageEvent = {
   pricingPayload: any;
   createdAt: Date;
   updatedAt: Date | null;
+  /** Spalten der App (src/db/individual/base-table-columns.ts). */
+  reportedAt: Date | null;
 };
 
 export type UsageOverageEventId = number;
@@ -345,31 +530,34 @@ export type CreditConsumptionQueueInsert = {
 };
 
 export type WorkflowQueue = {
-  id: string;
   /** String format: WF_<timestamp>_<hash> */
+  id: string;
   workflowType: string;
   payload: any;
   status: WorkflowQueueStatus;
   attemptCount: number;
   lastAttemptAt: Date | null;
-  tasks: any;
   /** Array of tasks with expected duration */
-  currentTask: number;
+  tasks: any;
   /** Current task being processed */
-  taskResults: any;
+  currentTask: number;
   /** Array of task results/details (logs go here, so we can see everything..) */
+  taskResults: any;
   createdAt: Date;
   scheduledAt: Date | null;
   updatedAt: Date | null;
-  priority: number;
   /** Higher number = higher priority */
+  priority: number;
   userId: number | null;
   createdBy: WorkflowCreatedBy;
-  /** Abort & Cleanup System */
+  /**
+   * Abort & Cleanup System
+   * User requested abort
+   */
   abortRequested: boolean;
-  /** User requested abort */
-  cleanupHandler: string | null;
   /** Cleanup function identifier */
+  cleanupHandler: string | null;
+  /** Automatic timeout timestamp */
   timeoutAt: Date | null;
 };
 
@@ -393,6 +581,30 @@ export type UserWithStats = {
     updatedAt: Date | null;
   };
   activityStats: QuickStats | null;
+};
+
+export type UserWithActivityOverview = {
+  user: {
+    id: number;
+    externalUserId: string | null;
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    createdAt: Date;
+    updatedAt: Date | null;
+  };
+  activityOverview: any;
+};
+
+export type PaginatedUsersWithActivityOverview = {
+  data: UserWithActivityOverview[];
+  pagination: {
+    page: number;
+    resultsPerPage: number;
+    totalPages: number;
+    totalResults: number;
+    availableStatusCodes: number[];
+  };
 };
 
 
@@ -420,54 +632,9 @@ export type NodeBillAppPermissionValue = (typeof NodeBillAppPermissions)[keyof t
 // APP SETTINGS
 // ============================================================================
 
-export enum NodeBillAppSettingsKey {
-  ApplicationName = "application_name",
-  BillingPlanLimitManagingCompaniesBase = "billing_plan_limit_managing_companies_base",
-  BillingPlanLimitManagingCompaniesPremium = "billing_plan_limit_managing_companies_premium",
-  BillingPlanLimitManagingCompaniesEnterprise = "billing_plan_limit_managing_companies_enterprise",
-  BillingPlanLimitManagingCompaniesLegacy = "billing_plan_limit_managing_companies_legacy",
-  BillingPlanLimitDocumentStorageGbBase = "billing_plan_limit_document_storage_gb_base",
-  BillingPlanLimitDocumentStorageGbPremium = "billing_plan_limit_document_storage_gb_premium",
-  BillingPlanLimitDocumentStorageGbEnterprise = "billing_plan_limit_document_storage_gb_enterprise",
-  BillingPlanLimitDocumentStorageGbLegacy = "billing_plan_limit_document_storage_gb_legacy",
-  BillingStorageProviderCostEurPerGb = "billing_storage_provider_cost_eur_per_gb",
-  BillingStorageCustomerPriceEurPerGb = "billing_storage_customer_price_eur_per_gb",
-  BillingStorageHardLimitGbPerCompany = "billing_storage_hard_limit_gb_per_company",
-  BillingOverageCurrency = "billing_overage_currency",
-  BillingOveragePriceEurPerManagingCompany = "billing_overage_price_eur_per_managing_company",
-  BillingOveragePriceEurPerDocumentStorageGb = "billing_overage_price_eur_per_document_storage_gb",
-  BillingOverageNegativeCorrectionsEnabled = "billing_overage_negative_corrections_enabled",
-  BillingOveragePullDefaultLookbackDays = "billing_overage_pull_default_lookback_days",
-  BillingOveragePullMaxEvents = "billing_overage_pull_max_events",
-  DunningGlobalBaseRateBGB247 = "dunning_global_base_rate_bgb_247",
-  DunningPaymentReminderEnabled = "dunning_payment_reminder_enabled",
-  DunningPaymentReminderAfterDays = "dunning_payment_reminder_after_days"
-}
+// No settings defined
 
-export type NodeBillAppSettingsTypeMap = {
-    [NodeBillAppSettingsKey.ApplicationName]: string;
-    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesBase]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesPremium]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesEnterprise]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesLegacy]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbBase]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbPremium]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbEnterprise]: number;
-    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbLegacy]: number;
-    [NodeBillAppSettingsKey.BillingStorageProviderCostEurPerGb]: number;
-    [NodeBillAppSettingsKey.BillingStorageCustomerPriceEurPerGb]: number;
-    [NodeBillAppSettingsKey.BillingStorageHardLimitGbPerCompany]: number;
-    [NodeBillAppSettingsKey.BillingOverageCurrency]: string;
-    [NodeBillAppSettingsKey.BillingOveragePriceEurPerManagingCompany]: number;
-    [NodeBillAppSettingsKey.BillingOveragePriceEurPerDocumentStorageGb]: number;
-    [NodeBillAppSettingsKey.BillingOverageNegativeCorrectionsEnabled]: boolean;
-    [NodeBillAppSettingsKey.BillingOveragePullDefaultLookbackDays]: number;
-    [NodeBillAppSettingsKey.BillingOveragePullMaxEvents]: number;
-    // Dunning
-    [NodeBillAppSettingsKey.DunningGlobalBaseRateBGB247]: number;
-    [NodeBillAppSettingsKey.DunningPaymentReminderEnabled]: boolean;
-    [NodeBillAppSettingsKey.DunningPaymentReminderAfterDays]: number;
-};
+
 
 // ============================================================================
 // SHARED UTILITY TYPES
@@ -502,38 +669,36 @@ export type IapPayoutImport = {
   periodEnd: string;
   /** Beträge (alle als String numeric — Drizzle-Konvention) */
   payoutCurrency: string;
-  grossSalesGross: string | null;
   /** Brutto-Verkäufe inkl. Endkunden-USt (informativ) */
-  providerFees: string | null;
+  grossSalesGross: string | null;
   /** Apple/Google Service-Fee 15–30% (informativ) */
-  netPayoutAmount: string;
+  providerFees: string | null;
   /** Was tatsächlich ausgezahlt wird → Erlös */
-  refundsAmount: string | null;
+  netPayoutAmount: string;
   /** Refunds in der Periode (bereits in netto verrechnet) */
+  refundsAmount: string | null;
+  /** Endkunden-USt, die Apple/Google selbst abgeführt haben */
   taxesWithheld: string | null;
   /**
-   * Endkunden-USt, die Apple/Google selbst abgeführt haben
    * Quelle des Reports — RevenueCat ist Default, CSV-Upload als Fallback
+   * "revenuecat_api" | "revenuecat_csv" | "apple_financial_report" | "google_earnings_report"
    */
   reportSource: string;
-  /** "revenuecat_api" | "revenuecat_csv" | "apple_financial_report" | "google_earnings_report" */
-  reportFileId: number | null;
   /** Optional: Original-CSV/PDF im Document-Store */
+  reportFileId: number | null;
+  /** Original-Payload für spätere Forensik / Steuerprüfung */
   rawReportSnapshot: any | null;
-  /**
-   * Original-Payload für spätere Forensik / Steuerprüfung
-   * Verlinkung zur Hauptbuch-Buchung
-   */
+  /** Verlinkung zur Hauptbuch-Buchung */
   bookkeepingRevenueId: number | null;
-  /** Idempotency */
-  externalRef: string;
   /**
+   * Idempotency
    * z.B. "rc_payout_2026-04_apple"
-   * Audit
    */
+  externalRef: string;
+  /** Audit */
   importedAt: Date;
-  importedByUserId: number | null;
   /** null = Cron-Job */
+  importedByUserId: number | null;
   createdAt: Date;
 };
 
@@ -545,45 +710,43 @@ export type IapPayoutImportInsert = {
   periodEnd: string;
   /** Beträge (alle als String numeric — Drizzle-Konvention) */
   payoutCurrency: string;
-  grossSalesGross?: string | null;
   /** Brutto-Verkäufe inkl. Endkunden-USt (informativ) */
-  providerFees?: string | null;
+  grossSalesGross?: string | null;
   /** Apple/Google Service-Fee 15–30% (informativ) */
-  netPayoutAmount: string;
+  providerFees?: string | null;
   /** Was tatsächlich ausgezahlt wird → Erlös */
-  refundsAmount?: string | null;
+  netPayoutAmount: string;
   /** Refunds in der Periode (bereits in netto verrechnet) */
+  refundsAmount?: string | null;
+  /** Endkunden-USt, die Apple/Google selbst abgeführt haben */
   taxesWithheld?: string | null;
   /**
-   * Endkunden-USt, die Apple/Google selbst abgeführt haben
    * Quelle des Reports — RevenueCat ist Default, CSV-Upload als Fallback
+   * "revenuecat_api" | "revenuecat_csv" | "apple_financial_report" | "google_earnings_report"
    */
   reportSource: string;
-  /** "revenuecat_api" | "revenuecat_csv" | "apple_financial_report" | "google_earnings_report" */
-  reportFileId?: number | null;
   /** Optional: Original-CSV/PDF im Document-Store */
+  reportFileId?: number | null;
+  /** Original-Payload für spätere Forensik / Steuerprüfung */
   rawReportSnapshot?: any | null;
-  /**
-   * Original-Payload für spätere Forensik / Steuerprüfung
-   * Verlinkung zur Hauptbuch-Buchung
-   */
+  /** Verlinkung zur Hauptbuch-Buchung */
   bookkeepingRevenueId?: number | null;
-  /** Idempotency */
-  externalRef: string;
   /**
+   * Idempotency
    * z.B. "rc_payout_2026-04_apple"
-   * Audit
    */
+  externalRef: string;
+  /** Audit */
   importedAt?: Date;
-  importedByUserId?: number | null;
   /** null = Cron-Job */
+  importedByUserId?: number | null;
   createdAt?: Date;
 };
 
 export type CustomerCompany = {
   id: number;
-  isFreelancer: boolean;
   /** wenn ein kunde freelancer ist, hat er keine company, das wollen wir hierdurch darstellen */
+  isFreelancer: boolean;
   name: string;
   street: string | null;
   streetNr: string | null;
@@ -602,8 +765,8 @@ export type CustomerCompany = {
 };
 
 export type CustomerCompanyInsert = {
-  isFreelancer?: boolean;
   /** wenn ein kunde freelancer ist, hat er keine company, das wollen wir hierdurch darstellen */
+  isFreelancer?: boolean;
   name: string;
   street?: string | null;
   streetNr?: string | null;
@@ -638,6 +801,7 @@ export type CompanyEmployee = {
   phone: string | null;
   createdAt: Date;
   updatedAt: Date | null;
+  /** id of the user in the target app */
   externalUserId: string | null;
 };
 
@@ -655,6 +819,7 @@ export type CompanyEmployeeInsert = {
   phone?: string | null;
   createdAt: Date;
   updatedAt?: Date | null;
+  /** id of the user in the target app */
   externalUserId?: string | null;
 };
 
@@ -664,8 +829,8 @@ export type CompanyEmployeeAssignment = {
   id: number;
   companyEmployeeId: number;
   companyId: number;
-  companyRole: string | null;
   /** optional */
+  companyRole: string | null;
   status: CompanyEmployeeStatus;
   /**
    * active = aktuell beschäftigt in dieser Company
@@ -673,8 +838,8 @@ export type CompanyEmployeeAssignment = {
    * terminated = ausgetreten
    */
   validFrom: Date;
-  validTo: Date | null;
   /** null = aktuell */
+  validTo: Date | null;
   createdAt: Date;
   updatedAt: Date | null;
   assignedBy: number | null;
@@ -683,8 +848,8 @@ export type CompanyEmployeeAssignment = {
 export type CompanyEmployeeAssignmentInsert = {
   companyEmployeeId: number;
   companyId: number;
-  companyRole?: string | null;
   /** optional */
+  companyRole?: string | null;
   status?: CompanyEmployeeStatus;
   /**
    * active = aktuell beschäftigt in dieser Company
@@ -692,8 +857,8 @@ export type CompanyEmployeeAssignmentInsert = {
    * terminated = ausgetreten
    */
   validFrom?: Date;
-  validTo?: Date | null;
   /** null = aktuell */
+  validTo?: Date | null;
   createdAt?: Date;
   updatedAt?: Date | null;
   assignedBy?: number | null;
@@ -703,36 +868,38 @@ export type CompanyEmployeeAssignmentId = number;
 
 export type Document = {
   id: number;
-  managingCompanyId: number;
   /** firma der das dokument gehört */
-  costCenterId: number | null;
+  managingCompanyId: number;
   /** optional: kostenstelle der das dokument zugeordnet ist */
+  costCenterId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
   fileName: string;
   fileType: string;
   fileSizeBytes: number;
-  s3Key: string;
   /** path in the s3 bucket */
-  uploadedBy: number | null;
+  s3Key: string;
   /** if not set, system created */
+  uploadedBy: number | null;
+  /** if true, document cannot be deleted or modified (for compliance) */
   isLocked: boolean;
 };
 
 export type DocumentInsert = {
-  managingCompanyId: number;
   /** firma der das dokument gehört */
-  costCenterId?: number | null;
+  managingCompanyId: number;
   /** optional: kostenstelle der das dokument zugeordnet ist */
+  costCenterId?: number | null;
   createdAt: Date;
   updatedAt?: Date | null;
   fileName: string;
   fileType: string;
   fileSizeBytes: number;
-  s3Key: string;
   /** path in the s3 bucket */
-  uploadedBy?: number | null;
+  s3Key: string;
   /** if not set, system created */
+  uploadedBy?: number | null;
+  /** if true, document cannot be deleted or modified (for compliance) */
   isLocked?: boolean;
 };
 
@@ -742,8 +909,8 @@ export type DocumentAssignment = {
   id: number;
   documentId: number;
   ownerType: DocumentOwnerType;
-  ownerId: number | null;
   /** nullable für "internal" */
+  ownerId: number | null;
   assignedBy: number | null;
   createdAt: Date;
 };
@@ -751,8 +918,8 @@ export type DocumentAssignment = {
 export type DocumentAssignmentInsert = {
   documentId: number;
   ownerType: DocumentOwnerType;
-  ownerId?: number | null;
   /** nullable für "internal" */
+  ownerId?: number | null;
   assignedBy?: number | null;
   createdAt: Date;
 };
@@ -767,14 +934,14 @@ export type Invoice = {
   documentType: InvoiceDocumentType;
   correctsInvoiceId: number | null;
   correctionReason: string | null;
-  /** company */
-  managingCompanyId: number;
-  /** firma der das dokument gehört */
-  costCenterId: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
-   * Rechnungsdetails
+   * company
+   * firma der das dokument gehört
    */
+  managingCompanyId: number;
+  /** optional: kostenstelle der das dokument zugeordnet ist */
+  costCenterId: number | null;
+  /** Rechnungsdetails */
   invoiceDate: Date;
   dueDate: Date;
   totalAmount: string;
@@ -787,75 +954,79 @@ export type Invoice = {
    * Generated on invoice creation, allows access to PDF without authentication
    */
   publicShareToken: string | null;
-  /** E-Rechnung / ZUGFeRD */
-  eInvoiceFormat: string | null;
-  /** 'zugferd' | null */
-  zugferdProfile: string | null;
   /**
-   * 'BASIC' | 'COMFORT' |CompanyCostCenter 'EXTENDED'
-   * Optional: Zusatzfelder
+   * E-Rechnung / ZUGFeRD
+   * 'zugferd' | null
    */
+  eInvoiceFormat: string | null;
+  /** 'BASIC' | 'COMFORT' |CompanyCostCenter 'EXTENDED' */
+  zugferdProfile: string | null;
+  /** Optional: Zusatzfelder */
   notes: string | null;
   taxRate: string | null;
   taxAmount: string | null;
   netAmount: string | null;
-  /** VAT Treatment Snapshot (immutable after issue) */
+  /**
+   * VAT Treatment Snapshot (immutable after issue)
+   * Snapshot of tax treatment
+   */
   vatTreatment: VatTreatment | null;
-  /** Snapshot of tax treatment */
-  vatLegalRef: string | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
-  vatNote: string | null;
+  vatLegalRef: string | null;
   /** User-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
+  vatNote: string | null;
+  /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom: any | null;
   /**
-   * { legalRef?, description?, vatRate?, vatAmountOverride? }
    * Dates for VAT calculation
+   * Leistungsdatum (when service was performed)
    */
   performedAt: Date | null;
   /**
-   * Leistungsdatum (when service was performed)
    * invoiceDate = Rechnungsdatum
    * Payment tracking (enterprise): we store *how* the invoice became paid.
    */
   paidAt: Date | null;
-  paidSource: string | null;
   /** "manual" | "payments" | "external" | null */
-  paidByPaymentId: number | null;
+  paidSource: string | null;
   /** nullable; for audit/tracing (no FK to avoid ordering/cycles) */
-  paymentMethod: string | null;
+  paidByPaymentId: number | null;
   /** z.B. "card", "sepa_debit", "paypal", "bank_transfer" */
+  paymentMethod: string | null;
+  /** z.B. "Stripe", "PayPal" */
   paymentProvider: string | null;
   /**
-   * z.B. "Stripe", "PayPal"
    * Optional: Kundendaten (für Rechnungen ohne Company)
    * Wird verwendet wenn companyId = null (z.B. Privatkunden, Ad-hoc Verkäufe)
+   * Pflicht für Rechnung wenn companyId = null
    */
   customerName: string | null;
-  /** Pflicht für Rechnung wenn companyId = null */
   customerStreet: string | null;
   customerStreetNr: string | null;
   customerZip: string | null;
   customerCity: string | null;
-  customerCountry: string | null;
   /** Default: "Deutschland" */
+  customerCountry: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
-  customerUstId: string | null;
   /** USt-IdNr für B2B (optional) */
+  customerUstId: string | null;
   language: string;
   /** Bankverbindung: Welches Konto soll auf der Rechnung stehen? */
   paymentAccountId: number | null;
   /** Bank-Fallback bei PayPal: Welches Bankkonto erscheint als Überweisungs-Alternative? */
   bankFallbackAccountId: number | null;
-  /** Zahlungsbedingungen */
+  /**
+   * Zahlungsbedingungen
+   * z.B. 30 fuer "Netto 30 Tage"
+   */
   paymentTermsDays: number | null;
-  /** z.B. 30 fuer "Netto 30 Tage" */
-  paymentTermsText: string | null;
   /** Freitext: "Zahlbar innerhalb von 30 Tagen" */
-  earlyPaymentDiscountPercent: string | null;
+  paymentTermsText: string | null;
   /** Skonto z.B. "2.0" fuer 2% */
-  earlyPaymentDiscountDays: number | null;
+  earlyPaymentDiscountPercent: string | null;
   /** Skonto-Frist z.B. 10 Tage */
+  earlyPaymentDiscountDays: number | null;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -867,14 +1038,14 @@ export type InvoiceInsert = {
   documentType?: InvoiceDocumentType;
   correctsInvoiceId?: number | null;
   correctionReason?: string | null;
-  /** company */
-  managingCompanyId: number;
-  /** firma der das dokument gehört */
-  costCenterId?: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
-   * Rechnungsdetails
+   * company
+   * firma der das dokument gehört
    */
+  managingCompanyId: number;
+  /** optional: kostenstelle der das dokument zugeordnet ist */
+  costCenterId?: number | null;
+  /** Rechnungsdetails */
   invoiceDate: Date;
   dueDate: Date;
   totalAmount: string;
@@ -887,75 +1058,79 @@ export type InvoiceInsert = {
    * Generated on invoice creation, allows access to PDF without authentication
    */
   publicShareToken?: string | null;
-  /** E-Rechnung / ZUGFeRD */
-  eInvoiceFormat?: string | null;
-  /** 'zugferd' | null */
-  zugferdProfile?: string | null;
   /**
-   * 'BASIC' | 'COMFORT' |CompanyCostCenter 'EXTENDED'
-   * Optional: Zusatzfelder
+   * E-Rechnung / ZUGFeRD
+   * 'zugferd' | null
    */
+  eInvoiceFormat?: string | null;
+  /** 'BASIC' | 'COMFORT' |CompanyCostCenter 'EXTENDED' */
+  zugferdProfile?: string | null;
+  /** Optional: Zusatzfelder */
   notes?: string | null;
   taxRate?: string | null;
   taxAmount?: string | null;
   netAmount?: string | null;
-  /** VAT Treatment Snapshot (immutable after issue) */
+  /**
+   * VAT Treatment Snapshot (immutable after issue)
+   * Snapshot of tax treatment
+   */
   vatTreatment?: VatTreatment | null;
-  /** Snapshot of tax treatment */
-  vatLegalRef?: string | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
-  vatNote?: string | null;
+  vatLegalRef?: string | null;
   /** User-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
+  vatNote?: string | null;
+  /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom?: any | null;
   /**
-   * { legalRef?, description?, vatRate?, vatAmountOverride? }
    * Dates for VAT calculation
+   * Leistungsdatum (when service was performed)
    */
   performedAt?: Date | null;
   /**
-   * Leistungsdatum (when service was performed)
    * invoiceDate = Rechnungsdatum
    * Payment tracking (enterprise): we store *how* the invoice became paid.
    */
   paidAt?: Date | null;
-  paidSource?: string | null;
   /** "manual" | "payments" | "external" | null */
-  paidByPaymentId?: number | null;
+  paidSource?: string | null;
   /** nullable; for audit/tracing (no FK to avoid ordering/cycles) */
-  paymentMethod?: string | null;
+  paidByPaymentId?: number | null;
   /** z.B. "card", "sepa_debit", "paypal", "bank_transfer" */
+  paymentMethod?: string | null;
+  /** z.B. "Stripe", "PayPal" */
   paymentProvider?: string | null;
   /**
-   * z.B. "Stripe", "PayPal"
    * Optional: Kundendaten (für Rechnungen ohne Company)
    * Wird verwendet wenn companyId = null (z.B. Privatkunden, Ad-hoc Verkäufe)
+   * Pflicht für Rechnung wenn companyId = null
    */
   customerName?: string | null;
-  /** Pflicht für Rechnung wenn companyId = null */
   customerStreet?: string | null;
   customerStreetNr?: string | null;
   customerZip?: string | null;
   customerCity?: string | null;
-  customerCountry?: string | null;
   /** Default: "Deutschland" */
+  customerCountry?: string | null;
   customerEmail?: string | null;
   customerPhone?: string | null;
-  customerUstId?: string | null;
   /** USt-IdNr für B2B (optional) */
+  customerUstId?: string | null;
   language?: string;
   /** Bankverbindung: Welches Konto soll auf der Rechnung stehen? */
   paymentAccountId?: number | null;
   /** Bank-Fallback bei PayPal: Welches Bankkonto erscheint als Überweisungs-Alternative? */
   bankFallbackAccountId?: number | null;
-  /** Zahlungsbedingungen */
+  /**
+   * Zahlungsbedingungen
+   * z.B. 30 fuer "Netto 30 Tage"
+   */
   paymentTermsDays?: number | null;
-  /** z.B. 30 fuer "Netto 30 Tage" */
-  paymentTermsText?: string | null;
   /** Freitext: "Zahlbar innerhalb von 30 Tagen" */
-  earlyPaymentDiscountPercent?: string | null;
+  paymentTermsText?: string | null;
   /** Skonto z.B. "2.0" fuer 2% */
-  earlyPaymentDiscountDays?: number | null;
+  earlyPaymentDiscountPercent?: string | null;
   /** Skonto-Frist z.B. 10 Tage */
+  earlyPaymentDiscountDays?: number | null;
   createdAt: Date;
   updatedAt?: Date | null;
 };
@@ -965,52 +1140,56 @@ export type InvoiceId = number;
 export type InvoiceLineItem = {
   id: number;
   invoiceId: number;
-  /** Item Details (denormalized for invoice immutability) */
+  /**
+   * Item Details (denormalized for invoice immutability)
+   * 'subscription', 'one_time', 'usage', etc.
+   */
   itemType: string;
-  /** 'subscription', 'one_time', 'usage', etc. */
   title: string;
   description: string | null;
-  /** Pricing */
-  unitPriceNet: string;
-  /** Netto-Preis pro Einheit */
-  quantity: string;
-  lineNetAmount: string;
-  /** unitPriceNet * quantity */
-  lineGrossAmount: string;
-  /** lineNetAmount * (1 + taxRate) */
-  taxRate: string;
-  /** z.B. 0.19 für 19% */
-  lineTaxAmount: string;
   /**
-   * lineNetAmount * taxRate
-   * Sort order
+   * Pricing
+   * Netto-Preis pro Einheit
    */
+  unitPriceNet: string;
+  quantity: string;
+  /** unitPriceNet * quantity */
+  lineNetAmount: string;
+  /** lineNetAmount * (1 + taxRate) */
+  lineGrossAmount: string;
+  /** z.B. 0.19 für 19% */
+  taxRate: string;
+  /** lineNetAmount * taxRate */
+  lineTaxAmount: string;
+  /** Sort order */
   sortOrder: number;
   createdAt: Date;
 };
 
 export type InvoiceLineItemInsert = {
   invoiceId: number;
-  /** Item Details (denormalized for invoice immutability) */
+  /**
+   * Item Details (denormalized for invoice immutability)
+   * 'subscription', 'one_time', 'usage', etc.
+   */
   itemType: string;
-  /** 'subscription', 'one_time', 'usage', etc. */
   title: string;
   description?: string | null;
-  /** Pricing */
-  unitPriceNet: string;
-  /** Netto-Preis pro Einheit */
-  quantity?: string;
-  lineNetAmount: string;
-  /** unitPriceNet * quantity */
-  lineGrossAmount: string;
-  /** lineNetAmount * (1 + taxRate) */
-  taxRate: string;
-  /** z.B. 0.19 für 19% */
-  lineTaxAmount: string;
   /**
-   * lineNetAmount * taxRate
-   * Sort order
+   * Pricing
+   * Netto-Preis pro Einheit
    */
+  unitPriceNet: string;
+  quantity?: string;
+  /** unitPriceNet * quantity */
+  lineNetAmount: string;
+  /** lineNetAmount * (1 + taxRate) */
+  lineGrossAmount: string;
+  /** z.B. 0.19 für 19% */
+  taxRate: string;
+  /** lineNetAmount * taxRate */
+  lineTaxAmount: string;
+  /** Sort order */
   sortOrder?: number;
   createdAt?: Date;
 };
@@ -1020,10 +1199,10 @@ export type InvoiceLineItemId = number;
 export type InvoiceItemTypeConfig = {
   id: number;
   managingCompanyId: number;
-  value: string;
   /** unique key, e.g. "montage" */
-  label: string;
+  value: string;
   /** display name, e.g. "Montage / Einbau" */
+  label: string;
   defaultProductType: string;
   sortOrder: number;
   isArchived: boolean;
@@ -1033,10 +1212,10 @@ export type InvoiceItemTypeConfig = {
 
 export type InvoiceItemTypeConfigInsert = {
   managingCompanyId: number;
-  value: string;
   /** unique key, e.g. "montage" */
-  label: string;
+  value: string;
   /** display name, e.g. "Montage / Einbau" */
+  label: string;
   defaultProductType?: string;
   sortOrder?: number;
   isArchived?: boolean;
@@ -1057,13 +1236,11 @@ export type InvoiceTemplate = {
   paymentAccountId: number | null;
   currency: string;
   language: string;
-  productType: string;
   /** standard | reduced | custom */
+  productType: string;
+  /** only for productType="custom" */
   customVatRate: string | null;
-  /**
-   * only for productType="custom"
-   * Payment terms
-   */
+  /** Payment terms */
   paymentTermsDays: number | null;
   paymentTermsText: string | null;
   earlyPaymentDiscountPercent: string | null;
@@ -1098,13 +1275,11 @@ export type InvoiceTemplateInsert = {
   paymentAccountId?: number | null;
   currency?: string;
   language?: string;
-  productType?: string;
   /** standard | reduced | custom */
+  productType?: string;
+  /** only for productType="custom" */
   customVatRate?: string | null;
-  /**
-   * only for productType="custom"
-   * Payment terms
-   */
+  /** Payment terms */
   paymentTermsDays?: number | null;
   paymentTermsText?: string | null;
   earlyPaymentDiscountPercent?: string | null;
@@ -1136,10 +1311,10 @@ export type InvoiceQuote = {
   quoteHash: string;
   quoteVersion: string;
   source: string;
-  stage: string;
   /** preview | create */
-  status: string;
+  stage: string;
   /** active | consumed */
+  status: string;
   quotePayload: any;
   warnings: any;
   createdBy: number | null;
@@ -1153,10 +1328,10 @@ export type InvoiceQuoteInsert = {
   quoteHash: string;
   quoteVersion: string;
   source?: string;
-  stage?: string;
   /** preview | create */
-  status?: string;
+  stage?: string;
   /** active | consumed */
+  status?: string;
   quotePayload: any;
   warnings?: any;
   createdBy?: number | null;
@@ -1168,9 +1343,11 @@ export type InvoiceQuoteId = number;
 
 export type CurrencyRate = {
   id: number;
-  /** Where it came from (for traceability + fallback order) */
+  /**
+   * Where it came from (for traceability + fallback order)
+   * e.g. "ecb_xml" | "frankfurter" | "openexchangerates"
+   */
   provider: string;
-  /** e.g. "ecb_xml" | "frankfurter" | "openexchangerates" */
   fromCurrency: string;
   toCurrency: string;
   /** Stichtag der Rate (z.B. EZB/Frankfurter "date"). Für Renewals extrem wichtig. */
@@ -1184,9 +1361,11 @@ export type CurrencyRate = {
 };
 
 export type CurrencyRateInsert = {
-  /** Where it came from (for traceability + fallback order) */
+  /**
+   * Where it came from (for traceability + fallback order)
+   * e.g. "ecb_xml" | "frankfurter" | "openexchangerates"
+   */
   provider: string;
-  /** e.g. "ecb_xml" | "frankfurter" | "openexchangerates" */
   fromCurrency: string;
   toCurrency: string;
   /** Stichtag der Rate (z.B. EZB/Frankfurter "date"). Für Renewals extrem wichtig. */
@@ -1204,15 +1383,15 @@ export type CurrencyRateId = number;
 export type ManagingCompany = {
   id: number;
   companyName: string;
-  companyLegalForm: LegalForm | null;
   /** Rechtsform: Nur unterstützte deutsche Rechtsformen! */
+  companyLegalForm: LegalForm | null;
   companyManagingDirector: string | null;
   companyStreet: string | null;
   companyStreetNr: string | null;
   companyZip: string | null;
   companyCity: string | null;
-  companyCountry: string | null;
   /** important for tax calculation and laws.. (urrently only germany supported, but we plan to expand later) */
+  companyCountry: string | null;
   companyEmail: string | null;
   companyPhone: string | null;
   companyWebsite: string | null;
@@ -1220,50 +1399,52 @@ export type ManagingCompany = {
   companyRegistrationCourt: string | null;
   companyTaxId: string | null;
   companyVatId: string | null;
-  /** Default-Zahlungsbedingungen (werden bei Rechnungserstellung uebernommen wenn nichts explizit angegeben) */
+  /**
+   * Default-Zahlungsbedingungen (werden bei Rechnungserstellung uebernommen wenn nichts explizit angegeben)
+   * FK zu paymentAccounts (kein ref wegen zirkulaerer Abhaengigkeit)
+   */
   defaultPaymentAccountId: number | null;
-  /** FK zu paymentAccounts (kein ref wegen zirkulaerer Abhaengigkeit) */
   defaultPaymentTermsDays: number | null;
   defaultPaymentTermsText: string | null;
   defaultEarlyPaymentDiscountPercent: string | null;
   defaultEarlyPaymentDiscountDays: number | null;
   /** Configuration */
   zugferdEnable: boolean;
+  /** ZUGFeRD Profile (official EN 16931 profiles) */
   zugferdDefaultProfile: ZugferdProfile;
   /**
-   * ZUGFeRD Profile (official EN 16931 profiles)
    * Currency & Bookkeeping
+   * Base currency for bookkeeping (only supported currencies!)
    */
   baseCurrency: Currency;
-  /** Base currency for bookkeeping (only supported currencies!) */
+  /** EÜR vs. Bilanzierung (§ 4 Abs. 3 EStG vs. § 5 EStG) */
   bookkeepingBasis: BookkeepingBasis;
   /**
-   * EÜR vs. Bilanzierung (§ 4 Abs. 3 EStG vs. § 5 EStG)
    * logos
+   * s3 key for white mode logo (for invoices on light background, standart vor invoices, exepts the user select something else)
    */
   whiteLogoKey: string | null;
-  /** s3 key for white mode logo (for invoices on light background, standart vor invoices, exepts the user select something else) */
-  darkLogoKey: string | null;
   /** s3 key for dark mode logo (for invoices on dark background) */
-  invoiceLogoMode: string;
+  darkLogoKey: string | null;
   /** default logo mode for invoices (white, dark) */
-  invoiceLayoutVariant: string;
+  invoiceLogoMode: string;
   /** default invoice layout variant for this company */
+  invoiceLayoutVariant: string;
   createdAt: Date;
   updatedAt: Date | null;
 };
 
 export type ManagingCompanyInsert = {
   companyName: string;
-  companyLegalForm?: LegalForm | null;
   /** Rechtsform: Nur unterstützte deutsche Rechtsformen! */
+  companyLegalForm?: LegalForm | null;
   companyManagingDirector?: string | null;
   companyStreet?: string | null;
   companyStreetNr?: string | null;
   companyZip?: string | null;
   companyCity?: string | null;
-  companyCountry?: string | null;
   /** important for tax calculation and laws.. (urrently only germany supported, but we plan to expand later) */
+  companyCountry?: string | null;
   companyEmail?: string | null;
   companyPhone?: string | null;
   companyWebsite?: string | null;
@@ -1271,35 +1452,37 @@ export type ManagingCompanyInsert = {
   companyRegistrationCourt?: string | null;
   companyTaxId?: string | null;
   companyVatId?: string | null;
-  /** Default-Zahlungsbedingungen (werden bei Rechnungserstellung uebernommen wenn nichts explizit angegeben) */
+  /**
+   * Default-Zahlungsbedingungen (werden bei Rechnungserstellung uebernommen wenn nichts explizit angegeben)
+   * FK zu paymentAccounts (kein ref wegen zirkulaerer Abhaengigkeit)
+   */
   defaultPaymentAccountId?: number | null;
-  /** FK zu paymentAccounts (kein ref wegen zirkulaerer Abhaengigkeit) */
   defaultPaymentTermsDays?: number | null;
   defaultPaymentTermsText?: string | null;
   defaultEarlyPaymentDiscountPercent?: string | null;
   defaultEarlyPaymentDiscountDays?: number | null;
   /** Configuration */
   zugferdEnable?: boolean;
+  /** ZUGFeRD Profile (official EN 16931 profiles) */
   zugferdDefaultProfile?: ZugferdProfile;
   /**
-   * ZUGFeRD Profile (official EN 16931 profiles)
    * Currency & Bookkeeping
+   * Base currency for bookkeeping (only supported currencies!)
    */
   baseCurrency?: Currency;
-  /** Base currency for bookkeeping (only supported currencies!) */
+  /** EÜR vs. Bilanzierung (§ 4 Abs. 3 EStG vs. § 5 EStG) */
   bookkeepingBasis?: BookkeepingBasis;
   /**
-   * EÜR vs. Bilanzierung (§ 4 Abs. 3 EStG vs. § 5 EStG)
    * logos
+   * s3 key for white mode logo (for invoices on light background, standart vor invoices, exepts the user select something else)
    */
   whiteLogoKey?: string | null;
-  /** s3 key for white mode logo (for invoices on light background, standart vor invoices, exepts the user select something else) */
-  darkLogoKey?: string | null;
   /** s3 key for dark mode logo (for invoices on dark background) */
-  invoiceLogoMode?: string;
+  darkLogoKey?: string | null;
   /** default logo mode for invoices (white, dark) */
-  invoiceLayoutVariant?: string;
+  invoiceLogoMode?: string;
   /** default invoice layout variant for this company */
+  invoiceLayoutVariant?: string;
   createdAt: Date;
   updatedAt?: Date | null;
 };
@@ -1313,22 +1496,23 @@ export type CompanyCostCenter = {
   description: string | null;
   createdAt: Date;
   updatedAt: Date | null;
-  code: string;
   /** eindeutiger code für die kostenstelle z.b. für rechnungen usw. */
-  isArchived: boolean;
+  code: string;
   /** archivierte kostenstelle, wird nicht mehr genutzt */
-  colour: string | null;
+  isArchived: boolean;
   /** hex color code for this cost center */
-  icon: string | null;
+  colour: string | null;
   /** optional icon identifier for UI separation from company logos */
-  whiteLogoKey: string | null;
+  icon: string | null;
   /** optional S3 key for white mode cost-center logo */
-  darkLogoKey: string | null;
+  whiteLogoKey: string | null;
   /** optional S3 key for dark mode cost-center logo */
-  invoiceLayoutVariant: string | null;
+  darkLogoKey: string | null;
   /** optional override; null => inherit company invoiceLayoutVariant */
-  sortOrder: number | null;
+  invoiceLayoutVariant: string | null;
   /** ortierung alphabetisch auf code, danach kommt sort order */
+  sortOrder: number | null;
+  /** wenn true, dann wird nach sort order sortiert, sonst erst alphabetisch nach code dann sort order */
   sortByOrder: boolean;
 };
 
@@ -1338,22 +1522,23 @@ export type CompanyCostCenterInsert = {
   description?: string | null;
   createdAt: Date;
   updatedAt?: Date | null;
-  code: string;
   /** eindeutiger code für die kostenstelle z.b. für rechnungen usw. */
-  isArchived?: boolean;
+  code: string;
   /** archivierte kostenstelle, wird nicht mehr genutzt */
-  colour?: string | null;
+  isArchived?: boolean;
   /** hex color code for this cost center */
-  icon?: string | null;
+  colour?: string | null;
   /** optional icon identifier for UI separation from company logos */
-  whiteLogoKey?: string | null;
+  icon?: string | null;
   /** optional S3 key for white mode cost-center logo */
-  darkLogoKey?: string | null;
+  whiteLogoKey?: string | null;
   /** optional S3 key for dark mode cost-center logo */
-  invoiceLayoutVariant?: string | null;
+  darkLogoKey?: string | null;
   /** optional override; null => inherit company invoiceLayoutVariant */
-  sortOrder?: number | null;
+  invoiceLayoutVariant?: string | null;
   /** ortierung alphabetisch auf code, danach kommt sort order */
+  sortOrder?: number | null;
+  /** wenn true, dann wird nach sort order sortiert, sonst erst alphabetisch nach code dann sort order */
   sortByOrder?: boolean;
 };
 
@@ -1361,15 +1546,15 @@ export type CompanyCostCenterId = number;
 
 export type UserSelectedCompany = {
   id: number;
-  userId: number;
   /** One selection per user */
+  userId: number;
   managingCompanyId: number;
   updatedAt: Date;
 };
 
 export type UserSelectedCompanyInsert = {
-  userId: number;
   /** One selection per user */
+  userId: number;
   managingCompanyId: number;
   updatedAt: Date;
 };
@@ -1419,10 +1604,10 @@ export type CompanyUserAssignment = {
   id: number;
   companyId: number;
   userId: number;
-  role: string;
   /** technical role in the company (viewer, editor, admin) */
-  companyRole: string | null;
+  role: string;
   /** roles in the company (seo, developer, etc.) not technical used, only vor visualization */
+  companyRole: string | null;
   createdAt: Date;
   validFrom: Date;
   validTo: Date | null;
@@ -1435,10 +1620,10 @@ export type CompanyUserAssignment = {
 export type CompanyUserAssignmentInsert = {
   companyId: number;
   userId: number;
-  role?: string;
   /** technical role in the company (viewer, editor, admin) */
-  companyRole?: string | null;
+  role?: string;
   /** roles in the company (seo, developer, etc.) not technical used, only vor visualization */
+  companyRole?: string | null;
   createdAt: Date;
   validFrom: Date;
   validTo?: Date | null;
@@ -1489,21 +1674,23 @@ export type CompanyApiKey = {
   id: number;
   managingCompanyId: number;
   name: string;
-  /** Security: Argon2 hash (irreversible, includes salt) */
+  /**
+   * Security: Argon2 hash (irreversible, includes salt)
+   * Argon2 hashes are ~96 chars, but allow room
+   */
   apiKeyHash: string;
   /**
-   * Argon2 hashes are ~96 chars, but allow room
    * Performance: SHA-256 fingerprint for fast lookups (before expensive Argon2 verification)
+   * SHA-256 in hex = 64 chars
    */
   apiKeyFingerprint: string;
   /**
-   * SHA-256 in hex = 64 chars
    * Pepper Rotation: Track which pepper version was used to create this key
    * Allows graceful pepper rotation without invalidating existing keys
    */
   pepperVersion: number;
-  role: string;
   /** technical role in the company (viewer, editor, admin) */
+  role: string;
   defaultCostCenter: number | null;
   /**
    * Cost center policy:
@@ -1523,21 +1710,23 @@ export type CompanyApiKey = {
 export type CompanyApiKeyInsert = {
   managingCompanyId: number;
   name: string;
-  /** Security: Argon2 hash (irreversible, includes salt) */
+  /**
+   * Security: Argon2 hash (irreversible, includes salt)
+   * Argon2 hashes are ~96 chars, but allow room
+   */
   apiKeyHash: string;
   /**
-   * Argon2 hashes are ~96 chars, but allow room
    * Performance: SHA-256 fingerprint for fast lookups (before expensive Argon2 verification)
+   * SHA-256 in hex = 64 chars
    */
   apiKeyFingerprint: string;
   /**
-   * SHA-256 in hex = 64 chars
    * Pepper Rotation: Track which pepper version was used to create this key
    * Allows graceful pepper rotation without invalidating existing keys
    */
   pepperVersion?: number;
-  role?: string;
   /** technical role in the company (viewer, editor, admin) */
+  role?: string;
   defaultCostCenter?: number | null;
   /**
    * Cost center policy:
@@ -1558,81 +1747,85 @@ export type CompanyApiKeyId = number;
 
 export type BookkeepingRevenue = {
   id: number;
-  /** company */
+  /**
+   * company
+   * firma der das dokument gehört
+   */
   managingCompanyId: number;
-  /** firma der das dokument gehört */
+  /** optional: kostenstelle der das dokument zugeordnet ist */
   costCenterId: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
    * Revenue details
+   * Date when revenue was received
    */
   revenueDate: Date;
-  /** Date when revenue was received */
-  amount: string;
   /** Gross amount (in base currency after conversion) */
-  currency: string;
+  amount: string;
   /** Base currency (from managing company) */
+  currency: string;
   description: string;
   category: BookkeepingRevenueCategory;
-  /** Multi-Currency Support (Original values before conversion) */
+  /**
+   * Multi-Currency Support (Original values before conversion)
+   * Original currency before conversion (null if same as base currency)
+   */
   originalCurrency: string | null;
-  /** Original currency before conversion (null if same as base currency) */
-  originalAmount: string | null;
   /** Original amount before conversion */
-  conversionRate: string | null;
+  originalAmount: string | null;
   /** Exchange rate used for conversion (e.g., 1.18 for USD->EUR) */
-  conversionDate: Date | null;
+  conversionRate: string | null;
   /** When the conversion rate was fetched */
+  conversionDate: Date | null;
+  /** FX provider used (e.g., "ecb_xml", "frankfurter") */
   conversionProvider: string | null;
   /**
-   * FX provider used (e.g., "ecb_xml", "frankfurter")
    * References
+   * Link to customer invoice (if applicable)
    */
   invoiceId: number | null;
-  /** Link to customer invoice (if applicable) */
-  assetId: number | null;
   /** Link to disposed asset (if applicable) */
+  assetId: number | null;
+  /** Receipt/proof document */
   documentId: number | null;
   /**
-   * Receipt/proof document
    * Tax details
+   * e.g., 0.19 for 19% VAT (optional for Kleinunternehmer)
    */
   taxRate: string | null;
-  /** e.g., 0.19 for 19% VAT (optional for Kleinunternehmer) */
-  taxAmount: string | null;
   /** Calculated tax amount */
+  taxAmount: string | null;
+  /** Net amount (before tax) */
   netAmount: string;
   /**
-   * Net amount (before tax)
    * VAT Treatment Snapshot (immutable after confirmation)
+   * Snapshot of tax treatment
    */
   vatTreatment: VatTreatment | null;
-  /** Snapshot of tax treatment */
-  vatLegalRef: string | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
+  vatLegalRef: string | null;
+  /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom: any | null;
   /**
-   * { legalRef?, description?, vatRate?, vatAmountOverride? }
    * Dates for VAT calculation
+   * Leistungsdatum (when service was performed)
    */
   performedAt: Date | null;
   /**
-   * Leistungsdatum (when service was performed)
    * Status & notes
+   * Confirmed by user?
    */
   isConfirmed: boolean;
-  /** Confirmed by user? */
   notes: string | null;
-  /** Eigenbeleg (self-created receipt) — mirrors bookkeeping_expenses pattern */
-  isSelfCreatedReceipt: boolean;
-  /** Eigenbeleg für Einnahmen ohne Originalbeleg (§ 146 AO) */
-  selfReceiptReason: string | null;
-  /** Pflicht-Begründung: warum kein Originalbeleg existiert (GoBD) */
-  eigenbelegNumber: number | null;
   /**
-   * Laufnummer pro Company+Jahr (numerischer Teil von ER-YYYY-NNNNN)
-   * Metadata
+   * Eigenbeleg (self-created receipt) — mirrors bookkeeping_expenses pattern
+   * Eigenbeleg für Einnahmen ohne Originalbeleg (§ 146 AO)
    */
+  isSelfCreatedReceipt: boolean;
+  /** Pflicht-Begründung: warum kein Originalbeleg existiert (GoBD) */
+  selfReceiptReason: string | null;
+  /** Laufnummer pro Company+Jahr (numerischer Teil von ER-YYYY-NNNNN) */
+  eigenbelegNumber: number | null;
+  /** Metadata */
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: number | null;
@@ -1650,81 +1843,85 @@ export type BookkeepingRevenue = {
 };
 
 export type BookkeepingRevenueInsert = {
-  /** company */
+  /**
+   * company
+   * firma der das dokument gehört
+   */
   managingCompanyId: number;
-  /** firma der das dokument gehört */
+  /** optional: kostenstelle der das dokument zugeordnet ist */
   costCenterId?: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
    * Revenue details
+   * Date when revenue was received
    */
   revenueDate: Date;
-  /** Date when revenue was received */
-  amount: string;
   /** Gross amount (in base currency after conversion) */
-  currency?: string;
+  amount: string;
   /** Base currency (from managing company) */
+  currency?: string;
   description: string;
   category: BookkeepingRevenueCategory;
-  /** Multi-Currency Support (Original values before conversion) */
+  /**
+   * Multi-Currency Support (Original values before conversion)
+   * Original currency before conversion (null if same as base currency)
+   */
   originalCurrency?: string | null;
-  /** Original currency before conversion (null if same as base currency) */
-  originalAmount?: string | null;
   /** Original amount before conversion */
-  conversionRate?: string | null;
+  originalAmount?: string | null;
   /** Exchange rate used for conversion (e.g., 1.18 for USD->EUR) */
-  conversionDate?: Date | null;
+  conversionRate?: string | null;
   /** When the conversion rate was fetched */
+  conversionDate?: Date | null;
+  /** FX provider used (e.g., "ecb_xml", "frankfurter") */
   conversionProvider?: string | null;
   /**
-   * FX provider used (e.g., "ecb_xml", "frankfurter")
    * References
+   * Link to customer invoice (if applicable)
    */
   invoiceId?: number | null;
-  /** Link to customer invoice (if applicable) */
-  assetId?: number | null;
   /** Link to disposed asset (if applicable) */
+  assetId?: number | null;
+  /** Receipt/proof document */
   documentId?: number | null;
   /**
-   * Receipt/proof document
    * Tax details
+   * e.g., 0.19 for 19% VAT (optional for Kleinunternehmer)
    */
   taxRate?: string | null;
-  /** e.g., 0.19 for 19% VAT (optional for Kleinunternehmer) */
-  taxAmount?: string | null;
   /** Calculated tax amount */
+  taxAmount?: string | null;
+  /** Net amount (before tax) */
   netAmount: string;
   /**
-   * Net amount (before tax)
    * VAT Treatment Snapshot (immutable after confirmation)
+   * Snapshot of tax treatment
    */
   vatTreatment?: VatTreatment | null;
-  /** Snapshot of tax treatment */
-  vatLegalRef?: string | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
+  vatLegalRef?: string | null;
+  /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom?: any | null;
   /**
-   * { legalRef?, description?, vatRate?, vatAmountOverride? }
    * Dates for VAT calculation
+   * Leistungsdatum (when service was performed)
    */
   performedAt?: Date | null;
   /**
-   * Leistungsdatum (when service was performed)
    * Status & notes
+   * Confirmed by user?
    */
   isConfirmed?: boolean;
-  /** Confirmed by user? */
   notes?: string | null;
-  /** Eigenbeleg (self-created receipt) — mirrors bookkeeping_expenses pattern */
-  isSelfCreatedReceipt?: boolean;
-  /** Eigenbeleg für Einnahmen ohne Originalbeleg (§ 146 AO) */
-  selfReceiptReason?: string | null;
-  /** Pflicht-Begründung: warum kein Originalbeleg existiert (GoBD) */
-  eigenbelegNumber?: number | null;
   /**
-   * Laufnummer pro Company+Jahr (numerischer Teil von ER-YYYY-NNNNN)
-   * Metadata
+   * Eigenbeleg (self-created receipt) — mirrors bookkeeping_expenses pattern
+   * Eigenbeleg für Einnahmen ohne Originalbeleg (§ 146 AO)
    */
+  isSelfCreatedReceipt?: boolean;
+  /** Pflicht-Begründung: warum kein Originalbeleg existiert (GoBD) */
+  selfReceiptReason?: string | null;
+  /** Laufnummer pro Company+Jahr (numerischer Teil von ER-YYYY-NNNNN) */
+  eigenbelegNumber?: number | null;
+  /** Metadata */
   createdAt?: Date;
   updatedAt?: Date | null;
   createdBy?: number | null;
@@ -1745,65 +1942,69 @@ export type BookkeepingRevenueId = number;
 
 export type BookkeepingExpense = {
   id: number;
-  /** company */
+  /**
+   * company
+   * firma der das dokument gehört
+   */
   managingCompanyId: number;
-  /** firma der das dokument gehört */
+  /** optional: kostenstelle der das dokument zugeordnet ist */
   costCenterId: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
    * Expense details
+   * Date when expense occurred
    */
   expenseDate: Date;
-  /** Date when expense occurred */
-  amount: string;
   /** Gross amount (in base currency after conversion) */
-  currency: string;
+  amount: string;
   /** Base currency (from managing company) */
+  currency: string;
   description: string;
   category: BookkeepingExpenseCategory;
-  /** Multi-Currency Support (Original values before conversion) */
+  /**
+   * Multi-Currency Support (Original values before conversion)
+   * Original currency before conversion (null if same as base currency)
+   */
   originalCurrency: string | null;
-  /** Original currency before conversion (null if same as base currency) */
-  originalAmount: string | null;
   /** Original amount before conversion */
-  conversionRate: string | null;
+  originalAmount: string | null;
   /** Exchange rate used for conversion (e.g., 1.18 for USD->EUR) */
-  conversionDate: Date | null;
+  conversionRate: string | null;
   /** When the conversion rate was fetched */
+  conversionDate: Date | null;
+  /** FX provider used (e.g., "ecb_xml", "frankfurter") */
   conversionProvider: string | null;
   /**
-   * FX provider used (e.g., "ecb_xml", "frankfurter")
    * Vendor details
+   * Vendor/supplier name (e.g., "Railway", "AWS")
    */
   vendor: string | null;
-  /** Vendor/supplier name (e.g., "Railway", "AWS") */
+  /** Vendor's invoice number */
   vendorInvoiceNumber: string | null;
   /**
-   * Vendor's invoice number
    * Document reference
+   * Receipt/invoice PDF
    */
   documentId: number | null;
   /**
-   * Receipt/invoice PDF
    * Tax details
+   * e.g., 0.19 for 19% VAT
    */
   taxRate: string | null;
-  /** e.g., 0.19 for 19% VAT */
-  taxAmount: string | null;
   /** Calculated tax amount */
+  taxAmount: string | null;
+  /** Net amount (before tax) */
   netAmount: string;
   /**
-   * Net amount (before tax)
    * Status & notes
+   * Tax deductible?
    */
   isDeductible: boolean;
-  /** Tax deductible? */
-  isConfirmed: boolean;
   /** Confirmed by user? */
-  isSelfCreatedReceipt: boolean;
+  isConfirmed: boolean;
   /** Self-Created Receipt flag */
-  selfReceiptReason: string | null;
+  isSelfCreatedReceipt: boolean;
   /** Reason for self-created receipt */
+  selfReceiptReason: string | null;
   notes: string | null;
   /** Metadata */
   createdAt: Date;
@@ -1813,20 +2014,18 @@ export type BookkeepingExpense = {
   isDeleted: boolean;
   deletedAt: Date | null;
   deletedBy: number | null;
-  /** Eigenbeleg specific */
-  eigenbelegNumber: number | null;
   /**
+   * Eigenbeleg specific
    * numeric part of vendorInvoiceNumber (EB-YYYY-00001), generated per company+year
-   * Input VAT (Vorsteuer) - for deductible expenses
    */
+  eigenbelegNumber: number | null;
+  /** Input VAT (Vorsteuer) - for deductible expenses */
   inputVatEligibility: InputVatEligibility;
-  inputVatAmount: string | null;
   /** Vorsteuer amount */
+  inputVatAmount: string | null;
+  /** For PARTIAL eligibility (e.g., 0.7 = 70%) */
   inputVatRate: string | null;
-  /**
-   * For PARTIAL eligibility (e.g., 0.7 = 70%)
-   * VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified)
-   */
+  /** VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified) */
   vatTreatment: VatTreatment | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus: FeeProposalStatus | null;
@@ -1844,65 +2043,69 @@ export type BookkeepingExpense = {
 };
 
 export type BookkeepingExpenseInsert = {
-  /** company */
+  /**
+   * company
+   * firma der das dokument gehört
+   */
   managingCompanyId: number;
-  /** firma der das dokument gehört */
+  /** optional: kostenstelle der das dokument zugeordnet ist */
   costCenterId?: number | null;
   /**
-   * optional: kostenstelle der das dokument zugeordnet ist
    * Expense details
+   * Date when expense occurred
    */
   expenseDate: Date;
-  /** Date when expense occurred */
-  amount: string;
   /** Gross amount (in base currency after conversion) */
-  currency?: string;
+  amount: string;
   /** Base currency (from managing company) */
+  currency?: string;
   description: string;
   category: BookkeepingExpenseCategory;
-  /** Multi-Currency Support (Original values before conversion) */
+  /**
+   * Multi-Currency Support (Original values before conversion)
+   * Original currency before conversion (null if same as base currency)
+   */
   originalCurrency?: string | null;
-  /** Original currency before conversion (null if same as base currency) */
-  originalAmount?: string | null;
   /** Original amount before conversion */
-  conversionRate?: string | null;
+  originalAmount?: string | null;
   /** Exchange rate used for conversion (e.g., 1.18 for USD->EUR) */
-  conversionDate?: Date | null;
+  conversionRate?: string | null;
   /** When the conversion rate was fetched */
+  conversionDate?: Date | null;
+  /** FX provider used (e.g., "ecb_xml", "frankfurter") */
   conversionProvider?: string | null;
   /**
-   * FX provider used (e.g., "ecb_xml", "frankfurter")
    * Vendor details
+   * Vendor/supplier name (e.g., "Railway", "AWS")
    */
   vendor?: string | null;
-  /** Vendor/supplier name (e.g., "Railway", "AWS") */
+  /** Vendor's invoice number */
   vendorInvoiceNumber?: string | null;
   /**
-   * Vendor's invoice number
    * Document reference
+   * Receipt/invoice PDF
    */
   documentId?: number | null;
   /**
-   * Receipt/invoice PDF
    * Tax details
+   * e.g., 0.19 for 19% VAT
    */
   taxRate?: string | null;
-  /** e.g., 0.19 for 19% VAT */
-  taxAmount?: string | null;
   /** Calculated tax amount */
+  taxAmount?: string | null;
+  /** Net amount (before tax) */
   netAmount: string;
   /**
-   * Net amount (before tax)
    * Status & notes
+   * Tax deductible?
    */
   isDeductible?: boolean;
-  /** Tax deductible? */
-  isConfirmed?: boolean;
   /** Confirmed by user? */
-  isSelfCreatedReceipt?: boolean;
+  isConfirmed?: boolean;
   /** Self-Created Receipt flag */
-  selfReceiptReason?: string | null;
+  isSelfCreatedReceipt?: boolean;
   /** Reason for self-created receipt */
+  selfReceiptReason?: string | null;
   notes?: string | null;
   /** Metadata */
   createdAt?: Date;
@@ -1912,20 +2115,18 @@ export type BookkeepingExpenseInsert = {
   isDeleted?: boolean;
   deletedAt?: Date | null;
   deletedBy?: number | null;
-  /** Eigenbeleg specific */
-  eigenbelegNumber?: number | null;
   /**
+   * Eigenbeleg specific
    * numeric part of vendorInvoiceNumber (EB-YYYY-00001), generated per company+year
-   * Input VAT (Vorsteuer) - for deductible expenses
    */
+  eigenbelegNumber?: number | null;
+  /** Input VAT (Vorsteuer) - for deductible expenses */
   inputVatEligibility?: InputVatEligibility;
-  inputVatAmount?: string | null;
   /** Vorsteuer amount */
+  inputVatAmount?: string | null;
+  /** For PARTIAL eligibility (e.g., 0.7 = 70%) */
   inputVatRate?: string | null;
-  /**
-   * For PARTIAL eligibility (e.g., 0.7 = 70%)
-   * VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified)
-   */
+  /** VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified) */
   vatTreatment?: VatTreatment | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus?: FeeProposalStatus | null;
@@ -1952,8 +2153,8 @@ export type PaymentAccount = {
   costCenterId: number | null;
   /** account details */
   type: PaymentAccountType;
-  name: string;
   /** display name */
+  name: string;
   currency: string;
   /** bank specifics (nullable for cash) */
   iban: string | null;
@@ -1962,39 +2163,37 @@ export type PaymentAccount = {
   accountOwner: string | null;
   /** paypal display (nullable for bank/cash) */
   paypalEmail: string | null;
+  /** e.g. "MeinShop" -> paypal.me/MeinShop */
   paypalHandle: string | null;
-  /**
-   * e.g. "MeinShop" -> paypal.me/MeinShop
-   * paypal api integration (nullable for non-paypal accounts)
-   */
+  /** paypal api integration (nullable for non-paypal accounts) */
   paypalClientId: string | null;
-  paypalClientSecret: string | null;
   /** AES-256-GCM encrypted via encryptionService */
-  paypalEnvironment: string;
+  paypalClientSecret: string | null;
   /** 'live' | 'sandbox' */
-  paypalWebhookId: string | null;
+  paypalEnvironment: string;
   /** PayPal-registered webhook ID */
+  paypalWebhookId: string | null;
   paypalSyncEnabled: boolean;
   paypalLastSyncAt: Date | null;
+  /** ISO-date for incremental sync start */
   paypalSyncCursor: string | null;
   /**
-   * ISO-date for incremental sync start
    * opening balance — Anfangssaldo ab Tracking-Start (Enterprise-Buchhaltung)
+   * numeric string, e.g. "12345.67"
    */
   openingBalance: string | null;
-  /** numeric string, e.g. "12345.67" */
+  /** ab wann der Saldo gilt */
   openingBalanceDate: Date | null;
-  /**
-   * ab wann der Saldo gilt
-   * import preferences
-   */
+  /** import preferences */
   allowCsvImport: boolean;
-  /** lifecycle */
+  /**
+   * lifecycle
+   * Default-Konto fuer Rechnungen
+   */
   isDefault: boolean;
-  /** Default-Konto fuer Rechnungen */
   isArchived: boolean;
-  isTransit: boolean;
   /** Durchlaufkonto (z.B. SumUp Terminal): Zahlungen sind informativ, nicht buchungsrelevant */
+  isTransit: boolean;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -2006,8 +2205,8 @@ export type PaymentAccountInsert = {
   costCenterId?: number | null;
   /** account details */
   type: PaymentAccountType;
-  name: string;
   /** display name */
+  name: string;
   currency?: string;
   /** bank specifics (nullable for cash) */
   iban?: string | null;
@@ -2016,39 +2215,37 @@ export type PaymentAccountInsert = {
   accountOwner?: string | null;
   /** paypal display (nullable for bank/cash) */
   paypalEmail?: string | null;
+  /** e.g. "MeinShop" -> paypal.me/MeinShop */
   paypalHandle?: string | null;
-  /**
-   * e.g. "MeinShop" -> paypal.me/MeinShop
-   * paypal api integration (nullable for non-paypal accounts)
-   */
+  /** paypal api integration (nullable for non-paypal accounts) */
   paypalClientId?: string | null;
-  paypalClientSecret?: string | null;
   /** AES-256-GCM encrypted via encryptionService */
-  paypalEnvironment?: string;
+  paypalClientSecret?: string | null;
   /** 'live' | 'sandbox' */
-  paypalWebhookId?: string | null;
+  paypalEnvironment?: string;
   /** PayPal-registered webhook ID */
+  paypalWebhookId?: string | null;
   paypalSyncEnabled?: boolean;
   paypalLastSyncAt?: Date | null;
+  /** ISO-date for incremental sync start */
   paypalSyncCursor?: string | null;
   /**
-   * ISO-date for incremental sync start
    * opening balance — Anfangssaldo ab Tracking-Start (Enterprise-Buchhaltung)
+   * numeric string, e.g. "12345.67"
    */
   openingBalance?: string | null;
-  /** numeric string, e.g. "12345.67" */
+  /** ab wann der Saldo gilt */
   openingBalanceDate?: Date | null;
-  /**
-   * ab wann der Saldo gilt
-   * import preferences
-   */
+  /** import preferences */
   allowCsvImport?: boolean;
-  /** lifecycle */
+  /**
+   * lifecycle
+   * Default-Konto fuer Rechnungen
+   */
   isDefault?: boolean;
-  /** Default-Konto fuer Rechnungen */
   isArchived?: boolean;
-  isTransit?: boolean;
   /** Durchlaufkonto (z.B. SumUp Terminal): Zahlungen sind informativ, nicht buchungsrelevant */
+  isTransit?: boolean;
   createdAt?: Date;
   updatedAt?: Date | null;
 };
@@ -2076,8 +2273,8 @@ export type PaymentProviderConnection = {
   disconnectedAt: Date | null;
   /** Fee VAT Treatment — determines how provider fees are taxed (per-connection, not global) */
   feeVatTreatment: FeeVatTreatment;
-  feeVatRate: string | null;
   /** Derived from treatment: 0 (EXEMPT), 0.19 (INCLUSIVE/RC), null (UNKNOWN) */
+  feeVatRate: string | null;
   createdAt: Date;
   createdBy: number | null;
   updatedAt: Date | null;
@@ -2104,8 +2301,8 @@ export type PaymentProviderConnectionInsert = {
   disconnectedAt?: Date | null;
   /** Fee VAT Treatment — determines how provider fees are taxed (per-connection, not global) */
   feeVatTreatment?: FeeVatTreatment;
-  feeVatRate?: string | null;
   /** Derived from treatment: 0 (EXEMPT), 0.19 (INCLUSIVE/RC), null (UNKNOWN) */
+  feeVatRate?: string | null;
   createdAt?: Date;
   createdBy?: number | null;
   updatedAt?: Date | null;
@@ -2120,8 +2317,8 @@ export type PaymentProviderOAuthState = {
   provider: PaymentProvider;
   state: string;
   redirectUri: string;
-  metadata: any | null;
   /** e.g. { autoCreateBankAccount: true } */
+  metadata: any | null;
   expiresAt: Date;
   consumedAt: Date | null;
   createdAt: Date;
@@ -2134,8 +2331,8 @@ export type PaymentProviderOAuthStateInsert = {
   provider: PaymentProvider;
   state: string;
   redirectUri: string;
-  metadata?: any | null;
   /** e.g. { autoCreateBankAccount: true } */
+  metadata?: any | null;
   expiresAt: Date;
   consumedAt?: Date | null;
   createdAt?: Date;
@@ -2217,51 +2414,49 @@ export type Payment = {
   paymentAccountId: number;
   source: PaymentSource;
   direction: PaymentDirection;
-  /** core amounts */
+  /**
+   * core amounts
+   * signed? we store absolute and use direction; keep positive here
+   */
   amount: string;
-  /** signed? we store absolute and use direction; keep positive here */
   currency: string;
   /**
    * Transaction fee fields (for provider-deducted fees: PayPal, Stripe, etc.)
    * These represent fees embedded IN the payment, NOT separate account fees.
    * For account fees (Kontofuehrungsgebuehr), use the fee allocation system instead.
+   * Fee deducted by provider (absolute, e.g. 1.84)
    */
   feeAmount: string | null;
-  /** Fee deducted by provider (absolute, e.g. 1.84) */
-  feeCurrency: string | null;
   /** Currency of fee (usually same as payment) */
-  netAmount: string | null;
+  feeCurrency: string | null;
   /** amount - feeAmount = what was actually received/sent */
+  netAmount: string | null;
   feeExpenseId: number | null;
   /**
    * FX context (informational — payment.amount is ALWAYS in account currency)
    * Records the original foreign-currency amount for audit/compliance.
    * GoBD: The actual bank movement (amount/currency) is authoritative and never converted.
    * All three null when no foreign currency involved.
+   * Foreign currency amount (e.g. 7.00)
    */
   originalAmount: string | null;
-  /** Foreign currency amount (e.g. 7.00) */
-  originalCurrency: string | null;
   /** Foreign currency code (e.g. "USD") */
-  conversionRate: string | null;
+  originalCurrency: string | null;
   /** Exchange rate (e.g. 0.87 = USD→EUR) */
-  bookedAt: Date;
+  conversionRate: string | null;
   /** booking date */
+  bookedAt: Date;
+  /** valuta date (optional) */
   valueAt: Date | null;
-  /**
-   * valuta date (optional)
-   * counterparty / reference (best effort)
-   */
+  /** counterparty / reference (best effort) */
   counterpartyName: string | null;
   counterpartyIban: string | null;
   counterpartyBic: string | null;
   reference: string | null;
   endToEndId: string | null;
+  /** provider specific id (if present) */
   bankTransactionId: string | null;
-  /**
-   * provider specific id (if present)
-   * raw import data (for audit/debug)
-   */
+  /** raw import data (for audit/debug) */
   raw: any | null;
   /**
    * Provider payout ID for fast lookup (e.g. SumUp PID "381815369").
@@ -2298,51 +2493,49 @@ export type PaymentInsert = {
   paymentAccountId: number;
   source?: PaymentSource;
   direction: PaymentDirection;
-  /** core amounts */
+  /**
+   * core amounts
+   * signed? we store absolute and use direction; keep positive here
+   */
   amount: string;
-  /** signed? we store absolute and use direction; keep positive here */
   currency?: string;
   /**
    * Transaction fee fields (for provider-deducted fees: PayPal, Stripe, etc.)
    * These represent fees embedded IN the payment, NOT separate account fees.
    * For account fees (Kontofuehrungsgebuehr), use the fee allocation system instead.
+   * Fee deducted by provider (absolute, e.g. 1.84)
    */
   feeAmount?: string | null;
-  /** Fee deducted by provider (absolute, e.g. 1.84) */
-  feeCurrency?: string | null;
   /** Currency of fee (usually same as payment) */
-  netAmount?: string | null;
+  feeCurrency?: string | null;
   /** amount - feeAmount = what was actually received/sent */
+  netAmount?: string | null;
   feeExpenseId?: number | null;
   /**
    * FX context (informational — payment.amount is ALWAYS in account currency)
    * Records the original foreign-currency amount for audit/compliance.
    * GoBD: The actual bank movement (amount/currency) is authoritative and never converted.
    * All three null when no foreign currency involved.
+   * Foreign currency amount (e.g. 7.00)
    */
   originalAmount?: string | null;
-  /** Foreign currency amount (e.g. 7.00) */
-  originalCurrency?: string | null;
   /** Foreign currency code (e.g. "USD") */
-  conversionRate?: string | null;
+  originalCurrency?: string | null;
   /** Exchange rate (e.g. 0.87 = USD→EUR) */
-  bookedAt: Date;
+  conversionRate?: string | null;
   /** booking date */
+  bookedAt: Date;
+  /** valuta date (optional) */
   valueAt?: Date | null;
-  /**
-   * valuta date (optional)
-   * counterparty / reference (best effort)
-   */
+  /** counterparty / reference (best effort) */
   counterpartyName?: string | null;
   counterpartyIban?: string | null;
   counterpartyBic?: string | null;
   reference?: string | null;
   endToEndId?: string | null;
+  /** provider specific id (if present) */
   bankTransactionId?: string | null;
-  /**
-   * provider specific id (if present)
-   * raw import data (for audit/debug)
-   */
+  /** raw import data (for audit/debug) */
   raw?: any | null;
   /**
    * Provider payout ID for fast lookup (e.g. SumUp PID "381815369").
@@ -2443,15 +2636,13 @@ export type ResolvedPaymentAllocation = {
 export type PaymentImportProfile = {
   id: number;
   managingCompanyId: number;
-  key: string;
   /** unique within managingCompany */
+  key: string;
   name: string;
   description: string | null;
+  /** "," | ";" | "\t" */
   delimiterHint: string | null;
-  /**
-   * "," | ";" | "\t"
-   * CanonicalField -> list of header aliases (case-insensitive). Stored as JSON for flexibility.
-   */
+  /** CanonicalField -> list of header aliases (case-insensitive). Stored as JSON for flexibility. */
   headerAliases: any;
   isArchived: boolean;
   createdAt: Date;
@@ -2462,15 +2653,13 @@ export type PaymentImportProfile = {
 
 export type PaymentImportProfileInsert = {
   managingCompanyId: number;
-  key: string;
   /** unique within managingCompany */
+  key: string;
   name: string;
   description?: string | null;
+  /** "," | ";" | "\t" */
   delimiterHint?: string | null;
-  /**
-   * "," | ";" | "\t"
-   * CanonicalField -> list of header aliases (case-insensitive). Stored as JSON for flexibility.
-   */
+  /** CanonicalField -> list of header aliases (case-insensitive). Stored as JSON for flexibility. */
   headerAliases: any;
   isArchived?: boolean;
   createdAt?: Date;
@@ -2487,8 +2676,8 @@ export type BookkeepingAuditLog = {
   costCenterId: number | null;
   actorUserId: number | null;
   entityType: BookkeepingAuditEntity;
-  entityId: number | null;
   /** optional (e.g. import preview) */
+  entityId: number | null;
   action: BookkeepingAuditAction;
   message: string | null;
   details: any | null;
@@ -2502,8 +2691,8 @@ export type BookkeepingAuditLogInsert = {
   costCenterId?: number | null;
   actorUserId?: number | null;
   entityType: BookkeepingAuditEntity;
-  entityId?: number | null;
   /** optional (e.g. import preview) */
+  entityId?: number | null;
   action: BookkeepingAuditAction;
   message?: string | null;
   details?: any | null;
@@ -2610,26 +2799,23 @@ export type VatRegimePeriod = {
   managingCompanyId: number;
   /** Period */
   validFrom: Date;
+  /** null = current period */
   validTo: Date | null;
-  /**
-   * null = current period
-   * Regime
-   */
+  /** Regime */
   regime: VatRegime;
   /** Trigger details (why did regime change?) */
   reason: VatRegimeReason;
-  triggerAmount: string | null;
   /** Revenue amount that triggered the switch */
-  triggerAt: Date | null;
+  triggerAmount: string | null;
   /** Exact timestamp when threshold was exceeded */
-  triggerDocId: number | null;
+  triggerAt: Date | null;
   /** Invoice/Revenue ID that caused the switch */
+  triggerDocId: number | null;
+  /** "invoice" | "revenue" */
   triggerDocType: string | null;
-  /**
-   * "invoice" | "revenue"
-   * Metadata
-   */
+  /** Metadata */
   createdAt: Date;
+  /** Always AUTO (no manual overrides) */
   calculatedBy: string;
 };
 
@@ -2638,26 +2824,23 @@ export type VatRegimePeriodInsert = {
   managingCompanyId: number;
   /** Period */
   validFrom: Date;
+  /** null = current period */
   validTo?: Date | null;
-  /**
-   * null = current period
-   * Regime
-   */
+  /** Regime */
   regime: VatRegime;
   /** Trigger details (why did regime change?) */
   reason: VatRegimeReason;
-  triggerAmount?: string | null;
   /** Revenue amount that triggered the switch */
-  triggerAt?: Date | null;
+  triggerAmount?: string | null;
   /** Exact timestamp when threshold was exceeded */
-  triggerDocId?: number | null;
+  triggerAt?: Date | null;
   /** Invoice/Revenue ID that caused the switch */
+  triggerDocId?: number | null;
+  /** "invoice" | "revenue" */
   triggerDocType?: string | null;
-  /**
-   * "invoice" | "revenue"
-   * Metadata
-   */
+  /** Metadata */
   createdAt?: Date;
+  /** Always AUTO (no manual overrides) */
   calculatedBy?: string;
 };
 
@@ -2779,10 +2962,10 @@ export type WorkEntry = {
   timeInMinutes: number | null;
   entryType: WorkEntryType;
   description: string | null;
-  isBillable: boolean;
   /** is the work entry billable to the company? wenn false dann kostenlose arbeit (beratung, ops, etc.) */
-  isBilled: boolean;
+  isBillable: boolean;
   /** wurde die arbeit schon in eine rechnung übernommen? */
+  isBilled: boolean;
   status: WorkEntryStatus;
   approvedBy: number | null;
   approvedAt: Date | null;
@@ -2800,10 +2983,10 @@ export type WorkEntryInsert = {
   timeInMinutes?: number | null;
   entryType: WorkEntryType;
   description?: string | null;
-  isBillable?: boolean;
   /** is the work entry billable to the company? wenn false dann kostenlose arbeit (beratung, ops, etc.) */
-  isBilled?: boolean;
+  isBillable?: boolean;
   /** wurde die arbeit schon in eine rechnung übernommen? */
+  isBilled?: boolean;
   status?: WorkEntryStatus;
   approvedBy?: number | null;
   approvedAt?: Date | null;
@@ -2840,90 +3023,90 @@ export type BookkeepingAsset = {
   /** Company */
   managingCompanyId: number;
   costCenterId: number | null;
-  /** Identification */
+  /**
+   * Identification
+   * e.g., "MacBook Pro 16", "Firmenwagen VW Passat"
+   */
   name: string;
-  /** e.g., "MacBook Pro 16", "Firmenwagen VW Passat" */
   description: string | null;
-  inventoryNumber: string | null;
   /** Inventarnummer (auto-generiert oder manuell) */
+  inventoryNumber: string | null;
   assetType: BookkeepingAssetType;
   /** Purchase & Commissioning */
   purchaseDate: Date;
-  inServiceDate: Date | null;
   /** Inbetriebnahmedatum (kann != purchaseDate!) */
-  purchaseAmountNet: string;
+  inServiceDate: Date | null;
   /** Netto-Kaufpreis (Basispreis) */
+  purchaseAmountNet: string;
   currency: string;
-  /** Anschaffungskostenmodell (§255 HGB) */
+  /**
+   * Anschaffungskostenmodell (§255 HGB)
+   * Anschaffungsnebenkosten (Lieferung, Montage, Zoll etc.)
+   */
   ancillaryAcquisitionCosts: string;
-  /** Anschaffungsnebenkosten (Lieferung, Montage, Zoll etc.) */
-  subsequentAcquisitionCosts: string;
   /** Nachträgliche AK (spätere Verbesserungen) */
+  subsequentAcquisitionCosts: string;
+  /** Preisminderungen (Rabatte, Skonti) */
   acquisitionPriceReductions: string;
   /**
-   * Preisminderungen (Rabatte, Skonti)
    * Gesamt-AK = purchaseAmountNet + ancillary + subsequent - reductions
    * Depreciation
+   * Nutzungsdauer in Monaten (null = GWG Sofortabschreibung)
    */
   usefulLifeMonths: number | null;
-  /** Nutzungsdauer in Monaten (null = GWG Sofortabschreibung) */
   depreciationMethod: DepreciationMethod;
+  /** Restwert am Ende der Nutzungsdauer */
   residualValue: string;
   /**
-   * Restwert am Ende der Nutzungsdauer
    * Degressive AfA (§7 Abs. 2 EStG)
+   * z.B. "0.25" für 25% – max 25% oder 2,5× linear
    */
   degressiveRate: string | null;
-  /** z.B. "0.25" für 25% – max 25% oder 2,5× linear */
+  /** Zeitpunkt Wechsel degressive → linear (§7 Abs. 3) */
   switchedToLinearDate: Date | null;
-  /**
-   * Zeitpunkt Wechsel degressive → linear (§7 Abs. 3)
-   * Sonderabschreibung (§7g Abs. 5 EStG)
-   */
+  /** Sonderabschreibung (§7g Abs. 5 EStG) */
   sonderafaApplied: boolean;
-  sonderafaAmount: string | null;
   /** Betrag der Sonderabschreibung (max 20% AK) */
+  sonderafaAmount: string | null;
+  /** Jahr der Inanspruchnahme */
   sonderafaYear: number | null;
-  /**
-   * Jahr der Inanspruchnahme
-   * Sammelposten (§6 Abs. 2a EStG)
-   */
+  /** Sammelposten (§6 Abs. 2a EStG) */
   sammelpostenPoolId: number | null;
-  /** Digital-AfA (BMF 2021) */
+  /**
+   * Digital-AfA (BMF 2021)
+   * Computer, Peripherie, Software
+   */
   isDigitalAsset: boolean;
   /**
-   * Computer, Peripherie, Software
    * Gebäude-AfA (§7 Abs. 4/5, §7i, §7b EStG)
+   * null für Nicht-Gebäude
    */
   buildingType: BuildingType | null;
-  /** null für Nicht-Gebäude */
-  constructionYear: number | null;
   /** Baujahr */
-  buildingApplicationDate: Date | null;
+  constructionYear: number | null;
   /** Bauantragsdatum */
-  landValue: string | null;
+  buildingApplicationDate: Date | null;
   /** Grundstückswert (NICHT abschreibbar – wird von AK abgezogen!) */
-  buildingAreaSqm: string | null;
+  landValue: string | null;
   /** Wohnfläche in m² (für §7b Prüfung) */
-  herstellungskostenPerSqm: string | null;
+  buildingAreaSqm: string | null;
   /** Für §7b: ≤ 5.200€/m² */
+  herstellungskostenPerSqm: string | null;
+  /** Denkmalschutzbescheinigung */
   denkmalBescheinigung: boolean;
   /**
-   * Denkmalschutzbescheinigung
    * Betriebliche Nutzung
+   * Für §7g: ≥ 90% erforderlich
    */
   businessUsePercentage: string;
   /**
-   * Für §7g: ≥ 90% erforderlich
    * AfA-Tabellen-Referenz (BMF)
+   * BMF-Schlüssel z.B. "6.14.3.1"
    */
   afaTableKey: string | null;
-  /** BMF-Schlüssel z.B. "6.14.3.1" */
+  /** Klartext z.B. "Computer, Notebooks" */
   afaTableName: string | null;
-  /**
-   * Klartext z.B. "Computer, Notebooks"
-   * Input VAT (Vorsteuer)
-   */
+  /** Input VAT (Vorsteuer) */
   inputVatAmount: string | null;
   inputVatRate: string | null;
   inputVatEligibility: InputVatEligibility;
@@ -2933,30 +3116,30 @@ export type BookkeepingAsset = {
   /** References */
   expenseId: number | null;
   documentId: number | null;
-  /** Lifecycle */
+  /**
+   * Lifecycle
+   * false = disposed/sold
+   */
   isActive: boolean;
-  /** false = disposed/sold */
   disposedAt: Date | null;
-  disposalAmount: string | null;
   /** Veräußerungserlös */
-  disposalReason: string | null;
+  disposalAmount: string | null;
   /** Freitext-Begründung */
-  disposalType: AssetDisposalType | null;
+  disposalReason: string | null;
   /** Strukturierter Abgangsgrund */
-  disposalBookValue: string | null;
+  disposalType: AssetDisposalType | null;
   /** Restbuchwert bei Abgang (berechnet & gespeichert) */
+  disposalBookValue: string | null;
+  /** Buchgewinn (+) / Buchverlust (−) */
   disposalGainLoss: string | null;
   /**
-   * Buchgewinn (+) / Buchverlust (−)
    * Bilanz-Readiness (in EÜR-Modus noch ungenutzt – für spätere Bilanz-Erweiterung)
+   * SKR03/SKR04 Sachkonto
    */
   accountNumber: string | null;
-  /** SKR03/SKR04 Sachkonto */
+  /** z.B. "A.II.1" Sachanlagen */
   bilanzPosition: string | null;
-  /**
-   * z.B. "A.II.1" Sachanlagen
-   * Metadata
-   */
+  /** Metadata */
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: number | null;
@@ -2970,90 +3153,90 @@ export type BookkeepingAssetInsert = {
   /** Company */
   managingCompanyId: number;
   costCenterId?: number | null;
-  /** Identification */
+  /**
+   * Identification
+   * e.g., "MacBook Pro 16", "Firmenwagen VW Passat"
+   */
   name: string;
-  /** e.g., "MacBook Pro 16", "Firmenwagen VW Passat" */
   description?: string | null;
-  inventoryNumber?: string | null;
   /** Inventarnummer (auto-generiert oder manuell) */
+  inventoryNumber?: string | null;
   assetType: BookkeepingAssetType;
   /** Purchase & Commissioning */
   purchaseDate: Date;
-  inServiceDate?: Date | null;
   /** Inbetriebnahmedatum (kann != purchaseDate!) */
-  purchaseAmountNet: string;
+  inServiceDate?: Date | null;
   /** Netto-Kaufpreis (Basispreis) */
+  purchaseAmountNet: string;
   currency?: string;
-  /** Anschaffungskostenmodell (§255 HGB) */
+  /**
+   * Anschaffungskostenmodell (§255 HGB)
+   * Anschaffungsnebenkosten (Lieferung, Montage, Zoll etc.)
+   */
   ancillaryAcquisitionCosts?: string;
-  /** Anschaffungsnebenkosten (Lieferung, Montage, Zoll etc.) */
-  subsequentAcquisitionCosts?: string;
   /** Nachträgliche AK (spätere Verbesserungen) */
+  subsequentAcquisitionCosts?: string;
+  /** Preisminderungen (Rabatte, Skonti) */
   acquisitionPriceReductions?: string;
   /**
-   * Preisminderungen (Rabatte, Skonti)
    * Gesamt-AK = purchaseAmountNet + ancillary + subsequent - reductions
    * Depreciation
+   * Nutzungsdauer in Monaten (null = GWG Sofortabschreibung)
    */
   usefulLifeMonths?: number | null;
-  /** Nutzungsdauer in Monaten (null = GWG Sofortabschreibung) */
   depreciationMethod: DepreciationMethod;
+  /** Restwert am Ende der Nutzungsdauer */
   residualValue?: string;
   /**
-   * Restwert am Ende der Nutzungsdauer
    * Degressive AfA (§7 Abs. 2 EStG)
+   * z.B. "0.25" für 25% – max 25% oder 2,5× linear
    */
   degressiveRate?: string | null;
-  /** z.B. "0.25" für 25% – max 25% oder 2,5× linear */
+  /** Zeitpunkt Wechsel degressive → linear (§7 Abs. 3) */
   switchedToLinearDate?: Date | null;
-  /**
-   * Zeitpunkt Wechsel degressive → linear (§7 Abs. 3)
-   * Sonderabschreibung (§7g Abs. 5 EStG)
-   */
+  /** Sonderabschreibung (§7g Abs. 5 EStG) */
   sonderafaApplied?: boolean;
-  sonderafaAmount?: string | null;
   /** Betrag der Sonderabschreibung (max 20% AK) */
+  sonderafaAmount?: string | null;
+  /** Jahr der Inanspruchnahme */
   sonderafaYear?: number | null;
-  /**
-   * Jahr der Inanspruchnahme
-   * Sammelposten (§6 Abs. 2a EStG)
-   */
+  /** Sammelposten (§6 Abs. 2a EStG) */
   sammelpostenPoolId?: number | null;
-  /** Digital-AfA (BMF 2021) */
+  /**
+   * Digital-AfA (BMF 2021)
+   * Computer, Peripherie, Software
+   */
   isDigitalAsset?: boolean;
   /**
-   * Computer, Peripherie, Software
    * Gebäude-AfA (§7 Abs. 4/5, §7i, §7b EStG)
+   * null für Nicht-Gebäude
    */
   buildingType?: BuildingType | null;
-  /** null für Nicht-Gebäude */
-  constructionYear?: number | null;
   /** Baujahr */
-  buildingApplicationDate?: Date | null;
+  constructionYear?: number | null;
   /** Bauantragsdatum */
-  landValue?: string | null;
+  buildingApplicationDate?: Date | null;
   /** Grundstückswert (NICHT abschreibbar – wird von AK abgezogen!) */
-  buildingAreaSqm?: string | null;
+  landValue?: string | null;
   /** Wohnfläche in m² (für §7b Prüfung) */
-  herstellungskostenPerSqm?: string | null;
+  buildingAreaSqm?: string | null;
   /** Für §7b: ≤ 5.200€/m² */
+  herstellungskostenPerSqm?: string | null;
+  /** Denkmalschutzbescheinigung */
   denkmalBescheinigung?: boolean;
   /**
-   * Denkmalschutzbescheinigung
    * Betriebliche Nutzung
+   * Für §7g: ≥ 90% erforderlich
    */
   businessUsePercentage?: string;
   /**
-   * Für §7g: ≥ 90% erforderlich
    * AfA-Tabellen-Referenz (BMF)
+   * BMF-Schlüssel z.B. "6.14.3.1"
    */
   afaTableKey?: string | null;
-  /** BMF-Schlüssel z.B. "6.14.3.1" */
+  /** Klartext z.B. "Computer, Notebooks" */
   afaTableName?: string | null;
-  /**
-   * Klartext z.B. "Computer, Notebooks"
-   * Input VAT (Vorsteuer)
-   */
+  /** Input VAT (Vorsteuer) */
   inputVatAmount?: string | null;
   inputVatRate?: string | null;
   inputVatEligibility?: InputVatEligibility;
@@ -3063,30 +3246,30 @@ export type BookkeepingAssetInsert = {
   /** References */
   expenseId?: number | null;
   documentId?: number | null;
-  /** Lifecycle */
+  /**
+   * Lifecycle
+   * false = disposed/sold
+   */
   isActive?: boolean;
-  /** false = disposed/sold */
   disposedAt?: Date | null;
-  disposalAmount?: string | null;
   /** Veräußerungserlös */
-  disposalReason?: string | null;
+  disposalAmount?: string | null;
   /** Freitext-Begründung */
-  disposalType?: AssetDisposalType | null;
+  disposalReason?: string | null;
   /** Strukturierter Abgangsgrund */
-  disposalBookValue?: string | null;
+  disposalType?: AssetDisposalType | null;
   /** Restbuchwert bei Abgang (berechnet & gespeichert) */
+  disposalBookValue?: string | null;
+  /** Buchgewinn (+) / Buchverlust (−) */
   disposalGainLoss?: string | null;
   /**
-   * Buchgewinn (+) / Buchverlust (−)
    * Bilanz-Readiness (in EÜR-Modus noch ungenutzt – für spätere Bilanz-Erweiterung)
+   * SKR03/SKR04 Sachkonto
    */
   accountNumber?: string | null;
-  /** SKR03/SKR04 Sachkonto */
+  /** z.B. "A.II.1" Sachanlagen */
   bilanzPosition?: string | null;
-  /**
-   * z.B. "A.II.1" Sachanlagen
-   * Metadata
-   */
+  /** Metadata */
   createdAt?: Date;
   updatedAt?: Date | null;
   createdBy?: number | null;
@@ -3102,13 +3285,13 @@ export type AssetCostComponent = {
   id: number;
   assetId: number;
   managingCompanyId: number;
-  componentType: string;
   /** delivery | installation | customs | notary | grunderwerbsteuer | subsequent | reduction | other */
+  componentType: string;
   description: string;
-  amount: string;
   /** positiv = Kosten, negativ = Minderung */
-  date: Date;
+  amount: string;
   /** Datum des Kostenzugangs */
+  date: Date;
   documentId: number | null;
   createdAt: Date;
   createdBy: number | null;
@@ -3120,13 +3303,13 @@ export type AssetCostComponent = {
 export type AssetCostComponentInsert = {
   assetId: number;
   managingCompanyId: number;
-  componentType: string;
   /** delivery | installation | customs | notary | grunderwerbsteuer | subsequent | reduction | other */
+  componentType: string;
   description: string;
-  amount: string;
   /** positiv = Kosten, negativ = Minderung */
-  date: Date;
+  amount: string;
   /** Datum des Kostenzugangs */
+  date: Date;
   documentId?: number | null;
   createdAt?: Date;
   createdBy?: number | null;
@@ -3141,12 +3324,12 @@ export type SammelpostenPool = {
   id: number;
   managingCompanyId: number;
   fiscalYear: number;
-  totalAmount: string;
   /** Summe aller WG im Pool */
-  annualDepreciation: string;
+  totalAmount: string;
   /** = totalAmount / 5 */
-  isClosed: boolean;
+  annualDepreciation: string;
   /** Gesperrt nach Jahresabschluss */
+  isClosed: boolean;
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: number | null;
@@ -3158,12 +3341,12 @@ export type SammelpostenPool = {
 export type SammelpostenPoolInsert = {
   managingCompanyId: number;
   fiscalYear: number;
-  totalAmount?: string;
   /** Summe aller WG im Pool */
-  annualDepreciation?: string;
+  totalAmount?: string;
   /** = totalAmount / 5 */
-  isClosed?: boolean;
+  annualDepreciation?: string;
   /** Gesperrt nach Jahresabschluss */
+  isClosed?: boolean;
   createdAt?: Date;
   updatedAt?: Date | null;
   createdBy?: number | null;
@@ -3182,41 +3365,41 @@ export type DepreciationRecord = {
   sammelpostenPoolId: number | null;
   /** Periode */
   fiscalYear: number;
-  periodMonth: number | null;
   /** 1–12, null für Jahresbuchung */
+  periodMonth: number | null;
+  /** "monthly" | "annual" */
   periodType: string;
   /**
-   * "monthly" | "annual"
    * Beträge
+   * Normale AfA
    */
   depreciationAmount: string;
-  /** Normale AfA */
-  sonderafaAmount: string;
   /** Sonder-AfA in dieser Periode */
-  totalAmount: string;
+  sonderafaAmount: string;
   /** depreciationAmount + sonderafaAmount */
-  accumulatedDepreciation: string;
+  totalAmount: string;
   /** Kumuliert nach dieser Buchung */
+  accumulatedDepreciation: string;
+  /** Restbuchwert nach Buchung */
   bookValueAfter: string;
-  /**
-   * Restbuchwert nach Buchung
-   * Methoden-Tracking (Audit – welche Methode galt zum Buchungszeitpunkt)
-   */
+  /** Methoden-Tracking (Audit – welche Methode galt zum Buchungszeitpunkt) */
   depreciationMethod: DepreciationMethod;
-  calculationBase: string;
   /** Bemessungsgrundlage */
+  calculationBase: string;
+  /** z.B. "0.25" für 25% degressive */
   rateApplied: string | null;
   /**
-   * z.B. "0.25" für 25% degressive
    * Status
+   * Finalisiert/gesperrt
    */
   isBooked: boolean;
-  /** Finalisiert/gesperrt */
   bookedAt: Date | null;
   bookedBy: number | null;
-  /** Metadata */
+  /**
+   * Metadata
+   * z.B. "Wechsel degressive → linear"
+   */
   notes: string | null;
-  /** z.B. "Wechsel degressive → linear" */
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: number | null;
@@ -3232,41 +3415,41 @@ export type DepreciationRecordInsert = {
   sammelpostenPoolId?: number | null;
   /** Periode */
   fiscalYear: number;
-  periodMonth?: number | null;
   /** 1–12, null für Jahresbuchung */
+  periodMonth?: number | null;
+  /** "monthly" | "annual" */
   periodType?: string;
   /**
-   * "monthly" | "annual"
    * Beträge
+   * Normale AfA
    */
   depreciationAmount: string;
-  /** Normale AfA */
-  sonderafaAmount?: string;
   /** Sonder-AfA in dieser Periode */
-  totalAmount: string;
+  sonderafaAmount?: string;
   /** depreciationAmount + sonderafaAmount */
-  accumulatedDepreciation: string;
+  totalAmount: string;
   /** Kumuliert nach dieser Buchung */
+  accumulatedDepreciation: string;
+  /** Restbuchwert nach Buchung */
   bookValueAfter: string;
-  /**
-   * Restbuchwert nach Buchung
-   * Methoden-Tracking (Audit – welche Methode galt zum Buchungszeitpunkt)
-   */
+  /** Methoden-Tracking (Audit – welche Methode galt zum Buchungszeitpunkt) */
   depreciationMethod: DepreciationMethod;
-  calculationBase: string;
   /** Bemessungsgrundlage */
+  calculationBase: string;
+  /** z.B. "0.25" für 25% degressive */
   rateApplied?: string | null;
   /**
-   * z.B. "0.25" für 25% degressive
    * Status
+   * Finalisiert/gesperrt
    */
   isBooked?: boolean;
-  /** Finalisiert/gesperrt */
   bookedAt?: Date | null;
   bookedBy?: number | null;
-  /** Metadata */
+  /**
+   * Metadata
+   * z.B. "Wechsel degressive → linear"
+   */
   notes?: string | null;
-  /** z.B. "Wechsel degressive → linear" */
   createdAt?: Date;
   updatedAt?: Date | null;
   createdBy?: number | null;
@@ -3292,13 +3475,13 @@ export type TaxParameter = {
   value: any;
   /** Zeitliche Gueltigkeit (date statt timestamp – Steuerrecht operiert auf Kalendertagen) */
   validFrom: string;
+  /** NULL = aktuell gueltig */
   validTo: string | null;
   /**
-   * NULL = aktuell gueltig
    * Rechtsgrundlage
+   * z.B. "§6 Abs. 2 EStG"
    */
   legalRef: string | null;
-  /** z.B. "§6 Abs. 2 EStG" */
   description: string | null;
   createdAt: Date;
   updatedBy: number | null;
@@ -3318,13 +3501,13 @@ export type TaxParameterInsert = {
   value: any;
   /** Zeitliche Gueltigkeit (date statt timestamp – Steuerrecht operiert auf Kalendertagen) */
   validFrom: string;
+  /** NULL = aktuell gueltig */
   validTo?: string | null;
   /**
-   * NULL = aktuell gueltig
    * Rechtsgrundlage
+   * z.B. "§6 Abs. 2 EStG"
    */
   legalRef?: string | null;
-  /** z.B. "§6 Abs. 2 EStG" */
   description?: string | null;
   createdAt?: Date;
   updatedBy?: number | null;
@@ -3338,8 +3521,8 @@ export type TaxParameterHistory = {
   paramKey: string;
   previousValue: any | null;
   newValue: any;
-  changeReason: string;
   /** z.B. "JStG 2027" */
+  changeReason: string;
   changedBy: number | null;
   changedAt: Date;
 };
@@ -3349,8 +3532,8 @@ export type TaxParameterHistoryInsert = {
   paramKey: string;
   previousValue?: any | null;
   newValue: any;
-  changeReason: string;
   /** z.B. "JStG 2027" */
+  changeReason: string;
   changedBy?: number | null;
   changedAt?: Date;
 };
@@ -3358,42 +3541,40 @@ export type TaxParameterHistoryInsert = {
 export type IabEntry = {
   id: number;
   managingCompanyId: number;
-  /** Geplante Investition */
+  /**
+   * Geplante Investition
+   * z.B. "Firmenwagen VW Passat"
+   */
   description: string;
-  /** z.B. "Firmenwagen VW Passat" */
   plannedAssetType: BookkeepingAssetType;
-  plannedAcquisitionCost: string;
   /** Geplante AK */
-  deductionRate: string;
+  plannedAcquisitionCost: string;
   /** Max 50% (§7g Abs. 1 S. 1) */
+  deductionRate: string;
+  /** = plannedAK * rate (max 50%) */
   deductionAmount: string;
   /**
-   * = plannedAK * rate (max 50%)
    * Zeitraum
+   * Jahr in dem IAB geltend gemacht wurde
    */
   fiscalYearClaimed: number;
-  /** Jahr in dem IAB geltend gemacht wurde */
-  deadlineDate: string;
   /** Fristende: 3 Jahre nach Anschaffungsjahr-Ende */
+  deadlineDate: string;
   status: IabStatus;
   /** Aufloesung bei Kauf */
   dissolvedAt: Date | null;
   linkedAssetId: number | null;
+  /** Betrag um den AK des Assets reduziert wird */
   akReductionAmount: string | null;
-  /**
-   * Betrag um den AK des Assets reduziert wird
-   * Rueckabwicklung bei Fristablauf
-   */
+  /** Rueckabwicklung bei Fristablauf */
   reversedAt: Date | null;
-  reversalAmount: string | null;
   /** = deductionAmount (wird zum Gewinn hinzugerechnet) */
-  reversalInterest: string | null;
+  reversalAmount: string | null;
   /** 6% p.a. Zinsen (§7g Abs. 3 EStG) */
+  reversalInterest: string | null;
+  /** Jahr der Rueckabwicklung */
   reversalFiscalYear: number | null;
-  /**
-   * Jahr der Rueckabwicklung
-   * Metadata
-   */
+  /** Metadata */
   createdAt: Date;
   updatedAt: Date | null;
   createdBy: number | null;
@@ -3405,42 +3586,40 @@ export type IabEntry = {
 
 export type IabEntryInsert = {
   managingCompanyId: number;
-  /** Geplante Investition */
+  /**
+   * Geplante Investition
+   * z.B. "Firmenwagen VW Passat"
+   */
   description: string;
-  /** z.B. "Firmenwagen VW Passat" */
   plannedAssetType: BookkeepingAssetType;
-  plannedAcquisitionCost: string;
   /** Geplante AK */
-  deductionRate?: string;
+  plannedAcquisitionCost: string;
   /** Max 50% (§7g Abs. 1 S. 1) */
+  deductionRate?: string;
+  /** = plannedAK * rate (max 50%) */
   deductionAmount: string;
   /**
-   * = plannedAK * rate (max 50%)
    * Zeitraum
+   * Jahr in dem IAB geltend gemacht wurde
    */
   fiscalYearClaimed: number;
-  /** Jahr in dem IAB geltend gemacht wurde */
-  deadlineDate: string;
   /** Fristende: 3 Jahre nach Anschaffungsjahr-Ende */
+  deadlineDate: string;
   status?: IabStatus;
   /** Aufloesung bei Kauf */
   dissolvedAt?: Date | null;
   linkedAssetId?: number | null;
+  /** Betrag um den AK des Assets reduziert wird */
   akReductionAmount?: string | null;
-  /**
-   * Betrag um den AK des Assets reduziert wird
-   * Rueckabwicklung bei Fristablauf
-   */
+  /** Rueckabwicklung bei Fristablauf */
   reversedAt?: Date | null;
-  reversalAmount?: string | null;
   /** = deductionAmount (wird zum Gewinn hinzugerechnet) */
-  reversalInterest?: string | null;
+  reversalAmount?: string | null;
   /** 6% p.a. Zinsen (§7g Abs. 3 EStG) */
+  reversalInterest?: string | null;
+  /** Jahr der Rueckabwicklung */
   reversalFiscalYear?: number | null;
-  /**
-   * Jahr der Rueckabwicklung
-   * Metadata
-   */
+  /** Metadata */
   createdAt?: Date;
   updatedAt?: Date | null;
   createdBy?: number | null;
@@ -3461,30 +3640,19 @@ export type EmployeeSearchItem = {
 export type FullCompany = {
     company: CustomerCompany;
     employees: [CompanyEmployee, CompanyEmployeeAssignment][];
-}
-
+};
 
 export type FullDocument = {
     document: Document;
     assignments: DocumentAssignment[];
-}
-
-
-
+};
 
 export type FullSelectedCompany = {
     selection: UserSelectedCompany;
     company: ManagingCompany;
-}
+};
 
-// Einkommensteuer types (IncomeTaxSettings standalone wegen Generator-Limitation)
 export type IncomeTaxSettingsInsert = Partial<Omit<IncomeTaxSettings, 'id' | 'createdAt'>> & { managingCompanyId: number };
-
-
-
-
-
-
 
 export type IncomeTaxSettingsId = number;
 
@@ -3496,50 +3664,50 @@ export type EmploymentIncome = {
   employerSteuernummer: string | null;
   employmentPeriodFrom: string | null;
   employmentPeriodTo: string | null;
-  /** Zeile 3-6: Einkommen & einbehaltene Steuern */
+  /**
+   * Zeile 3-6: Einkommen & einbehaltene Steuern
+   * Zeile 3
+   */
   bruttoarbeitslohn: string;
-  /** Zeile 3 */
-  lohnsteuer: string;
   /** Zeile 4 */
-  solidaritaetszuschlag: string;
+  lohnsteuer: string;
   /** Zeile 5 */
+  solidaritaetszuschlag: string;
+  /** Zeile 6 */
   kirchensteuer: string;
   /**
-   * Zeile 6
    * Zeile 8: Versorgungsbezuege
+   * Zeile 8
    */
   versorgungsbezuege: string | null;
   /**
-   * Zeile 8
    * Zeile 15: Lohnersatzleistungen (Progressionsvorbehalt)
+   * Zeile 15
    */
   lohnersatzleistungen: string | null;
   /**
-   * Zeile 15
    * Zeile 17-18: Steuerfreie Fahrtkostenerstattungen
+   * Zeile 17
    */
   steuerfreiFahrtkosten: string | null;
-  /** Zeile 17 */
+  /** Zeile 18 */
   pauschalBesteuertFahrtkosten: string | null;
   /**
-   * Zeile 18
    * Zeile 22a-27: Sozialversicherungsbeitraege
+   * Zeile 22a (AG-Anteil Rentenversicherung)
    */
   agAnteilRV: string | null;
-  /** Zeile 22a (AG-Anteil Rentenversicherung) */
-  anAnteilRV: string | null;
   /** Zeile 23a (AN-Anteil Rentenversicherung) */
-  agZuschussKV: string | null;
+  anAnteilRV: string | null;
   /** Zeile 24a/b (AG-Zuschuss Krankenversicherung) */
-  anBeitraegeKV: string | null;
+  agZuschussKV: string | null;
   /** Zeile 25 (AN-Beitraege Krankenversicherung) */
-  anBeitraegePV: string | null;
+  anBeitraegeKV: string | null;
   /** Zeile 26 (AN-Beitraege Pflegeversicherung) */
+  anBeitraegePV: string | null;
+  /** Zeile 27 (AN-Beitraege Arbeitslosenversicherung) */
   anBeitraegeAV: string | null;
-  /**
-   * Zeile 27 (AN-Beitraege Arbeitslosenversicherung)
-   * Dokumentverweis (Scan der Lohnsteuerbescheinigung)
-   */
+  /** Dokumentverweis (Scan der Lohnsteuerbescheinigung) */
   documentId: number | null;
   notes: string | null;
   /** Metadata */
@@ -3555,50 +3723,50 @@ export type EmploymentIncomeInsert = {
   employerSteuernummer?: string | null;
   employmentPeriodFrom?: string | null;
   employmentPeriodTo?: string | null;
-  /** Zeile 3-6: Einkommen & einbehaltene Steuern */
+  /**
+   * Zeile 3-6: Einkommen & einbehaltene Steuern
+   * Zeile 3
+   */
   bruttoarbeitslohn: string;
-  /** Zeile 3 */
-  lohnsteuer?: string;
   /** Zeile 4 */
-  solidaritaetszuschlag?: string;
+  lohnsteuer?: string;
   /** Zeile 5 */
+  solidaritaetszuschlag?: string;
+  /** Zeile 6 */
   kirchensteuer?: string;
   /**
-   * Zeile 6
    * Zeile 8: Versorgungsbezuege
+   * Zeile 8
    */
   versorgungsbezuege?: string | null;
   /**
-   * Zeile 8
    * Zeile 15: Lohnersatzleistungen (Progressionsvorbehalt)
+   * Zeile 15
    */
   lohnersatzleistungen?: string | null;
   /**
-   * Zeile 15
    * Zeile 17-18: Steuerfreie Fahrtkostenerstattungen
+   * Zeile 17
    */
   steuerfreiFahrtkosten?: string | null;
-  /** Zeile 17 */
+  /** Zeile 18 */
   pauschalBesteuertFahrtkosten?: string | null;
   /**
-   * Zeile 18
    * Zeile 22a-27: Sozialversicherungsbeitraege
+   * Zeile 22a (AG-Anteil Rentenversicherung)
    */
   agAnteilRV?: string | null;
-  /** Zeile 22a (AG-Anteil Rentenversicherung) */
-  anAnteilRV?: string | null;
   /** Zeile 23a (AN-Anteil Rentenversicherung) */
-  agZuschussKV?: string | null;
+  anAnteilRV?: string | null;
   /** Zeile 24a/b (AG-Zuschuss Krankenversicherung) */
-  anBeitraegeKV?: string | null;
+  agZuschussKV?: string | null;
   /** Zeile 25 (AN-Beitraege Krankenversicherung) */
-  anBeitraegePV?: string | null;
+  anBeitraegeKV?: string | null;
   /** Zeile 26 (AN-Beitraege Pflegeversicherung) */
+  anBeitraegePV?: string | null;
+  /** Zeile 27 (AN-Beitraege Arbeitslosenversicherung) */
   anBeitraegeAV?: string | null;
-  /**
-   * Zeile 27 (AN-Beitraege Arbeitslosenversicherung)
-   * Dokumentverweis (Scan der Lohnsteuerbescheinigung)
-   */
+  /** Dokumentverweis (Scan der Lohnsteuerbescheinigung) */
   documentId?: number | null;
   notes?: string | null;
   /** Metadata */
@@ -3706,8 +3874,8 @@ export type Steuerminderungen = {
   taxYear: number;
   type: SteuerminderungType;
   description: string;
-  amount: string;
   /** Rechnungsbetrag / Arbeitskosten (NICHT der Steuerabzug) */
+  amount: string;
   documentId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
@@ -3718,8 +3886,8 @@ export type SteuerminderungenInsert = {
   taxYear: number;
   type: SteuerminderungType;
   description: string;
-  amount: string;
   /** Rechnungsbetrag / Arbeitskosten (NICHT der Steuerabzug) */
+  amount: string;
   documentId?: number | null;
   createdAt?: Date;
   updatedAt?: Date | null;
@@ -3829,14 +3997,14 @@ export type CapitalMovement = {
   id: number;
   /** Mandant */
   managingCompanyId: number;
-  /** Klassifikation */
-  type: CapitalMovementType;
-  /** withdrawal | deposit */
-  subType: CapitalMovementSubType;
   /**
-   * Detailkategorie
-   * Betrag (immer positiv, Richtung ergibt sich aus type)
+   * Klassifikation
+   * withdrawal | deposit
    */
+  type: CapitalMovementType;
+  /** Detailkategorie */
+  subType: CapitalMovementSubType;
+  /** Betrag (immer positiv, Richtung ergibt sich aus type) */
   amount: string;
   currency: string;
   /** Beschreibung & Beleg */
@@ -3884,14 +4052,14 @@ export type CapitalMovement = {
 export type CapitalMovementInsert = {
   /** Mandant */
   managingCompanyId: number;
-  /** Klassifikation */
-  type: CapitalMovementType;
-  /** withdrawal | deposit */
-  subType: CapitalMovementSubType;
   /**
-   * Detailkategorie
-   * Betrag (immer positiv, Richtung ergibt sich aus type)
+   * Klassifikation
+   * withdrawal | deposit
    */
+  type: CapitalMovementType;
+  /** Detailkategorie */
+  subType: CapitalMovementSubType;
+  /** Betrag (immer positiv, Richtung ergibt sich aus type) */
   amount: string;
   currency?: string;
   /** Beschreibung & Beleg */
@@ -3941,161 +4109,335 @@ export type CapitalMovementInsert = {
 // OAUTH2 TYPES
 // ============================================================================
 
+export enum OAuth2Scope {
+  INVOICES_READ = "invoices:read",
+  INVOICES_WRITE = "invoices:write",
+  INVOICES_DELETE = "invoices:delete",
+  INVOICES_PUBLISH = "invoices:publish",
+  EXPENSES_READ = "expenses:read",
+  EXPENSES_WRITE = "expenses:write",
+  EXPENSES_DELETE = "expenses:delete",
+  EXPENSES_ANALYZE = "expenses:analyze",
+  REVENUES_READ = "revenues:read",
+  REVENUES_WRITE = "revenues:write",
+  REVENUES_DELETE = "revenues:delete",
+  PAYMENTS_READ = "payments:read",
+  PAYMENTS_WRITE = "payments:write",
+  DOCUMENTS_READ = "documents:read",
+  DOCUMENTS_WRITE = "documents:write",
+  DOCUMENTS_DELETE = "documents:delete",
+  COMPANIES_READ = "companies:read",
+  COMPANIES_WRITE = "companies:write",
+  COMPANIES_DELETE = "companies:delete",
+  EMPLOYEES_READ = "employees:read",
+  EMPLOYEES_WRITE = "employees:write",
+  EMPLOYEES_DELETE = "employees:delete",
+  COST_CENTERS_READ = "cost_centers:read",
+  COST_CENTERS_WRITE = "cost_centers:write",
+  REPORTS_READ = "reports:read",
+  ADMIN_SETTINGS = "admin:settings",
+  ADMIN_USERS = "admin:users",
+  OAUTH2_CLIENTS_READ = "oauth2:clients:read",
+  OAUTH2_CLIENTS_WRITE = "oauth2:clients:write"
+}
 
+export type OAuth2ScopeValue = `${OAuth2Scope}`;
 
+export const ALL_OAUTH2_SCOPES = [
+  "invoices:read",
+  "invoices:write",
+  "invoices:delete",
+  "invoices:publish",
+  "expenses:read",
+  "expenses:write",
+  "expenses:delete",
+  "expenses:analyze",
+  "revenues:read",
+  "revenues:write",
+  "revenues:delete",
+  "payments:read",
+  "payments:write",
+  "documents:read",
+  "documents:write",
+  "documents:delete",
+  "companies:read",
+  "companies:write",
+  "companies:delete",
+  "employees:read",
+  "employees:write",
+  "employees:delete",
+  "cost_centers:read",
+  "cost_centers:write",
+  "reports:read",
+  "admin:settings",
+  "admin:users",
+  "oauth2:clients:read",
+  "oauth2:clients:write",
+] as const satisfies readonly OAuth2ScopeValue[];
 
+export const SCOPE_DESCRIPTIONS: Record<OAuth2ScopeValue, string> = {
+    [OAuth2Scope.INVOICES_READ]: "Rechnungen lesen",
+    [OAuth2Scope.INVOICES_WRITE]: "Rechnungen erstellen und bearbeiten",
+    [OAuth2Scope.INVOICES_DELETE]: "Rechnungen loeschen",
+    [OAuth2Scope.INVOICES_PUBLISH]: "Rechnungen veroeffentlichen und versenden",
+
+    [OAuth2Scope.EXPENSES_READ]: "Ausgaben lesen",
+    [OAuth2Scope.EXPENSES_WRITE]: "Ausgaben erstellen und bearbeiten",
+    [OAuth2Scope.EXPENSES_DELETE]: "Ausgaben loeschen",
+    [OAuth2Scope.EXPENSES_ANALYZE]: "Belege mit OCR analysieren",
+
+    [OAuth2Scope.REVENUES_READ]: "Einnahmen lesen",
+    [OAuth2Scope.REVENUES_WRITE]: "Einnahmen erstellen und bearbeiten",
+    [OAuth2Scope.REVENUES_DELETE]: "Einnahmen loeschen",
+
+    [OAuth2Scope.PAYMENTS_READ]: "Zahlungen lesen",
+    [OAuth2Scope.PAYMENTS_WRITE]: "Zahlungen erstellen und bearbeiten",
+
+    [OAuth2Scope.DOCUMENTS_READ]: "Dokumente lesen",
+    [OAuth2Scope.DOCUMENTS_WRITE]: "Dokumente hochladen",
+    [OAuth2Scope.DOCUMENTS_DELETE]: "Dokumente loeschen",
+
+    [OAuth2Scope.COMPANIES_READ]: "Firmen lesen",
+    [OAuth2Scope.COMPANIES_WRITE]: "Firmen erstellen und bearbeiten",
+    [OAuth2Scope.COMPANIES_DELETE]: "Firmen loeschen",
+
+    [OAuth2Scope.EMPLOYEES_READ]: "Mitarbeiter lesen",
+    [OAuth2Scope.EMPLOYEES_WRITE]: "Mitarbeiter erstellen und bearbeiten",
+    [OAuth2Scope.EMPLOYEES_DELETE]: "Mitarbeiter loeschen",
+
+    [OAuth2Scope.COST_CENTERS_READ]: "Kostenstellen lesen",
+    [OAuth2Scope.COST_CENTERS_WRITE]: "Kostenstellen erstellen und bearbeiten",
+
+    [OAuth2Scope.REPORTS_READ]: "Berichte und Statistiken lesen",
+
+    [OAuth2Scope.ADMIN_SETTINGS]: "App-Einstellungen verwalten",
+    [OAuth2Scope.ADMIN_USERS]: "Benutzer verwalten",
+    [OAuth2Scope.OAUTH2_CLIENTS_READ]: "OAuth2-Clients lesen und pruefen",
+    [OAuth2Scope.OAUTH2_CLIENTS_WRITE]: "OAuth2-Clients verwalten, anlegen und rotieren",
+
+} as const;
+
+export const SCOPE_GROUPS: Partial<Record<string, readonly OAuth2ScopeValue[]>> = {
+    "Rechnungen": [
+        OAuth2Scope.INVOICES_READ,
+        OAuth2Scope.INVOICES_WRITE,
+        OAuth2Scope.INVOICES_DELETE,
+        OAuth2Scope.INVOICES_PUBLISH,
+    ],
+    "Ausgaben": [
+        OAuth2Scope.EXPENSES_READ,
+        OAuth2Scope.EXPENSES_WRITE,
+        OAuth2Scope.EXPENSES_DELETE,
+        OAuth2Scope.EXPENSES_ANALYZE,
+    ],
+    "Einnahmen": [
+        OAuth2Scope.REVENUES_READ,
+        OAuth2Scope.REVENUES_WRITE,
+        OAuth2Scope.REVENUES_DELETE,
+    ],
+    "Zahlungen": [
+        OAuth2Scope.PAYMENTS_READ,
+        OAuth2Scope.PAYMENTS_WRITE,
+    ],
+    "Dokumente": [
+        OAuth2Scope.DOCUMENTS_READ,
+        OAuth2Scope.DOCUMENTS_WRITE,
+        OAuth2Scope.DOCUMENTS_DELETE,
+    ],
+    "Firmen & Mitarbeiter": [
+        OAuth2Scope.COMPANIES_READ,
+        OAuth2Scope.COMPANIES_WRITE,
+        OAuth2Scope.COMPANIES_DELETE,
+        OAuth2Scope.EMPLOYEES_READ,
+        OAuth2Scope.EMPLOYEES_WRITE,
+        OAuth2Scope.EMPLOYEES_DELETE,
+    ],
+    "Verwaltung": [
+        OAuth2Scope.COST_CENTERS_READ,
+        OAuth2Scope.COST_CENTERS_WRITE,
+        OAuth2Scope.REPORTS_READ,
+    ],
+    "Admin": [
+        OAuth2Scope.ADMIN_SETTINGS,
+        OAuth2Scope.ADMIN_USERS,
+        OAuth2Scope.OAUTH2_CLIENTS_READ,
+        OAuth2Scope.OAUTH2_CLIENTS_WRITE,
+    ],
+} as const;
 
 export type OAuth2Client = {
   id: number;
   /** Client identification */
   clientId: string;
   clientSecretHash: string;
-  clientSecretFingerprint: string;
   /** HMAC-SHA256 */
+  clientSecretFingerprint: string;
+  /** For secret rotation */
   pepperVersion: number;
   /**
-   * For secret rotation
+   * Das abgeloeste Geheimnis, befristet weiter gueltig (retireClientSecret). Erst rotieren,
+   * dann in Ruhe ausrollen; scheitert das Ausrollen, rollbackClientSecret statt Ausfall.
+   * Der Abdruck steht daneben, weil die Anmeldung ueber ihn vorselektiert.
+   */
+  previousClientSecretHash: string | null;
+  previousClientSecretFingerprint: string | null;
+  previousPepperVersion: number | null;
+  previousClientSecretExpiresAt: Date | null;
+  /**
    * Metadata
+   * e.g., "Production API Client"
    */
   name: string;
-  /** e.g., "Production API Client" */
+  /** e.g., "Main backend service for production" */
   description: string | null;
   /**
-   * e.g., "Main backend service for production"
    * Tenant isolation (only used when OAUTH2_TENANT_CONFIG.enabled = true)
    * Apps with tenants set the real ID; apps without get the default 0.
    * FK constraint is added by app-specific migration, NOT in Drizzle schema (keeps file syncable).
    */
   managingCompanyId: number;
-  defaultCostCenter: number | null;
   /** Default cost center for operations */
+  defaultCostCenter: number | null;
+  /** JSON array of allowed cost center IDs (null = all) */
   availableCostCenters: string | null;
   /**
-   * JSON array of allowed cost center IDs (null = all)
    * Access control
+   * viewer | editor | admin
    */
   role: string;
-  /** viewer | editor | admin */
+  /** JSON array: ["invoices:read", "invoices:write", "expenses:read"] */
   scopes: string | null;
   /**
-   * JSON array: ["invoices:read", "invoices:write", "expenses:read"]
    * Token settings
+   * Seconds (1 hour default)
    */
   accessTokenTtl: number;
-  /** Seconds (1 hour default) */
-  refreshTokenTtl: number;
   /** Seconds (30 days default) */
+  refreshTokenTtl: number;
+  /** Max concurrent refresh tokens */
   maxTokensPerClient: number;
   /**
-   * Max concurrent refresh tokens
    * Security
+   * JSON array of whitelisted IPs (null = any)
    */
   allowedIps: string | null;
-  /** JSON array of whitelisted IPs (null = any) */
-  allowedOrigins: string | null;
   /** JSON array of whitelisted origins for CORS */
-  rateLimitPerMinute: number;
+  allowedOrigins: string | null;
   /** Requests per minute */
+  rateLimitPerMinute: number;
+  /** Requests per hour */
   rateLimitPerHour: number;
-  /**
-   * Requests per hour
-   * Status
-   */
+  /** Status */
   isActive: boolean;
   revokedAt: Date | null;
   validFrom: Date;
+  /** null = no expiry */
   validTo: Date | null;
   /**
-   * null = no expiry
-   * Secret rotation & dual-secret transition window (TSK-000079, TSK-000084)
+   * Audit
+   * User ID who created this client
    */
-  previousClientSecretHash: string | null;
-  previousClientSecretFingerprint: string | null;
-  previousPepperVersion: number | null;
-  lastRotatedAt: Date | null;
-  supersededAt: Date | null;
-  /** Audit */
   createdBy: number;
-  /** User ID who created this client */
   createdAt: Date;
   updatedAt: Date | null;
+  /** Track last successful authentication */
   lastUsedAt: Date | null;
+  /**
+   * Systemkonto: ist der Client an einen Nutzer gebunden (users.isSystemAccount), handelt
+   * jedes Token dieses Clients als dieser Nutzer (Claim actorUserId). Der Fremdschluessel
+   * auf users.id steht nicht im Schema, um den Import-Kreis zu vermeiden.
+   */
+  systemUserId: number | null;
+  /** Spalten der App (src/routes/oauth2/individual/oauth2-client.columns.ts). */
+  lastRotatedAt: Date | null;
+  supersededAt: Date | null;
 };
 
 export type OAuth2ClientInsert = {
   /** Client identification */
   clientId: string;
   clientSecretHash: string;
-  clientSecretFingerprint: string;
   /** HMAC-SHA256 */
+  clientSecretFingerprint: string;
+  /** For secret rotation */
   pepperVersion?: number;
   /**
-   * For secret rotation
+   * Das abgeloeste Geheimnis, befristet weiter gueltig (retireClientSecret). Erst rotieren,
+   * dann in Ruhe ausrollen; scheitert das Ausrollen, rollbackClientSecret statt Ausfall.
+   * Der Abdruck steht daneben, weil die Anmeldung ueber ihn vorselektiert.
+   */
+  previousClientSecretHash?: string | null;
+  previousClientSecretFingerprint?: string | null;
+  previousPepperVersion?: number | null;
+  previousClientSecretExpiresAt?: Date | null;
+  /**
    * Metadata
+   * e.g., "Production API Client"
    */
   name: string;
-  /** e.g., "Production API Client" */
+  /** e.g., "Main backend service for production" */
   description?: string | null;
   /**
-   * e.g., "Main backend service for production"
    * Tenant isolation (only used when OAUTH2_TENANT_CONFIG.enabled = true)
    * Apps with tenants set the real ID; apps without get the default 0.
    * FK constraint is added by app-specific migration, NOT in Drizzle schema (keeps file syncable).
    */
   managingCompanyId?: number;
-  defaultCostCenter?: number | null;
   /** Default cost center for operations */
+  defaultCostCenter?: number | null;
+  /** JSON array of allowed cost center IDs (null = all) */
   availableCostCenters?: string | null;
   /**
-   * JSON array of allowed cost center IDs (null = all)
    * Access control
+   * viewer | editor | admin
    */
   role?: string;
-  /** viewer | editor | admin */
+  /** JSON array: ["invoices:read", "invoices:write", "expenses:read"] */
   scopes?: string | null;
   /**
-   * JSON array: ["invoices:read", "invoices:write", "expenses:read"]
    * Token settings
+   * Seconds (1 hour default)
    */
   accessTokenTtl?: number;
-  /** Seconds (1 hour default) */
-  refreshTokenTtl?: number;
   /** Seconds (30 days default) */
+  refreshTokenTtl?: number;
+  /** Max concurrent refresh tokens */
   maxTokensPerClient?: number;
   /**
-   * Max concurrent refresh tokens
    * Security
+   * JSON array of whitelisted IPs (null = any)
    */
   allowedIps?: string | null;
-  /** JSON array of whitelisted IPs (null = any) */
-  allowedOrigins?: string | null;
   /** JSON array of whitelisted origins for CORS */
-  rateLimitPerMinute?: number;
+  allowedOrigins?: string | null;
   /** Requests per minute */
+  rateLimitPerMinute?: number;
+  /** Requests per hour */
   rateLimitPerHour?: number;
-  /**
-   * Requests per hour
-   * Status
-   */
+  /** Status */
   isActive?: boolean;
   revokedAt?: Date | null;
   validFrom?: Date;
+  /** null = no expiry */
   validTo?: Date | null;
   /**
-   * null = no expiry
-   * Secret rotation & dual-secret transition window (TSK-000079, TSK-000084)
+   * Audit
+   * User ID who created this client
    */
-  previousClientSecretHash?: string | null;
-  previousClientSecretFingerprint?: string | null;
-  previousPepperVersion?: number | null;
-  lastRotatedAt?: Date | null;
-  supersededAt?: Date | null;
-  /** Audit */
   createdBy: number;
-  /** User ID who created this client */
   createdAt?: Date;
   updatedAt?: Date | null;
+  /** Track last successful authentication */
   lastUsedAt?: Date | null;
+  /**
+   * Systemkonto: ist der Client an einen Nutzer gebunden (users.isSystemAccount), handelt
+   * jedes Token dieses Clients als dieser Nutzer (Claim actorUserId). Der Fremdschluessel
+   * auf users.id steht nicht im Schema, um den Import-Kreis zu vermeiden.
+   */
+  systemUserId?: number | null;
+  /** Spalten der App (src/routes/oauth2/individual/oauth2-client.columns.ts). */
+  lastRotatedAt?: Date | null;
+  supersededAt?: Date | null;
 };
 
 export type OAuth2ClientId = OAuth2Client["id"];
@@ -4103,18 +4445,20 @@ export type OAuth2ClientId = OAuth2Client["id"];
 export type OAuth2RefreshToken = {
   id: number;
   clientId: number;
-  /** Token identification */
+  /**
+   * Token identification
+   * Argon2 hash of refresh token
+   */
   tokenHash: string;
-  /** Argon2 hash of refresh token */
-  tokenFingerprint: string;
   /** HMAC-SHA256 for fast lookup */
+  tokenFingerprint: string;
+  /** JWT ID (unique identifier) */
   jti: string;
   /**
-   * JWT ID (unique identifier)
    * Metadata
+   * Space-separated scopes granted to this token
    */
   scope: string | null;
-  /** Space-separated scopes granted to this token */
   issuedAt: Date;
   expiresAt: Date;
   /** Security */
@@ -4124,25 +4468,27 @@ export type OAuth2RefreshToken = {
   /** Tracking */
   lastUsedAt: Date | null;
   usageCount: number;
-  ipAddress: string | null;
   /** IPv4 or IPv6 */
+  ipAddress: string | null;
   userAgent: string | null;
 };
 
 export type OAuth2RefreshTokenInsert = {
   clientId: number;
-  /** Token identification */
+  /**
+   * Token identification
+   * Argon2 hash of refresh token
+   */
   tokenHash: string;
-  /** Argon2 hash of refresh token */
-  tokenFingerprint: string;
   /** HMAC-SHA256 for fast lookup */
+  tokenFingerprint: string;
+  /** JWT ID (unique identifier) */
   jti: string;
   /**
-   * JWT ID (unique identifier)
    * Metadata
+   * Space-separated scopes granted to this token
    */
   scope?: string | null;
-  /** Space-separated scopes granted to this token */
   issuedAt?: Date;
   expiresAt: Date;
   /** Security */
@@ -4152,51 +4498,59 @@ export type OAuth2RefreshTokenInsert = {
   /** Tracking */
   lastUsedAt?: Date | null;
   usageCount?: number;
-  ipAddress?: string | null;
   /** IPv4 or IPv6 */
+  ipAddress?: string | null;
   userAgent?: string | null;
 };
 
 export type OAuth2AuditLog = {
   id: number;
   clientId: number | null;
-  /** Request details */
+  /**
+   * Request details
+   * client_credentials | refresh_token
+   */
   grantType: string;
-  /** client_credentials | refresh_token */
-  scope: string | null;
   /** Requested scope */
+  scope: string | null;
   success: boolean;
-  errorCode: string | null;
   /** invalid_client | invalid_grant | etc. */
+  errorCode: string | null;
   errorDescription: string | null;
   /** Security context */
   ipAddress: string | null;
   userAgent: string | null;
   timestamp: Date;
-  /** Rate limiting metadata */
+  /**
+   * Rate limiting metadata
+   * Requests in current window
+   */
   requestCount: number | null;
-  /** Requests in current window */
   rateLimitExceeded: boolean;
 };
 
 export type OAuth2AuditLogInsert = {
   clientId?: number | null;
-  /** Request details */
+  /**
+   * Request details
+   * client_credentials | refresh_token
+   */
   grantType: string;
-  /** client_credentials | refresh_token */
-  scope?: string | null;
   /** Requested scope */
+  scope?: string | null;
   success: boolean;
-  errorCode?: string | null;
   /** invalid_client | invalid_grant | etc. */
+  errorCode?: string | null;
   errorDescription?: string | null;
   /** Security context */
   ipAddress?: string | null;
   userAgent?: string | null;
   timestamp?: Date;
-  /** Rate limiting metadata */
+  /**
+   * Rate limiting metadata
+   * Requests in current window
+   */
   requestCount?: number | null;
-  /** Requests in current window */
   rateLimitExceeded?: boolean;
 };
 
@@ -4208,8 +4562,285 @@ export type UnsensitiveOAuth2Client = Omit<
     | "previousClientSecretHash"
     | "previousClientSecretFingerprint"
     | "previousPepperVersion"
-> & {
-    hasPreviousSecret?: boolean;
+> & { hasPreviousSecret?: boolean };
+
+
+
+// ============================================================================
+// API KEY TYPES
+// ============================================================================
+
+export type ApiKey = {
+  id: number;
+  /**
+   * The person who minted the key. Without a tenant column this is also the owner. Set null on user delete
+   * so we don't cascade-delete keys when the creator's account is removed.
+   */
+  createdByUserId: number | null;
+  /**
+   * Display metadata
+   * e.g. "Production CI", "Zapier integration"
+   */
+  name: string;
+  description: string | null;
+  /**
+   * Visible prefix shown in UI lists (e.g. "qr_live_8k2abc34").
+   * Stored separately so list endpoints never need to touch the hash.
+   */
+  keyPrefix: string;
+  /** "live" | "test" */
+  environment: string;
+  /** Security: Argon2id hash (irreversible) */
+  apiKeyHash: string;
+  /** Performance: HMAC-SHA256 fingerprint (pepper-bound) for fast lookups */
+  apiKeyFingerprint: string;
+  /** Pepper rotation: which version produced the fingerprint above */
+  pepperVersion: number;
+  /**
+   * Authorization — the key's effective role inside its tenant. Must
+   * be <= creator's role at creation time (use-case enforces).
+   * `owner` is intentionally not allowed; a leaked key must never be
+   * able to transfer ownership.
+   * viewer | editor | admin
+   */
+  role: string;
+  /** OAuth2Scope values */
+  scopes: string[];
+  /**
+   * Security policy (all optional)
+   * null = any IP
+   */
+  allowedIps: string[] | null | null;
+  /** null = no per-key limit */
+  rateLimitPerMinute: number | null;
+  /** null = no per-key limit */
+  rateLimitPerHour: number | null;
+  /** Lifecycle */
+  isActive: boolean;
+  validFrom: Date;
+  /** null = no expiry */
+  validTo: Date | null;
+  revokedAt: Date | null;
+  revokedReason: string | null;
+  /** Usage tracking */
+  lastUsedAt: Date | null;
+  lastUsedIp: string | null;
+  usageCount: number;
+  /** Audit */
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
+export type ApiKeyInsert = {
+  /**
+   * The person who minted the key. Without a tenant column this is also the owner. Set null on user delete
+   * so we don't cascade-delete keys when the creator's account is removed.
+   */
+  createdByUserId?: number | null;
+  /**
+   * Display metadata
+   * e.g. "Production CI", "Zapier integration"
+   */
+  name: string;
+  description?: string | null;
+  /**
+   * Visible prefix shown in UI lists (e.g. "qr_live_8k2abc34").
+   * Stored separately so list endpoints never need to touch the hash.
+   */
+  keyPrefix: string;
+  /** "live" | "test" */
+  environment?: string;
+  /** Security: Argon2id hash (irreversible) */
+  apiKeyHash: string;
+  /** Performance: HMAC-SHA256 fingerprint (pepper-bound) for fast lookups */
+  apiKeyFingerprint: string;
+  /** Pepper rotation: which version produced the fingerprint above */
+  pepperVersion?: number;
+  /**
+   * Authorization — the key's effective role inside its tenant. Must
+   * be <= creator's role at creation time (use-case enforces).
+   * `owner` is intentionally not allowed; a leaked key must never be
+   * able to transfer ownership.
+   * viewer | editor | admin
+   */
+  role?: string;
+  /** OAuth2Scope values */
+  scopes?: string[];
+  /**
+   * Security policy (all optional)
+   * null = any IP
+   */
+  allowedIps?: string[] | null | null;
+  /** null = no per-key limit */
+  rateLimitPerMinute?: number | null;
+  /** null = no per-key limit */
+  rateLimitPerHour?: number | null;
+  /** Lifecycle */
+  isActive?: boolean;
+  validFrom?: Date;
+  /** null = no expiry */
+  validTo?: Date | null;
+  revokedAt?: Date | null;
+  revokedReason?: string | null;
+  /** Usage tracking */
+  lastUsedAt?: Date | null;
+  lastUsedIp?: string | null;
+  usageCount?: number;
+  /** Audit */
+  createdAt?: Date;
+  updatedAt?: Date | null;
+};
+
+export type ApiKeyId = ApiKey["id"];
+
+export type ApiKeyAuditLogEntry = {
+  id: number;
+  apiKeyId: number | null;
+  /** Outcome */
+  success: boolean;
+  errorCode: string | null;
+  /**
+   * invalid_key | revoked | expired | ip_not_allowed | rate_limited |
+   * insufficient_scope | insufficient_role
+   */
+  errorDescription: string | null;
+  /** Request context */
+  method: string | null;
+  path: string | null;
+  requestedScope: string | null;
+  /** Security context */
+  ipAddress: string | null;
+  userAgent: string | null;
+  timestamp: Date;
+  /** Mandant, denormalisiert, damit das Log auch nach dem Loeschen des Schluessels filterbar bleibt. */
+  workspaceId: number | null;
+};
+
+export type ApiKeyAuditLogInsert = {
+  apiKeyId?: number | null;
+  /** Outcome */
+  success: boolean;
+  errorCode?: string | null;
+  /**
+   * invalid_key | revoked | expired | ip_not_allowed | rate_limited |
+   * insufficient_scope | insufficient_role
+   */
+  errorDescription?: string | null;
+  /** Request context */
+  method?: string | null;
+  path?: string | null;
+  requestedScope?: string | null;
+  /** Security context */
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  timestamp?: Date;
+  /** Mandant, denormalisiert, damit das Log auch nach dem Loeschen des Schluessels filterbar bleibt. */
+  workspaceId?: number | null;
+};
+
+export type UnsensitiveApiKey = Omit<ApiKey, "apiKeyHash" | "apiKeyFingerprint" | "pepperVersion">;
+
+export type ApiKeyRole = "viewer" | "editor" | "admin";
+
+export type ApiKeyEnvironment = "live" | "test";
+
+export type ApiKeyStatus = "active" | "pending" | "expired" | "inactive" | "revoked";
+
+export type ApiKeyView = Omit<UnsensitiveApiKey, "role" | "environment" | "scopes" | "allowedIps"> & {
+        role: ApiKeyRole;
+        environment: ApiKeyEnvironment;
+        scopes: OAuth2ScopeValue[];
+        allowedIps: string[] | null;
+        status: ApiKeyStatus;
+    };
+
+export type ApiKeyDenyCode = | "INSUFFICIENT_ROLE"      // caller's role too low
+    | "PLAN_LIMIT_REACHED"     // tenant has hit its api_keys cap
+    | "WORKSPACE_INACTIVE"     // tenant suspended / billing issue
+    | "NOT_AUTHENTICATED"      // no session — only ever from capabilities pre-flight
+    | "ROLE_TOO_HIGH"          // caller cannot mint a key with role > own role
+    | "API_KEY_NOT_FOUND"      // key id does not belong to the caller's tenant
+    | "VALIDATION_FAILED"      // body/params didn't match schema
+    | "INVALID_SCOPE"          // scope not in OAuth2Scope enum
+    | "INVALID_IP";
+
+export type ApiKeyDenyReason = {
+    code: ApiKeyDenyCode;
+    message: string;
+    /** Optional extra context — e.g. { required: "admin", actual: "editor" } */
+    details?: Record<string, string | number | boolean | null>;
+};
+
+export type ApiKeyCapabilities = {
+    canCreate: boolean;
+    canList: boolean;
+    canRevoke: boolean;
+    canDelete: boolean;
+    /** Role of the caller in the tenant — drives most checks. */
+    role: "owner" | "admin" | "editor" | "viewer" | null;
+    /**
+     * Capacity from the tenant hook (`maxActiveKeys`). `max=null` = unlimited.
+     * `remaining=null` = unlimited.
+     */
+    limits: {
+        max: number | null;
+        current: number;
+        remaining: number | null;
+    };
+    /** Set only for actions where the corresponding `can*` is `false`. */
+    reasons: {
+        create?: ApiKeyDenyReason;
+        list?: ApiKeyDenyReason;
+        revoke?: ApiKeyDenyReason;
+        delete?: ApiKeyDenyReason;
+    };
 };
 
 
+
+// ============================================================================
+// WEBHOOK PAYLOADS
+// ============================================================================
+
+export type WebhookPayloadStripe = {
+    provider: "stripe";
+    id: string;
+    type: string;
+    api_version?: string | null;
+    created: number;
+    livemode?: boolean;
+    request?: { id?: string | null; idempotency_key?: string | null } | null;
+    data: {
+        object: Record<string, unknown>;
+        previous_attributes?: Record<string, unknown>;
+    };
+};
+
+export type WebhookPayloadPayPal = {
+    provider: "paypal";
+    id: string;
+    event_type: string;
+    create_time: string;
+    resource_type: string;
+    resource: Record<string, unknown>;
+    summary?: string;
+};
+
+export type WebhookPayloadPrintful = {
+    provider: "printful";
+    type: string;
+    created: number;
+    retries?: number;
+    store: number;
+    data: Record<string, unknown>;
+};
+
+export type WebhookPayloadGeneric = {
+    provider: string;
+    raw: Record<string, unknown>;
+};
+
+export type WebhookPayload = | WebhookPayloadStripe
+    | WebhookPayloadPayPal
+    | WebhookPayloadPrintful
+    | WebhookPayloadGeneric;

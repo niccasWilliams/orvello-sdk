@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.383Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
@@ -1498,7 +1497,7 @@ export type PaymentsCreateAccountBody = {
   sumupSyncEnabled?: boolean;
   isDefault?: boolean;
   openingBalance?: string | null;
-  openingBalanceDate?: string | any | {
+  openingBalanceDate?: string | string | {
   year: number;
   month: number;
   day: number;
@@ -1529,7 +1528,7 @@ export type PaymentsUpdateAccountBody = {
   sumupSyncEnabled?: boolean;
   isDefault?: boolean;
   openingBalance?: string | null;
-  openingBalanceDate?: string | any | {
+  openingBalanceDate?: string | string | {
   year: number;
   month: number;
   day: number;
@@ -2365,7 +2364,7 @@ export type ReconciliationQueueResponseData = {
   amount: string;
   currency: string;
   direction: string;
-  bookedAt: any;
+  bookedAt: string;
   counterpartyName: string | null;
   counterpartyIban: string | null;
   reference: string | null;
@@ -2387,7 +2386,7 @@ export type ReconciliationQueueResponseData = {
   kind: string;
   allocatedAmount: string;
   targetLabel: string;
-  createdAt: any;
+  createdAt: string;
 }>;
   suggestions: Array<{
   targetType: "invoice" | "expense" | "revenue";
@@ -2404,14 +2403,14 @@ export type ReconciliationQueueResponseData = {
   label: string;
   invoiceNumber?: string;
   customerName?: string | null;
-  invoiceDate?: any;
-  dueDate?: any;
+  invoiceDate?: string;
+  dueDate?: string;
   status?: string;
   vendor?: string | null;
   vendorInvoiceNumber?: string | null;
   description?: string | null;
-  expenseDate?: any;
-  revenueDate?: any;
+  expenseDate?: string;
+  revenueDate?: string;
   isConfirmed?: boolean;
 }>;
   bestMatch: {
@@ -2429,14 +2428,14 @@ export type ReconciliationQueueResponseData = {
   label: string;
   invoiceNumber?: string;
   customerName?: string | null;
-  invoiceDate?: any;
-  dueDate?: any;
+  invoiceDate?: string;
+  dueDate?: string;
   status?: string;
   vendor?: string | null;
   vendorInvoiceNumber?: string | null;
   description?: string | null;
-  expenseDate?: any;
-  revenueDate?: any;
+  expenseDate?: string;
+  revenueDate?: string;
   isConfirmed?: boolean;
 } | null;
   transferSuggestion: {
@@ -2445,7 +2444,7 @@ export type ReconciliationQueueResponseData = {
   counterpartAccountId: number;
   counterpartAccountName: string | null;
   counterpartAccountType: string | null;
-  counterpartDate: any;
+  counterpartDate: string;
   counterpartName: string | null;
   confidence: "high" | "medium" | "low";
 } | null;
@@ -2591,7 +2590,7 @@ export type ReconciliationGroupsResponseData = {
   amount: string;
   remainingAmount: string;
   currency: string;
-  bookedAt: any;
+  bookedAt: string;
   counterpartyName: string | null;
   reference: string | null;
 }>;

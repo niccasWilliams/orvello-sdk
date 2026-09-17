@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.399Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { CompanyCostCenter, CompanyUserAssignment, CompanyUserInvite, FullSelectedCompany, ManagingCompany, PaginatedResult, UnsensitiveCompanyApiKey, UserSelectedCompany, VatSettings } from "../../frontend-types";
@@ -244,8 +243,11 @@ export type ManagingCompaniesVatSettingsUpsertParams = {
 export type ManagingCompaniesVatSettingsUpsertQuery = undefined;
 export type ManagingCompaniesVatSettingsUpsertBody = {
   managingCompanyId?: number;
+  /** Besteuerungsverfahren: SOLL = Soll-Versteuerung (Rechnungsdatum), IST = Ist-Versteuerung (Zahlungseingang). Aenderung nur wenn steuerlich abgestimmt – hat Auswirkung auf UStVA-Zeitraum. */
   accountingMethod?: "SOLL" | "IST";
+  /** UStVA-Meldepraeferenz: auto = vom System ermittelt, monthly/quarterly/annual = manuell festgelegt, none = keine automatische Meldung. */
   ustvaFilingPreference?: "auto" | "monthly" | "quarterly" | "annual" | "none";
+  /** Freie Map fuer Steuerentscheidungen – NICHT direkt beschreiben, stattdessen PUT /decisions/:decisionKey nutzen. Dieser Weg ist unauditiert und ueberschreibt alle vorherigen Entscheidungen auf einmal. */
   taxDecisions?: Record<string, any>;
 };
 export type ManagingCompaniesVatSettingsUpsertResponseData = VatSettings;
@@ -253,13 +255,18 @@ export type ManagingCompaniesVatSettingsUpsertResponse = import("../types").ApiE
 
 export type ManagingCompaniesVatSettingsDecisionUpsertParams = {
   companyId: number;
+  /** Eindeutiger Entscheidungsschluessel. Erlaubte Keys (Allowlist): 'vat.regime' (Werte: 'kleinunternehmer' | 'regelbesteuert'), 'vat.regime.auto_switch_consent' (Wert: { enabled: boolean } – opt-in fuer automatische Regime-Umstellung bei Grenz */
   decisionKey: string;
 };
 export type ManagingCompaniesVatSettingsDecisionUpsertQuery = undefined;
 export type ManagingCompaniesVatSettingsDecisionUpsertBody = {
+  /** Der Entscheidungswert. Haengt vom decisionKey ab: vat.regime → { regime: 'kleinunternehmer' | 'regelbesteuert' } | vat.regime.auto_switch_consent → { enabled: true | false } (true = System darf bei §19-Grenzwert-Ueberschreitung automatisch  */
   value: any;
+  /** Optionale Begruendung/Notiz zur Entscheidung (z.B. 'Steuerberater-Empfehlung vom 01.01.2025'). Wird im Audit-Log gespeichert. */
   note?: string;
+  /** ISO-Zeitstempel ab wann die Entscheidung gelten soll. Wenn nicht angegeben: sofort (Server-Zeitpunkt). Nur relevant fuer vat.regime – bestimmt ab welchem Datum das neue Regime im Buchungssystem gilt. */
   effectiveFrom?: string;
+  /** Optionale strukturierte Zusatzdaten (z.B. { source: 'user_alert_click', alertKey: 'vat.threshold_exceeded' }). Nuetzlich fuer Analytics / Traceability woher die Entscheidung kam. */
   metadata?: Record<string, any>;
 };
 export type ManagingCompaniesVatSettingsDecisionUpsertResponseData = { settings: VatSettings; decision: any; appliedRegimePeriod?: any };

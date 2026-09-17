@@ -1,16 +1,26 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.405Z
 // Run `pnpm run api:generate` to regenerate
 
-import type { Webhook } from "../../frontend-types";
+import type { PaginatedResult, Webhook } from "../../frontend-types";
 
-export type WebhooksListParams = undefined;
-export type WebhooksListQuery = {
-
+export type WebhooksSearchParams = undefined;
+export type WebhooksSearchQuery = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  provider?: string;
+  eventType?: string;
+  status?: "pending" | "processed" | "failed" | "skipped";
+  processed?: boolean;
+  externalId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: "createdAt" | "processedAt" | "status";
+  sortOrder?: "asc" | "desc";
 };
-export type WebhooksListBody = undefined;
-export type WebhooksListResponseData = { webhooks: Webhook[]; canDelete: boolean };
-export type WebhooksListResponse = import("../types").ApiEnvelope<WebhooksListResponseData>;
+export type WebhooksSearchBody = undefined;
+export type WebhooksSearchResponseData = { webhooks: PaginatedResult<Webhook>; canDelete: boolean };
+export type WebhooksSearchResponse = import("../types").ApiEnvelope<WebhooksSearchResponseData>;
 
 export type WebhooksDeleteParams = {
   webhookId: number;
@@ -29,21 +39,21 @@ export type WebhooksDeleteBulkResponseData = null;
 export type WebhooksDeleteBulkResponse = import("../types").ApiEnvelope<WebhooksDeleteBulkResponseData>;
 
 export const apiRoutes_webhooks = {
-  "webhooks_list": {
+  "webhooks_search": {
     method: "GET",
-    path: "/webhooks/getAll",
+    path: "/webhooks/search",
     auth: {"type":"frontend_permission_http","permission":"webhook_view"},
     meta: {
       tags: ["webhooks"],
-      summary: "List webhooks",
+      summary: "Search webhooks (paginated)",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
-      params: WebhooksListParams;
-      query: WebhooksListQuery;
-      body: WebhooksListBody;
-      response: WebhooksListResponse;
-      responseData: WebhooksListResponseData;
+      params: WebhooksSearchParams;
+      query: WebhooksSearchQuery;
+      body: WebhooksSearchBody;
+      response: WebhooksSearchResponse;
+      responseData: WebhooksSearchResponseData;
     },
   },
   "webhooks_delete": {

@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.403Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { PaginatedResult, UnsensitiveOAuth2Client } from "../../frontend-types";
@@ -40,15 +39,15 @@ export type Oauth2ExternalClientsGetResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
 export type Oauth2ExternalClientsGetResponse = import("../types").ApiEnvelope<Oauth2ExternalClientsGetResponseData>;
@@ -89,15 +88,15 @@ export type Oauth2ExternalClientsCreateResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
   credentials: {
@@ -146,15 +145,15 @@ export type Oauth2ExternalClientsUpdateResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
 export type Oauth2ExternalClientsUpdateResponse = import("../types").ApiEnvelope<Oauth2ExternalClientsUpdateResponseData>;
@@ -183,15 +182,15 @@ export type Oauth2ExternalClientsRotateResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
   credentials: {
@@ -199,7 +198,7 @@ export type Oauth2ExternalClientsRotateResponseData = {
   client_secret: string;
   warning: string;
 };
-  lastRotatedAt: any;
+  lastRotatedAt: string;
 };
 export type Oauth2ExternalClientsRotateResponse = import("../types").ApiEnvelope<Oauth2ExternalClientsRotateResponseData>;
 
@@ -227,15 +226,15 @@ export type Oauth2ExternalClientsRetireResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
   retired: boolean;
@@ -266,15 +265,15 @@ export type Oauth2ExternalClientsRollbackResponseData = {
   rateLimitPerMinute: number;
   rateLimitPerHour: number;
   isActive: boolean;
-  revokedAt?: any | null;
-  validFrom: any;
-  validTo?: any | null;
+  revokedAt?: string | null;
+  validFrom: string;
+  validTo?: string | null;
   createdBy: number;
-  createdAt: any;
-  updatedAt?: any | null;
-  lastUsedAt?: any | null;
-  lastRotatedAt?: any | null;
-  supersededAt?: any | null;
+  createdAt: string;
+  updatedAt?: string | null;
+  lastUsedAt?: string | null;
+  lastRotatedAt?: string | null;
+  supersededAt?: string | null;
   hasPreviousSecret?: boolean;
 };
   retired: boolean;

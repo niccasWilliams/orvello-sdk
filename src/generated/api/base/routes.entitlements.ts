@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.396Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { Role, RoleAssignment } from "../../frontend-types";
@@ -131,7 +130,7 @@ export const apiRoutes_entitlements = {
   "entitlements_list": {
     method: "GET",
     path: "/entitlements",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "List available entitlements",
@@ -149,7 +148,7 @@ export const apiRoutes_entitlements = {
   "entitlements_assign": {
     method: "POST",
     path: "/entitlements",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:write"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Assign entitlement to user",
@@ -168,7 +167,7 @@ export const apiRoutes_entitlements = {
   "entitlements_get_state": {
     method: "GET",
     path: "/entitlements/:userId/:type/:identifier",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Get current entitlement state",
@@ -186,7 +185,7 @@ export const apiRoutes_entitlements = {
   "entitlements_update_state": {
     method: "PUT",
     path: "/entitlements/:userId/:type/:identifier",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read","entitlements:write"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Update entitlement validity",
@@ -205,7 +204,7 @@ export const apiRoutes_entitlements = {
   "entitlements_revoke": {
     method: "DELETE",
     path: "/entitlements/:userId/:type/:identifier",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:write"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Revoke entitlement from user",
@@ -223,7 +222,7 @@ export const apiRoutes_entitlements = {
   "entitlements_getAll": {
     method: "GET",
     path: "/entitlements/getAll",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Alias for listing entitlements",
@@ -241,7 +240,7 @@ export const apiRoutes_entitlements = {
   "entitlements_getAssigned": {
     method: "GET",
     path: "/entitlements/assigned",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Get role assignments (legacy)",
@@ -259,7 +258,7 @@ export const apiRoutes_entitlements = {
   "entitlements_getUserEntitlements": {
     method: "GET",
     path: "/entitlements/user/:userId",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Get active user entitlements (legacy)",
@@ -277,7 +276,7 @@ export const apiRoutes_entitlements = {
   "entitlements_context_get_by_shop_assignment": {
     method: "GET",
     path: "/entitlements/context/by-shop-assignment/:shopAssignmentId",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Get entitlement sync context by shop assignment id",
@@ -295,7 +294,7 @@ export const apiRoutes_entitlements = {
   "entitlements_usage_overages_pull": {
     method: "GET",
     path: "/entitlements/usage-overages",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Pull usage overages",
@@ -313,7 +312,7 @@ export const apiRoutes_entitlements = {
   "entitlements_getById": {
     method: "GET",
     path: "/entitlements/:id",
-    auth: {"type":"unified_bearer","allowUserSession":false,"scopes":["entitlements:read"]},
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
     meta: {
       tags: ["entitlements"],
       summary: "Get entitlement by role id (legacy)",

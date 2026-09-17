@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.382Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { PaginatedResult, SystemSettings, VatAccountingMethod, VatSettingsHistory } from "../../frontend-types";

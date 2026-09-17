@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.383Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { NodeBillUser, Permission, Role } from "../../frontend-types";
@@ -8,9 +7,17 @@ export type AppInfoHealthParams = undefined;
 export type AppInfoHealthQuery = undefined;
 export type AppInfoHealthBody = undefined;
 export type AppInfoHealthResponseData = {
-  status: string;
-  timestamp: string;
+  status: "healthy" | "degraded" | "unhealthy";
   uptime: number;
+  timestamp: string;
+  version: string;
+  checks: Array<{
+  name: string;
+  status: "ok" | "warning" | "error";
+  latencyMs: number | null;
+  message?: string;
+  details?: Record<string, any>;
+}>;
 };
 export type AppInfoHealthResponse = import("../types").ApiEnvelope<AppInfoHealthResponseData>;
 
@@ -25,7 +32,7 @@ export type AppInfoGetQuery = {
 
 };
 export type AppInfoGetBody = undefined;
-export type AppInfoGetResponseData = { plannerUser: NodeBillUser; plannerUsers?: NodeBillUser[]; userRoles: Role[]; subscriptionLimits?: { planCode: 'base' | 'premium' | 'enterprise' | 'legacy'; sourceRoles: string[]; maxManagingCompanies: number | null; maxDocumentStorageGb: number | null }; subscriptionUsage?: { managingCompanies: { used: number; limit: number | null; remaining: number | null; canCreate: boolean }; documentStorage: { costPerGbEur: number; pricePerGbEur: number; usedBytes: number; usedGb: number; documentsCount: number; limitGb: number | null; remainingGb: number | null; canUpload: boolean; estimatedProviderCostEur: number; estimatedCustomerPriceEur: number; estimatedMarginEur: number; byManagingCompany: Array<{ managingCompanyId: number; companyName: string | null; documentsCount: number; usedBytes: number; usedGb: number; estimatedProviderCostEur: number; estimatedCustomerPriceEur: number; estimatedMarginEur: number }> } }; subscription?: { canCreateManagingCompany: boolean; canUploadDocuments: boolean; upgradeUrl: string | null } };
+export type AppInfoGetResponseData = { appId: string; plannerUser: NodeBillUser; userRoles: Role[]; subscriptionLimits?: { planCode: string; sourceRoles: string[]; limits: Record<string, number | null> }; subscriptionUsage?: { planCode: string; sourceRoles: string[]; metrics: Record<string, { used: number; limit: number | null; remaining: number | null; canUse: boolean }> }; subscription?: { upgradeUrl: string | null } };
 export type AppInfoGetResponse = import("../types").ApiEnvelope<AppInfoGetResponseData>;
 
 export type AppInfoOwnPermissionsGetParams = undefined;
@@ -44,6 +51,7 @@ export const apiRoutes_app_info = {
     meta: {
       tags: ["app-info"],
       summary: "Health check",
+      description: "Kern-Pruefungen des Prozesses (Datenbank, Speicher, Event-Loop, Verschluesselung). 200 bei healthy/degraded, 503 bei unhealthy.",
       validated: {"params":false,"query":false,"body":false},
     },
     types: null as unknown as {

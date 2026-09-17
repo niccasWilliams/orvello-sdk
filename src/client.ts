@@ -81,7 +81,7 @@ import type {
   Oauth2ExternalClientsRollbackResponseData,
   Oauth2ExternalClientsRevokeResponseData,
   Oauth2ExternalClientsDeleteResponseData,
-} from "./generated/api/features/routes.oauth2_external.js";
+} from "./generated/api/index.js";
 
 import { diagnoseOrvello, type BaseUrlProvider, type OrvelloDiagnosis } from "./diagnose.js";
 import {

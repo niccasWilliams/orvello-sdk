@@ -1,5 +1,4 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
-// Generated at: 2026-09-12T14:36:48.398Z
 // Run `pnpm run api:generate` to regenerate
 
 import type { AppLog, PaginatedResult } from "../../frontend-types";
@@ -10,8 +9,8 @@ export type LogsSearchQuery = {
   page?: number;
   pageSize?: number;
   level?: "debug" | "info" | "warn" | "error";
-  dateFrom?: any;
-  dateTo?: any;
+  dateFrom?: string;
+  dateTo?: string;
 };
 export type LogsSearchBody = undefined;
 export type LogsSearchResponseData = { logs: PaginatedResult<AppLog>; canDelete: boolean };
