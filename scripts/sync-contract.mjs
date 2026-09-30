@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { cp, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -78,4 +79,7 @@ if (check) {
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }
+  // Der Routen-Index wird aus genau diesem Vertrag abgeleitet. Ohne diesen Schritt
+  // bringt jeder Sync einen neuen Vertrag mit altem Index, und `npm run check` ist rot.
+  execFileSync(process.execPath, [join(root, "scripts/build-route-index.mjs")], { cwd: root, stdio: "inherit" });
 }
