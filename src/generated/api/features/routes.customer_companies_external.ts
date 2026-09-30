@@ -71,6 +71,7 @@ export type CustomerCompaniesDeleteExternalResponseData = null;
 export type CustomerCompaniesDeleteExternalResponse = import("../types").ApiEnvelope<CustomerCompaniesDeleteExternalResponseData>;
 
 export const apiRoutes_customer_companies_external = {
+  // Contract source: explicit
   "customer_companies_search_external": {
     method: "GET",
     path: "/customer-companies/external",
@@ -89,6 +90,7 @@ export const apiRoutes_customer_companies_external = {
       responseData: CustomerCompaniesSearchExternalResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_get_by_id_external": {
     method: "GET",
     path: "/customer-companies/external/:companyId",
@@ -107,6 +109,7 @@ export const apiRoutes_customer_companies_external = {
       responseData: CustomerCompaniesGetByIdExternalResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_create_external": {
     method: "POST",
     path: "/customer-companies/external",
@@ -126,6 +129,7 @@ export const apiRoutes_customer_companies_external = {
       responseData: CustomerCompaniesCreateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_update_external": {
     method: "PUT",
     path: "/customer-companies/external/:companyId",
@@ -145,6 +149,7 @@ export const apiRoutes_customer_companies_external = {
       responseData: CustomerCompaniesUpdateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_delete_external": {
     method: "DELETE",
     path: "/customer-companies/external/:companyId",

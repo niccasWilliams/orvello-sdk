@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.4 - 2026-09-30
+
+- Vertrag auf node-bill 9d9a593 nachgezogen (Fingerabdruck `bfd85f17c2aa`). Die getippten
+  Namensraeume bleiben gleich. Neu im Vertrag sind unter anderem `receivedAt` fuer
+  Bareinnahmen und `outputVatWarnings` im Umsatzsteuer-Bericht; die Frontend-Routen
+  `/api-keys/*` gibt es bei node-bill nicht mehr.
+- `invoices.downloadPdfFromUrl` schickt das Credential nur noch an den Dienst selbst. Eine
+  absolute Adresse auf einem anderen Host bekommt keinen `Authorization`-Kopf mehr.
+- `sync:contract` baut den Routen-Index mit (war in 1f8c912, bisher unveroeffentlicht).
+
 ## 0.2.2 - 2026-09-12
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

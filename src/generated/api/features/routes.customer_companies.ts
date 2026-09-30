@@ -199,6 +199,7 @@ export type CustomerCompaniesSearchResponseData = PaginatedResult<FullCompany>;
 export type CustomerCompaniesSearchResponse = import("../types").ApiEnvelope<CustomerCompaniesSearchResponseData>;
 
 export const apiRoutes_customer_companies = {
+  // Contract source: explicit
   "customer_companies_employees_create": {
     method: "POST",
     path: "/customer-companies/employees/create",
@@ -215,6 +216,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employees_delete": {
     method: "DELETE",
     path: "/customer-companies/employees/delete/:employeeId",
@@ -231,6 +233,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employees_update": {
     method: "PUT",
     path: "/customer-companies/employees/update/:employeeId",
@@ -247,6 +250,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employees_get_by_id": {
     method: "GET",
     path: "/customer-companies/employees/byId/:employeeId",
@@ -263,6 +267,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employees_search": {
     method: "GET",
     path: "/customer-companies/employees/search",
@@ -279,6 +284,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeesSearchResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employee_assignments_create": {
     method: "POST",
     path: "/customer-companies/employee-assignments/create",
@@ -295,6 +301,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeeAssignmentsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employee_assignments_update": {
     method: "PUT",
     path: "/customer-companies/employee-assignments/update/:assignmentId",
@@ -311,6 +318,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeeAssignmentsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employee_assignments_by_company_id": {
     method: "GET",
     path: "/customer-companies/employee-assignments/byCompanyId/:companyId",
@@ -327,6 +335,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeeAssignmentsByCompanyIdResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_employee_assignments_by_employee_id": {
     method: "GET",
     path: "/customer-companies/employee-assignments/byEmployeeId/:employeeId",
@@ -343,6 +352,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesEmployeeAssignmentsByEmployeeIdResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_create": {
     method: "POST",
     path: "/customer-companies/create",
@@ -359,6 +369,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_delete": {
     method: "DELETE",
     path: "/customer-companies/delete/:companyId",
@@ -375,6 +386,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_update": {
     method: "PUT",
     path: "/customer-companies/update/:companyId",
@@ -391,6 +403,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_get_by_id": {
     method: "GET",
     path: "/customer-companies/byId/:companyId",
@@ -407,6 +420,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_get_full_by_id": {
     method: "GET",
     path: "/customer-companies/byId/:companyId/full",
@@ -423,6 +437,7 @@ export const apiRoutes_customer_companies = {
       responseData: CustomerCompaniesGetFullByIdResponseData;
     },
   },
+  // Contract source: explicit
   "customer_companies_search": {
     method: "GET",
     path: "/customer-companies/search",

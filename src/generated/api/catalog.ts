@@ -6,6 +6,7 @@ export type RouteGroup = { key: string; module: string };
 export const apiMountPrefixes = {
   base: [
   "/api-keys",
+  "/api/amp-mail",
   "/api/amp-proxy",
   "/api/entitlements",
   "/app-info",
@@ -41,10 +42,6 @@ export const apiMountPrefixes = {
 
 export const apiGroups = {
   base: [
-  {
-    "key": "api_keys",
-    "module": "./routes.api_keys"
-  },
   {
     "key": "app_info",
     "module": "./routes.app_info"
@@ -130,8 +127,8 @@ export const apiGroups = {
     "module": "./features/routes.admin"
   },
   {
-    "key": "api_keys",
-    "module": "./base/routes.api_keys"
+    "key": "amp_mail",
+    "module": "./base/routes.amp_mail"
   },
   {
     "key": "app_info",

@@ -539,6 +539,8 @@ export type InvoicesUpdateStatusParams = {
 export type InvoicesUpdateStatusQuery = undefined;
 export type InvoicesUpdateStatusBody = {
   status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  receivedAt?: string;
+  paymentMethod?: "cash" | "other";
 };
 export type InvoicesUpdateStatusResponseData = Invoice;
 export type InvoicesUpdateStatusResponse = import("../types").ApiEnvelope<InvoicesUpdateStatusResponseData>;
@@ -564,6 +566,7 @@ export type InvoicesRepairPdfResponseData = {
 export type InvoicesRepairPdfResponse = import("../types").ApiEnvelope<InvoicesRepairPdfResponseData>;
 
 export const apiRoutes_invoices = {
+  // Contract source: explicit
   "invoice_dunning_suggestions": {
     method: "GET",
     path: "/invoices/dunning/suggestions",
@@ -582,6 +585,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningSuggestionsResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_list_notices": {
     method: "GET",
     path: "/invoices/dunning/:invoiceId/notices",
@@ -600,6 +604,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningListNoticesResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_preview": {
     method: "POST",
     path: "/invoices/dunning/:invoiceId/preview",
@@ -618,6 +623,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_issue": {
     method: "POST",
     path: "/invoices/dunning/:invoiceId/issue",
@@ -636,6 +642,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningIssueResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_notice_pdf": {
     method: "GET",
     path: "/invoices/dunning/notices/:noticeId/pdf",
@@ -654,6 +661,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningNoticePdfResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_notice_download": {
     method: "GET",
     path: "/invoices/dunning/notices/:noticeId/download",
@@ -672,6 +680,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningNoticeDownloadResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_delete_notice": {
     method: "DELETE",
     path: "/invoices/dunning/:invoiceId/notices/:noticeId",
@@ -690,6 +699,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningDeleteNoticeResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_get_settings": {
     method: "GET",
     path: "/invoices/dunning/settings",
@@ -708,6 +718,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningGetSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "invoice_dunning_update_settings": {
     method: "PUT",
     path: "/invoices/dunning/settings",
@@ -726,6 +737,7 @@ export const apiRoutes_invoices = {
       responseData: InvoiceDunningUpdateSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_view_pdf": {
     method: "GET",
     path: "/invoices/:invoiceId/pdf",
@@ -744,6 +756,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesViewPdfResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_download_pdf": {
     method: "GET",
     path: "/invoices/:invoiceId/download",
@@ -762,6 +775,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesDownloadPdfResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_create_manual": {
     method: "POST",
     path: "/invoices/manual",
@@ -781,6 +795,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesCreateManualResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_search": {
     method: "GET",
     path: "/invoices",
@@ -799,6 +814,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesSearchResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_list_pending": {
     method: "GET",
     path: "/invoices/pending",
@@ -817,6 +833,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesListPendingResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_list_overdue": {
     method: "GET",
     path: "/invoices/overdue",
@@ -835,6 +852,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesListOverdueResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_analysis": {
     method: "GET",
     path: "/invoices/:invoiceId/analysis",
@@ -853,6 +871,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesAnalysisResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_credit_note_preview": {
     method: "POST",
     path: "/invoices/:invoiceId/credit-note/preview",
@@ -871,6 +890,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesCreditNotePreviewResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_credit_note_issue": {
     method: "POST",
     path: "/invoices/:invoiceId/credit-note/issue",
@@ -889,6 +909,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesCreditNoteIssueResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_status_policy": {
     method: "GET",
     path: "/invoices/:invoiceId/status-policy",
@@ -907,6 +928,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesStatusPolicyResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_payment_reconciliation": {
     method: "GET",
     path: "/invoices/:invoiceId/payment-reconciliation",
@@ -925,6 +947,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesPaymentReconciliationResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_get_by_id": {
     method: "GET",
     path: "/invoices/:invoiceId",
@@ -943,6 +966,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_update_status": {
     method: "PUT",
     path: "/invoices/:invoiceId/status",
@@ -961,6 +985,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesUpdateStatusResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_delete": {
     method: "DELETE",
     path: "/invoices/:invoiceId",
@@ -979,6 +1004,7 @@ export const apiRoutes_invoices = {
       responseData: InvoicesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_repair_pdf": {
     method: "POST",
     path: "/invoices/:invoiceId/repair-pdf",

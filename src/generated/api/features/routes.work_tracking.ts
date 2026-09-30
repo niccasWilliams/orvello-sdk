@@ -176,6 +176,7 @@ export type WorkTrackingBillResponseData = {
 export type WorkTrackingBillResponse = import("../types").ApiEnvelope<WorkTrackingBillResponseData>;
 
 export const apiRoutes_work_tracking = {
+  // Contract source: explicit
   "work_tracking_assignment_create": {
     method: "POST",
     path: "/apps/admin/work-tracking/assignments/create",
@@ -193,6 +194,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingAssignmentCreateResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_assignment_update": {
     method: "PUT",
     path: "/apps/admin/work-tracking/assignments/update/:workEntryAssignmentId",
@@ -210,6 +212,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingAssignmentUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_assignment_delete": {
     method: "DELETE",
     path: "/apps/admin/work-tracking/assignments/delete/:workEntryAssignmentId",
@@ -227,6 +230,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingAssignmentDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_get_my_role": {
     method: "GET",
     path: "/apps/admin/work-tracking/my-role",
@@ -244,6 +248,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingGetMyRoleResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_list": {
     method: "GET",
     path: "/apps/admin/work-tracking/list",
@@ -261,6 +266,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingListResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_get_by_id": {
     method: "GET",
     path: "/apps/admin/work-tracking/byId/:workEntryId",
@@ -278,6 +284,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_create": {
     method: "POST",
     path: "/apps/admin/work-tracking/create",
@@ -295,6 +302,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingCreateResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_update": {
     method: "PUT",
     path: "/apps/admin/work-tracking/update/:workEntryId",
@@ -312,6 +320,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_delete": {
     method: "DELETE",
     path: "/apps/admin/work-tracking/delete/:workEntryId",
@@ -329,6 +338,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_approve": {
     method: "POST",
     path: "/apps/admin/work-tracking/approve/:workEntryId",
@@ -346,6 +356,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingApproveResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_reject": {
     method: "POST",
     path: "/apps/admin/work-tracking/reject/:workEntryId",
@@ -363,6 +374,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingRejectResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_bill_preview": {
     method: "POST",
     path: "/apps/admin/work-tracking/bill/preview",
@@ -380,6 +392,7 @@ export const apiRoutes_work_tracking = {
       responseData: WorkTrackingBillPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "work_tracking_bill": {
     method: "POST",
     path: "/apps/admin/work-tracking/bill",

@@ -55,6 +55,7 @@ export type PermissionsAssignmentsListResponseData = RolePermission[];
 export type PermissionsAssignmentsListResponse = import("../types").ApiEnvelope<PermissionsAssignmentsListResponseData>;
 
 export const apiRoutes_permissions = {
+  // Contract source: explicit
   "permissions_create": {
     method: "POST",
     path: "/permissions/create",
@@ -73,6 +74,7 @@ export const apiRoutes_permissions = {
       responseData: PermissionsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "permissions_sync": {
     method: "POST",
     path: "/permissions/sync",
@@ -90,6 +92,7 @@ export const apiRoutes_permissions = {
       responseData: PermissionsSyncResponseData;
     },
   },
+  // Contract source: explicit
   "permissions_list": {
     method: "GET",
     path: "/permissions/getAll",
@@ -107,6 +110,7 @@ export const apiRoutes_permissions = {
       responseData: PermissionsListResponseData;
     },
   },
+  // Contract source: explicit
   "permissions_assign_to_role": {
     method: "POST",
     path: "/permissions/assign/:roleId/:permissionId",
@@ -124,6 +128,7 @@ export const apiRoutes_permissions = {
       responseData: PermissionsAssignToRoleResponseData;
     },
   },
+  // Contract source: explicit
   "permissions_unassign_from_role": {
     method: "DELETE",
     path: "/permissions/unassign/:roleId/:permissionId",
@@ -141,6 +146,7 @@ export const apiRoutes_permissions = {
       responseData: PermissionsUnassignFromRoleResponseData;
     },
   },
+  // Contract source: explicit
   "permissions_assignments_list": {
     method: "GET",
     path: "/permissions/getAssignments",

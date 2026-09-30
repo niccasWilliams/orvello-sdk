@@ -41,6 +41,7 @@ export type InternalUsersDeleteResponseData = { deleted: boolean; userId: number
 export type InternalUsersDeleteResponse = InternalUsersDeleteResponseData;
 
 export const apiRoutes_internal = {
+  // Contract source: explicit
   "internal_users_provision": {
     method: "POST",
     path: "/internal/users/provision",
@@ -59,6 +60,7 @@ export const apiRoutes_internal = {
       responseData: InternalUsersProvisionResponseData;
     },
   },
+  // Contract source: explicit
   "internal_users_sync": {
     method: "POST",
     path: "/internal/users/sync",
@@ -77,6 +79,7 @@ export const apiRoutes_internal = {
       responseData: InternalUsersSyncResponseData;
     },
   },
+  // Contract source: explicit
   "internal_users_delete": {
     method: "DELETE",
     path: "/internal/users/:externalUserId",

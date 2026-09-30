@@ -14,6 +14,7 @@ export type ExportsDatevBuchungsstapelResponseData = import("../types").Contract
 export type ExportsDatevBuchungsstapelResponse = import("../types").ApiEnvelope<ExportsDatevBuchungsstapelResponseData>;
 
 export const apiRoutes_exports = {
+  // Contract source: explicit
   "exports_datev_metadata": {
     method: "GET",
     path: "/exports/bookkeeping/datev/metadata",
@@ -31,6 +32,7 @@ export const apiRoutes_exports = {
       responseData: ExportsDatevMetadataResponseData;
     },
   },
+  // Contract source: explicit
   "exports_datev_buchungsstapel": {
     method: "GET",
     path: "/exports/bookkeeping/datev/buchungsstapel",

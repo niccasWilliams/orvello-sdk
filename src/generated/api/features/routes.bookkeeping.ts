@@ -154,6 +154,7 @@ export type BookkeepingRevenuesConfirmCashParams = {
 export type BookkeepingRevenuesConfirmCashQuery = undefined;
 export type BookkeepingRevenuesConfirmCashBody = {
   confirmedAt?: string;
+  receivedAt?: string;
 };
 export type BookkeepingRevenuesConfirmCashResponseData = BookkeepingRevenue;
 export type BookkeepingRevenuesConfirmCashResponse = import("../types").ApiEnvelope<BookkeepingRevenuesConfirmCashResponseData>;
@@ -1043,6 +1044,11 @@ export type BookkeepingReportsVatUstvaResponseData = {
   accountingMethod?: string;
   hasKleinunternehmerSegments?: boolean;
   kleinunternehmerNote?: string;
+  outputVatWarnings?: Array<{
+  code: "missing_receipt_date" | "correction_without_refund" | "not_convertible" | "foreign_currency";
+  invoiceId: number;
+  message: string;
+}>;
 };
 export type BookkeepingReportsVatUstvaResponse = import("../types").ApiEnvelope<BookkeepingReportsVatUstvaResponseData>;
 
@@ -2767,6 +2773,7 @@ export type BookkeepingIapPayoutsListResponseData = { items: IapPayoutImport[] }
 export type BookkeepingIapPayoutsListResponse = import("../types").ApiEnvelope<BookkeepingIapPayoutsListResponseData>;
 
 export const apiRoutes_bookkeeping = {
+  // Contract source: explicit
   "bookkeeping_revenues_search": {
     method: "GET",
     path: "/bookkeeping/revenues",
@@ -2785,6 +2792,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesSearchResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_get_by_id": {
     method: "GET",
     path: "/bookkeeping/revenues/:id",
@@ -2803,6 +2811,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_analyze_receipt": {
     method: "POST",
     path: "/bookkeeping/revenues/analyze-receipt",
@@ -2821,6 +2830,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesAnalyzeReceiptResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_create": {
     method: "POST",
     path: "/bookkeeping/revenues",
@@ -2840,6 +2850,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_update": {
     method: "PUT",
     path: "/bookkeeping/revenues/:id",
@@ -2858,6 +2869,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_upload_receipt": {
     method: "POST",
     path: "/bookkeeping/revenues/:id/upload-receipt",
@@ -2877,6 +2889,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesUploadReceiptResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_bulk_confirm": {
     method: "POST",
     path: "/bookkeeping/revenues/bulk-confirm",
@@ -2895,6 +2908,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesBulkConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_confirm": {
     method: "POST",
     path: "/bookkeeping/revenues/:id/confirm",
@@ -2913,6 +2927,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_confirm_cash": {
     method: "POST",
     path: "/bookkeeping/revenues/:id/confirm-cash",
@@ -2920,7 +2935,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahme als Barzahlung bestätigen",
-      description: "Markiert eine Einnahme als Bareinnahme mit einem expliziten Zahlungsdatum (confirmedAt). Die Einnahme wird mit diesem Datum in die EÜR aufgenommen (Zufluss-Prinzip § 4 Abs. 3 EStG). Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden.",
+      description: "Markiert eine Einnahme als Bareinnahme. receivedAt (JJJJ-MM-TT, nicht in der Zukunft) ist der Zuflusstag, an dem die Einnahme in der EÜR steht (§ 11 EStG); bei einer bezahlten Rechnung ohne zugeordnete Zahlungen folgt deren paidAt. Ohne receivedAt gilt das Einnahmedatum, bei Rechnungseinnahmen also das Rechnungsdatum. Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -2931,6 +2946,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesConfirmCashResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_revoke_cash_confirm": {
     method: "POST",
     path: "/bookkeeping/revenues/:id/revoke-cash-confirm",
@@ -2949,6 +2965,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesRevokeCashConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_delete": {
     method: "DELETE",
     path: "/bookkeeping/revenues/:id",
@@ -2967,6 +2984,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_create_external": {
     method: "POST",
     path: "/bookkeeping/revenues/external",
@@ -2986,6 +3004,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesCreateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_revenues_invoice_adjustment_external": {
     method: "POST",
     path: "/bookkeeping/revenues/external/invoice-adjustment",
@@ -3005,6 +3024,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingRevenuesInvoiceAdjustmentExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_search": {
     method: "GET",
     path: "/bookkeeping/expenses",
@@ -3023,6 +3043,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesSearchResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_get_by_id": {
     method: "GET",
     path: "/bookkeeping/expenses/:id",
@@ -3041,6 +3062,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_analyze_receipt": {
     method: "POST",
     path: "/bookkeeping/expenses/analyze-receipt",
@@ -3059,6 +3081,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesAnalyzeReceiptResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_create": {
     method: "POST",
     path: "/bookkeeping/expenses",
@@ -3078,6 +3101,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_update": {
     method: "PUT",
     path: "/bookkeeping/expenses/:id",
@@ -3097,6 +3121,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_upload_receipt": {
     method: "POST",
     path: "/bookkeeping/expenses/:id/upload-receipt",
@@ -3116,6 +3141,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesUploadReceiptResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_bulk_confirm": {
     method: "POST",
     path: "/bookkeeping/expenses/bulk-confirm",
@@ -3134,6 +3160,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesBulkConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_confirm": {
     method: "POST",
     path: "/bookkeeping/expenses/:id/confirm",
@@ -3152,6 +3179,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_confirm_cash": {
     method: "POST",
     path: "/bookkeeping/expenses/:id/confirm-cash",
@@ -3170,6 +3198,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesConfirmCashResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_revoke_cash_confirm": {
     method: "POST",
     path: "/bookkeeping/expenses/:id/revoke-cash-confirm",
@@ -3188,6 +3217,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesRevokeCashConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_mark_as_asset": {
     method: "POST",
     path: "/bookkeeping/expenses/:id/mark-as-asset",
@@ -3206,6 +3236,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesMarkAsAssetResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_delete": {
     method: "DELETE",
     path: "/bookkeeping/expenses/:id",
@@ -3224,6 +3255,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_expenses_create_external": {
     method: "POST",
     path: "/bookkeeping/expenses/external",
@@ -3243,6 +3275,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingExpensesCreateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_list_sammelposten_pools": {
     method: "GET",
     path: "/bookkeeping/assets/sammelposten-pools",
@@ -3260,6 +3293,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsListSammelpostenPoolsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_get_sammelposten_pool": {
     method: "GET",
     path: "/bookkeeping/assets/sammelposten-pools/:poolId",
@@ -3278,6 +3312,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsGetSammelpostenPoolResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_generate_depreciation": {
     method: "POST",
     path: "/bookkeeping/assets/depreciation/generate",
@@ -3296,6 +3331,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsGenerateDepreciationResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_get_depreciation_records": {
     method: "GET",
     path: "/bookkeeping/assets/depreciation/records",
@@ -3314,6 +3350,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsGetDepreciationRecordsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_finalize_depreciation": {
     method: "POST",
     path: "/bookkeeping/assets/depreciation/finalize",
@@ -3332,6 +3369,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsFinalizeDepreciationResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_list": {
     method: "GET",
     path: "/bookkeeping/assets/iab",
@@ -3349,6 +3387,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabListResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_create": {
     method: "POST",
     path: "/bookkeeping/assets/iab",
@@ -3367,6 +3406,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_get": {
     method: "GET",
     path: "/bookkeeping/assets/iab/:iabId",
@@ -3385,6 +3425,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabGetResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_dissolve": {
     method: "POST",
     path: "/bookkeeping/assets/iab/:iabId/dissolve",
@@ -3403,6 +3444,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabDissolveResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_reverse": {
     method: "POST",
     path: "/bookkeeping/assets/iab/:iabId/reverse",
@@ -3421,6 +3463,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabReverseResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_iab_delete": {
     method: "DELETE",
     path: "/bookkeeping/assets/iab/:iabId",
@@ -3439,6 +3482,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsIabDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_search": {
     method: "GET",
     path: "/bookkeeping/assets",
@@ -3457,6 +3501,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsSearchResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_create": {
     method: "POST",
     path: "/bookkeeping/assets",
@@ -3475,6 +3520,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_get_by_id": {
     method: "GET",
     path: "/bookkeeping/assets/:assetId",
@@ -3493,6 +3539,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_update": {
     method: "PUT",
     path: "/bookkeeping/assets/:assetId",
@@ -3511,6 +3558,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_dispose": {
     method: "POST",
     path: "/bookkeeping/assets/:assetId/dispose",
@@ -3529,6 +3577,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsDisposeResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_delete": {
     method: "DELETE",
     path: "/bookkeeping/assets/:assetId",
@@ -3547,6 +3596,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_apply_sonderafa": {
     method: "POST",
     path: "/bookkeeping/assets/:assetId/sonderafa",
@@ -3565,6 +3615,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsApplySonderafaResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_switch_to_linear": {
     method: "POST",
     path: "/bookkeeping/assets/:assetId/switch-to-linear",
@@ -3583,6 +3634,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsSwitchToLinearResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_add_cost_component": {
     method: "POST",
     path: "/bookkeeping/assets/:assetId/cost-components",
@@ -3601,6 +3653,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsAddCostComponentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_list_cost_components": {
     method: "GET",
     path: "/bookkeeping/assets/:assetId/cost-components",
@@ -3619,6 +3672,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsListCostComponentsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_assets_delete_cost_component": {
     method: "DELETE",
     path: "/bookkeeping/assets/:assetId/cost-components/:componentId",
@@ -3637,6 +3691,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAssetsDeleteCostComponentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_euer": {
     method: "GET",
     path: "/bookkeeping/reports/euer",
@@ -3655,6 +3710,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsEuerResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_summary": {
     method: "GET",
     path: "/bookkeeping/reports/summary",
@@ -3673,6 +3729,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsSummaryResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_monthly_trend": {
     method: "GET",
     path: "/bookkeeping/reports/monthly-trend",
@@ -3691,6 +3748,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsMonthlyTrendResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_asset_register": {
     method: "GET",
     path: "/bookkeeping/reports/assets",
@@ -3709,6 +3767,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsAssetRegisterResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_category_breakdown": {
     method: "GET",
     path: "/bookkeeping/reports/category-breakdown",
@@ -3727,6 +3786,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsCategoryBreakdownResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_vendor_breakdown": {
     method: "GET",
     path: "/bookkeeping/reports/vendor-breakdown",
@@ -3745,6 +3805,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsVendorBreakdownResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_vat_status": {
     method: "GET",
     path: "/bookkeeping/reports/vat/status",
@@ -3762,6 +3823,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsVatStatusResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_vat_periods": {
     method: "GET",
     path: "/bookkeeping/reports/vat/periods",
@@ -3779,6 +3841,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsVatPeriodsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_reports_vat_ustva": {
     method: "GET",
     path: "/bookkeeping/reports/vat/ustva",
@@ -3797,6 +3860,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingReportsVatUstvaResponseData;
     },
   },
+  // Contract source: explicit
   "payments_import_csv": {
     method: "POST",
     path: "/bookkeeping/payments/import/csv",
@@ -3816,6 +3880,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsImportCsvResponseData;
     },
   },
+  // Contract source: explicit
   "payments_import_csv_preview": {
     method: "POST",
     path: "/bookkeeping/payments/import/csv/preview",
@@ -3835,6 +3900,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsImportCsvPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "payments_list_csv_profiles": {
     method: "GET",
     path: "/bookkeeping/payments/import/csv/profiles",
@@ -3852,6 +3918,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsListCsvProfilesResponseData;
     },
   },
+  // Contract source: explicit
   "payments_download_csv_template": {
     method: "GET",
     path: "/bookkeeping/payments/import/csv/template/:profileKey",
@@ -3870,6 +3937,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsDownloadCsvTemplateResponseData;
     },
   },
+  // Contract source: explicit
   "payments_list_import_profiles": {
     method: "GET",
     path: "/bookkeeping/payments/import/profiles",
@@ -3888,6 +3956,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsListImportProfilesResponseData;
     },
   },
+  // Contract source: explicit
   "payments_create_import_profile": {
     method: "POST",
     path: "/bookkeeping/payments/import/profiles",
@@ -3906,6 +3975,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsCreateImportProfileResponseData;
     },
   },
+  // Contract source: explicit
   "payments_update_import_profile": {
     method: "PUT",
     path: "/bookkeeping/payments/import/profiles/:id",
@@ -3924,6 +3994,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsUpdateImportProfileResponseData;
     },
   },
+  // Contract source: explicit
   "payments_search": {
     method: "GET",
     path: "/bookkeeping/payments/search",
@@ -3942,6 +4013,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsSearchResponseData;
     },
   },
+  // Contract source: explicit
   "payments_create_manual": {
     method: "POST",
     path: "/bookkeeping/payments/manual",
@@ -3960,6 +4032,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsCreateManualResponseData;
     },
   },
+  // Contract source: explicit
   "payments_transfer_link": {
     method: "POST",
     path: "/bookkeeping/payments/transfer/link",
@@ -3978,6 +4051,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsTransferLinkResponseData;
     },
   },
+  // Contract source: explicit
   "payments_cashbook": {
     method: "GET",
     path: "/bookkeeping/payments/cashbook",
@@ -3996,6 +4070,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsCashbookResponseData;
     },
   },
+  // Contract source: explicit
   "payments_match_suggestions": {
     method: "GET",
     path: "/bookkeeping/payments/match/:paymentId/suggestions",
@@ -4014,6 +4089,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsMatchSuggestionsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_booking_payment_suggestions": {
     method: "GET",
     path: "/bookkeeping/payments/booking-match/:targetType/:targetId/payment-suggestions",
@@ -4032,6 +4108,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsBookingPaymentSuggestionsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_allocate": {
     method: "POST",
     path: "/bookkeeping/payments/allocate/:paymentId",
@@ -4050,6 +4127,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsAllocateResponseData;
     },
   },
+  // Contract source: explicit
   "payments_unallocate": {
     method: "DELETE",
     path: "/bookkeeping/payments/allocations/:paymentId/:allocationId",
@@ -4068,6 +4146,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsUnallocateResponseData;
     },
   },
+  // Contract source: explicit
   "payments_update": {
     method: "PUT",
     path: "/bookkeeping/payments/update/:paymentId",
@@ -4086,6 +4165,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "payments_reversal_preview": {
     method: "GET",
     path: "/bookkeeping/payments/:paymentId/reversal-preview",
@@ -4104,6 +4184,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsReversalPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "payments_reverse": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/reverse",
@@ -4122,6 +4203,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsReverseResponseData;
     },
   },
+  // Contract source: explicit
   "payments_transfer_unlink": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/transfer/unlink",
@@ -4140,6 +4222,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsTransferUnlinkResponseData;
     },
   },
+  // Contract source: explicit
   "payments_transfer_linkable": {
     method: "GET",
     path: "/bookkeeping/payments/:paymentId/transfer/linkable",
@@ -4158,6 +4241,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsTransferLinkableResponseData;
     },
   },
+  // Contract source: explicit
   "payments_allocation_reversal_preview": {
     method: "GET",
     path: "/bookkeeping/payments/:paymentId/allocations/:allocationId/reversal-preview",
@@ -4176,6 +4260,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsAllocationReversalPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "payments_allocation_reverse": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/allocations/:allocationId/reverse",
@@ -4194,6 +4279,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsAllocationReverseResponseData;
     },
   },
+  // Contract source: explicit
   "payments_delete": {
     method: "DELETE",
     path: "/bookkeeping/payments/:paymentId",
@@ -4212,6 +4298,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "payments_book": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/book",
@@ -4230,6 +4317,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsBookResponseData;
     },
   },
+  // Contract source: explicit
   "payments_record_fee": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/fee",
@@ -4248,6 +4336,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsRecordFeeResponseData;
     },
   },
+  // Contract source: explicit
   "payments_writeoff": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/writeoff",
@@ -4266,6 +4355,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsWriteoffResponseData;
     },
   },
+  // Contract source: explicit
   "payments_apply_discount": {
     method: "POST",
     path: "/bookkeeping/payments/:paymentId/discount",
@@ -4284,6 +4374,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsApplyDiscountResponseData;
     },
   },
+  // Contract source: explicit
   "payments_get_account_by_id": {
     method: "GET",
     path: "/bookkeeping/payments/accounts/bdId/:accountId",
@@ -4302,6 +4393,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsGetAccountByIdResponseData;
     },
   },
+  // Contract source: explicit
   "payments_list_accounts": {
     method: "GET",
     path: "/bookkeeping/payments/accounts",
@@ -4320,6 +4412,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsListAccountsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_create_account": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/create",
@@ -4338,6 +4431,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsCreateAccountResponseData;
     },
   },
+  // Contract source: explicit
   "payments_update_account": {
     method: "PUT",
     path: "/bookkeeping/payments/accounts/update/:accountId",
@@ -4356,6 +4450,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsUpdateAccountResponseData;
     },
   },
+  // Contract source: explicit
   "payments_archive_account": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/:accountId/archive",
@@ -4374,6 +4469,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsArchiveAccountResponseData;
     },
   },
+  // Contract source: explicit
   "payments_delete_account": {
     method: "DELETE",
     path: "/bookkeeping/payments/accounts/:accountId",
@@ -4392,6 +4488,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsDeleteAccountResponseData;
     },
   },
+  // Contract source: explicit
   "payments_paypal_sync": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/:accountId/paypal/sync",
@@ -4410,6 +4507,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsPaypalSyncResponseData;
     },
   },
+  // Contract source: explicit
   "payments_sumup_oauth_start": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/:accountId/sumup/oauth/start",
@@ -4428,6 +4526,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsSumupOauthStartResponseData;
     },
   },
+  // Contract source: explicit
   "payments_sumup_sync": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/:accountId/sumup/sync",
@@ -4446,6 +4545,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsSumupSyncResponseData;
     },
   },
+  // Contract source: explicit
   "payments_sumup_oauth_disconnect": {
     method: "DELETE",
     path: "/bookkeeping/payments/accounts/:accountId/sumup/oauth",
@@ -4464,6 +4564,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsSumupOauthDisconnectResponseData;
     },
   },
+  // Contract source: explicit
   "payments_paypal_webhook_register": {
     method: "POST",
     path: "/bookkeeping/payments/accounts/:accountId/paypal/webhook/register",
@@ -4482,6 +4583,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsPaypalWebhookRegisterResponseData;
     },
   },
+  // Contract source: explicit
   "payments_paypal_webhook_deregister": {
     method: "DELETE",
     path: "/bookkeeping/payments/accounts/:accountId/paypal/webhook",
@@ -4500,6 +4602,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsPaypalWebhookDeregisterResponseData;
     },
   },
+  // Contract source: explicit
   "payments_list_balance_snapshots": {
     method: "GET",
     path: "/bookkeeping/payments/snapshots",
@@ -4518,6 +4621,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsListBalanceSnapshotsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_create_balance_snapshot": {
     method: "POST",
     path: "/bookkeeping/payments/snapshots",
@@ -4536,6 +4640,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsCreateBalanceSnapshotResponseData;
     },
   },
+  // Contract source: explicit
   "payments_void_balance_snapshot": {
     method: "POST",
     path: "/bookkeeping/payments/snapshots/:snapshotId/void",
@@ -4554,6 +4659,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsVoidBalanceSnapshotResponseData;
     },
   },
+  // Contract source: explicit
   "payments_update_fee_vat_treatment": {
     method: "PUT",
     path: "/bookkeeping/payments/accounts/:accountId/fee-vat-treatment",
@@ -4572,6 +4678,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsUpdateFeeVatTreatmentResponseData;
     },
   },
+  // Contract source: explicit
   "payments_list_fee_proposals": {
     method: "GET",
     path: "/bookkeeping/payments/fee-proposals",
@@ -4590,6 +4697,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsListFeeProposalsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_confirm_fee_proposals": {
     method: "POST",
     path: "/bookkeeping/payments/fee-proposals/confirm",
@@ -4608,6 +4716,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsConfirmFeeProposalsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_reject_fee_proposals": {
     method: "POST",
     path: "/bookkeeping/payments/fee-proposals/reject",
@@ -4626,6 +4735,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsRejectFeeProposalsResponseData;
     },
   },
+  // Contract source: explicit
   "payments_paypal_webhook_receive": {
     method: "POST",
     path: "/bookkeeping/payments/public/paypal/webhook",
@@ -4643,6 +4753,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsPaypalWebhookReceiveResponseData;
     },
   },
+  // Contract source: explicit
   "payments_sumup_oauth_callback": {
     method: "GET",
     path: "/bookkeeping/payments/public/sumup/oauth/callback",
@@ -4661,6 +4772,7 @@ export const apiRoutes_bookkeeping = {
       responseData: PaymentsSumupOauthCallbackResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_payments_list_accounts_external": {
     method: "GET",
     path: "/bookkeeping/payments/external/accounts",
@@ -4679,6 +4791,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingPaymentsListAccountsExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_payments_create_manual_external": {
     method: "POST",
     path: "/bookkeeping/payments/external/manual",
@@ -4698,6 +4811,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingPaymentsCreateManualExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_payments_settle_invoice_external": {
     method: "POST",
     path: "/bookkeeping/payments/external/settle-invoice",
@@ -4717,6 +4831,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingPaymentsSettleInvoiceExternalResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_audit_logs": {
     method: "GET",
     path: "/bookkeeping/audit/logs",
@@ -4735,6 +4850,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingAuditLogsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_locks_get_state": {
     method: "GET",
     path: "/bookkeeping/locks/state",
@@ -4752,6 +4868,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingLocksGetStateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_locks_recommendation": {
     method: "GET",
     path: "/bookkeeping/locks/recommendation",
@@ -4770,6 +4887,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingLocksRecommendationResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_locks_overview": {
     method: "GET",
     path: "/bookkeeping/locks/overview",
@@ -4788,6 +4906,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingLocksOverviewResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_locks_set": {
     method: "POST",
     path: "/bookkeeping/locks/set",
@@ -4806,6 +4925,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingLocksSetResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_health": {
     method: "GET",
     path: "/bookkeeping/tax-params/health",
@@ -4823,6 +4943,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsHealthResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_sync": {
     method: "POST",
     path: "/bookkeeping/tax-params/sync",
@@ -4840,6 +4961,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsSyncResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_list": {
     method: "GET",
     path: "/bookkeeping/tax-params",
@@ -4858,6 +4980,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsListResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_history": {
     method: "GET",
     path: "/bookkeeping/tax-params/:key/history",
@@ -4876,6 +4999,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsHistoryResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_create": {
     method: "POST",
     path: "/bookkeeping/tax-params",
@@ -4894,6 +5018,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_tax_params_update": {
     method: "PATCH",
     path: "/bookkeeping/tax-params/:id",
@@ -4912,6 +5037,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingTaxParamsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_get_settings": {
     method: "GET",
     path: "/bookkeeping/income-tax/settings",
@@ -4929,6 +5055,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxGetSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_upsert_settings": {
     method: "POST",
     path: "/bookkeeping/income-tax/settings",
@@ -4947,6 +5074,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpsertSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_list_employment": {
     method: "GET",
     path: "/bookkeeping/income-tax/employment",
@@ -4965,6 +5093,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxListEmploymentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_get_employment": {
     method: "GET",
     path: "/bookkeeping/income-tax/employment/:id",
@@ -4983,6 +5112,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxGetEmploymentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_create_employment": {
     method: "POST",
     path: "/bookkeeping/income-tax/employment",
@@ -5001,6 +5131,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxCreateEmploymentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_update_employment": {
     method: "PUT",
     path: "/bookkeeping/income-tax/employment/:id",
@@ -5019,6 +5150,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpdateEmploymentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_delete_employment": {
     method: "DELETE",
     path: "/bookkeeping/income-tax/employment/:id",
@@ -5037,6 +5169,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxDeleteEmploymentResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_list_werbungskosten": {
     method: "GET",
     path: "/bookkeeping/income-tax/werbungskosten",
@@ -5055,6 +5188,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxListWerbungskostenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_create_werbungskosten": {
     method: "POST",
     path: "/bookkeeping/income-tax/werbungskosten",
@@ -5073,6 +5207,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxCreateWerbungskostenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_update_werbungskosten": {
     method: "PUT",
     path: "/bookkeeping/income-tax/werbungskosten/:id",
@@ -5091,6 +5226,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpdateWerbungskostenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_delete_werbungskosten": {
     method: "DELETE",
     path: "/bookkeeping/income-tax/werbungskosten/:id",
@@ -5109,6 +5245,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxDeleteWerbungskostenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_list_sonderausgaben": {
     method: "GET",
     path: "/bookkeeping/income-tax/sonderausgaben",
@@ -5127,6 +5264,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxListSonderausgabenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_create_sonderausgaben": {
     method: "POST",
     path: "/bookkeeping/income-tax/sonderausgaben",
@@ -5145,6 +5283,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxCreateSonderausgabenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_update_sonderausgaben": {
     method: "PUT",
     path: "/bookkeeping/income-tax/sonderausgaben/:id",
@@ -5163,6 +5302,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpdateSonderausgabenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_delete_sonderausgaben": {
     method: "DELETE",
     path: "/bookkeeping/income-tax/sonderausgaben/:id",
@@ -5181,6 +5321,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxDeleteSonderausgabenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_list_vorsorge": {
     method: "GET",
     path: "/bookkeeping/income-tax/vorsorge",
@@ -5199,6 +5340,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxListVorsorgeResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_create_vorsorge": {
     method: "POST",
     path: "/bookkeeping/income-tax/vorsorge",
@@ -5217,6 +5359,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxCreateVorsorgeResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_update_vorsorge": {
     method: "PUT",
     path: "/bookkeeping/income-tax/vorsorge/:id",
@@ -5235,6 +5378,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpdateVorsorgeResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_delete_vorsorge": {
     method: "DELETE",
     path: "/bookkeeping/income-tax/vorsorge/:id",
@@ -5253,6 +5397,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxDeleteVorsorgeResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_list_steuerminderungen": {
     method: "GET",
     path: "/bookkeeping/income-tax/steuerminderungen",
@@ -5271,6 +5416,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxListSteuerminderungenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_create_steuerminderungen": {
     method: "POST",
     path: "/bookkeeping/income-tax/steuerminderungen",
@@ -5289,6 +5435,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxCreateSteuerminderungenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_update_steuerminderungen": {
     method: "PUT",
     path: "/bookkeeping/income-tax/steuerminderungen/:id",
@@ -5307,6 +5454,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxUpdateSteuerminderungenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_delete_steuerminderungen": {
     method: "DELETE",
     path: "/bookkeeping/income-tax/steuerminderungen/:id",
@@ -5325,6 +5473,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxDeleteSteuerminderungenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_get_estimate": {
     method: "GET",
     path: "/bookkeeping/income-tax/estimate",
@@ -5343,6 +5492,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxGetEstimateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_get_vorauszahlungen": {
     method: "GET",
     path: "/bookkeeping/income-tax/vorauszahlungen",
@@ -5361,6 +5511,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxGetVorauszahlungenResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_income_tax_get_summary": {
     method: "GET",
     path: "/bookkeeping/income-tax/summary",
@@ -5379,6 +5530,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIncomeTaxGetSummaryResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_dashboard": {
     method: "GET",
     path: "/bookkeeping/reconciliation/dashboard",
@@ -5397,6 +5549,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationDashboardResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_queue": {
     method: "GET",
     path: "/bookkeeping/reconciliation/queue",
@@ -5415,6 +5568,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationQueueResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_batch_suggestions": {
     method: "POST",
     path: "/bookkeeping/reconciliation/batch-suggestions",
@@ -5433,6 +5587,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationBatchSuggestionsResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_auto_match_preview": {
     method: "GET",
     path: "/bookkeeping/reconciliation/auto-match/preview",
@@ -5451,6 +5606,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationAutoMatchPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_auto_match_confirm": {
     method: "POST",
     path: "/bookkeeping/reconciliation/auto-match/confirm",
@@ -5469,6 +5625,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationAutoMatchConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_confirm_provider_payout": {
     method: "POST",
     path: "/bookkeeping/reconciliation/confirm-provider-payout",
@@ -5487,6 +5644,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationConfirmProviderPayoutResponseData;
     },
   },
+  // Contract source: explicit
   "reconciliation_groups": {
     method: "GET",
     path: "/bookkeeping/reconciliation/groups",
@@ -5505,6 +5663,7 @@ export const apiRoutes_bookkeeping = {
       responseData: ReconciliationGroupsResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_search": {
     method: "GET",
     path: "/bookkeeping/capital-movements",
@@ -5523,6 +5682,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsSearchResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_kapitalkonto": {
     method: "GET",
     path: "/bookkeeping/capital-movements/kapitalkonto",
@@ -5541,6 +5701,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsKapitalkontoResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_get_by_id": {
     method: "GET",
     path: "/bookkeeping/capital-movements/:id",
@@ -5559,6 +5720,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_create": {
     method: "POST",
     path: "/bookkeeping/capital-movements",
@@ -5577,6 +5739,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_update": {
     method: "PATCH",
     path: "/bookkeeping/capital-movements/:id",
@@ -5595,6 +5758,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_confirm": {
     method: "POST",
     path: "/bookkeeping/capital-movements/:id/confirm",
@@ -5613,6 +5777,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_cash_confirm": {
     method: "POST",
     path: "/bookkeeping/capital-movements/:id/cash-confirm",
@@ -5631,6 +5796,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsCashConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_revoke_cash_confirm": {
     method: "POST",
     path: "/bookkeeping/capital-movements/:id/revoke-cash-confirm",
@@ -5649,6 +5815,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsRevokeCashConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_reverse": {
     method: "POST",
     path: "/bookkeeping/capital-movements/:id/reverse",
@@ -5667,6 +5834,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsReverseResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_capital_movements_delete": {
     method: "DELETE",
     path: "/bookkeeping/capital-movements/:id",
@@ -5685,6 +5853,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingCapitalMovementsDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_iap_payouts_import": {
     method: "POST",
     path: "/bookkeeping/iap-payouts/import",
@@ -5704,6 +5873,7 @@ export const apiRoutes_bookkeeping = {
       responseData: BookkeepingIapPayoutsImportResponseData;
     },
   },
+  // Contract source: explicit
   "bookkeeping_iap_payouts_list": {
     method: "GET",
     path: "/bookkeeping/iap-payouts",

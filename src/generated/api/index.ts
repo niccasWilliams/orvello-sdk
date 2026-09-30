@@ -4,7 +4,7 @@
 export * from "./types";
 export * from "./catalog";
 export * from "./features/routes.admin";
-export * from "./base/routes.api_keys";
+export * from "./base/routes.amp_mail";
 export * from "./base/routes.app_info";
 export * from "./base/routes.auth";
 export * from "./features/routes.bookkeeping";
@@ -36,7 +36,7 @@ export * from "./features/routes.work_tracking";
 
 import type { ApiEnvelope } from "./types";
 import { apiRoutes_admin } from "./features/routes.admin";
-import { apiRoutes_api_keys } from "./base/routes.api_keys";
+import { apiRoutes_amp_mail } from "./base/routes.amp_mail";
 import { apiRoutes_app_info } from "./base/routes.app_info";
 import { apiRoutes_auth } from "./base/routes.auth";
 import { apiRoutes_bookkeeping } from "./features/routes.bookkeeping";
@@ -68,7 +68,7 @@ import { apiRoutes_work_tracking } from "./features/routes.work_tracking";
 
 export type ApiRoutes =
   typeof apiRoutes_admin
-  & typeof apiRoutes_api_keys
+  & typeof apiRoutes_amp_mail
   & typeof apiRoutes_app_info
   & typeof apiRoutes_auth
   & typeof apiRoutes_bookkeeping
@@ -101,7 +101,7 @@ export type ApiRoutes =
 
 export const apiRoutes: ApiRoutes = {
   ...apiRoutes_admin,
-  ...apiRoutes_api_keys,
+  ...apiRoutes_amp_mail,
   ...apiRoutes_app_info,
   ...apiRoutes_auth,
   ...apiRoutes_bookkeeping,

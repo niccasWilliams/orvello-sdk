@@ -48,6 +48,21 @@ export type AuthMeBody = undefined;
 export type AuthMeResponseData = DirectAuthMe;
 export type AuthMeResponse = import("../types").ApiEnvelope<AuthMeResponseData>;
 
+export type AuthMeProfileUpdateParams = undefined;
+export type AuthMeProfileUpdateQuery = undefined;
+export type AuthMeProfileUpdateBody = {
+  name?: string;
+  avatarStyle?: {
+  seed?: string;
+  hue?: number;
+  shape?: "round" | "organic" | "boxy" | "nub" | "cloud" | "sun" | "capsule" | "triangle" | "hexagon" | "droplet";
+  expression?: "idle" | "happy" | "sad" | "mad" | "surprised" | "wink" | "sleepy" | "smug" | "unsure" | "scared" | "love" | "shy" | "sick" | "thinking";
+  background?: "none" | "squircle" | "circle";
+} | null;
+};
+export type AuthMeProfileUpdateResponseData = DirectAuthMe;
+export type AuthMeProfileUpdateResponse = import("../types").ApiEnvelope<AuthMeProfileUpdateResponseData>;
+
 export type AuthPushTokenUpsertParams = undefined;
 export type AuthPushTokenUpsertQuery = undefined;
 export type AuthPushTokenUpsertBody = {
@@ -84,6 +99,7 @@ export type AuthVerifyEmailLandingResponseData = Blob;
 export type AuthVerifyEmailLandingResponse = Blob;
 
 export const apiRoutes_auth = {
+  // Contract source: explicit
   "auth_register": {
     method: "POST",
     path: "/auth/register",
@@ -102,6 +118,7 @@ export const apiRoutes_auth = {
       responseData: AuthRegisterResponseData;
     },
   },
+  // Contract source: explicit
   "auth_login": {
     method: "POST",
     path: "/auth/login",
@@ -120,6 +137,7 @@ export const apiRoutes_auth = {
       responseData: AuthLoginResponseData;
     },
   },
+  // Contract source: explicit
   "auth_refresh": {
     method: "POST",
     path: "/auth/refresh",
@@ -138,6 +156,7 @@ export const apiRoutes_auth = {
       responseData: AuthRefreshResponseData;
     },
   },
+  // Contract source: explicit
   "auth_logout": {
     method: "POST",
     path: "/auth/logout",
@@ -156,6 +175,7 @@ export const apiRoutes_auth = {
       responseData: AuthLogoutResponseData;
     },
   },
+  // Contract source: explicit
   "auth_me": {
     method: "GET",
     path: "/auth/me",
@@ -173,6 +193,26 @@ export const apiRoutes_auth = {
       responseData: AuthMeResponseData;
     },
   },
+  // Contract source: explicit
+  "auth_me_profile_update": {
+    method: "PATCH",
+    path: "/auth/me/profile",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Update the current user's own profile (name, avatar)",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthMeProfileUpdateParams;
+      query: AuthMeProfileUpdateQuery;
+      body: AuthMeProfileUpdateBody;
+      response: AuthMeProfileUpdateResponse;
+      responseData: AuthMeProfileUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
   "auth_push_token_upsert": {
     method: "POST",
     path: "/auth/push-token",
@@ -191,6 +231,7 @@ export const apiRoutes_auth = {
       responseData: AuthPushTokenUpsertResponseData;
     },
   },
+  // Contract source: explicit
   "auth_verify_email_request": {
     method: "POST",
     path: "/auth/verify-email/request",
@@ -209,6 +250,7 @@ export const apiRoutes_auth = {
       responseData: AuthVerifyEmailRequestResponseData;
     },
   },
+  // Contract source: explicit
   "auth_verify_email_confirm": {
     method: "POST",
     path: "/auth/verify-email/confirm",
@@ -227,6 +269,7 @@ export const apiRoutes_auth = {
       responseData: AuthVerifyEmailConfirmResponseData;
     },
   },
+  // Contract source: explicit
   "auth_verify_email_landing": {
     method: "GET",
     path: "/auth/verify-email",

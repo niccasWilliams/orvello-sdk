@@ -54,6 +54,7 @@ export type ManagingCompaniesLogosDeleteResponseData = null;
 export type ManagingCompaniesLogosDeleteResponse = import("../types").ApiEnvelope<ManagingCompaniesLogosDeleteResponseData>;
 
 export const apiRoutes_managing_company_logos = {
+  // Contract source: explicit
   "managing_companies_logos_settings": {
     method: "GET",
     path: "/managing-companies/logos/settings",
@@ -72,6 +73,7 @@ export const apiRoutes_managing_company_logos = {
       responseData: ManagingCompaniesLogosSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_logos_urls": {
     method: "GET",
     path: "/managing-companies/logos/urls",
@@ -90,6 +92,7 @@ export const apiRoutes_managing_company_logos = {
       responseData: ManagingCompaniesLogosUrlsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_logos_set_mode": {
     method: "PUT",
     path: "/managing-companies/logos/mode",
@@ -108,6 +111,7 @@ export const apiRoutes_managing_company_logos = {
       responseData: ManagingCompaniesLogosSetModeResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_logos_upload": {
     method: "POST",
     path: "/managing-companies/logos/upload/:mode",
@@ -127,6 +131,7 @@ export const apiRoutes_managing_company_logos = {
       responseData: ManagingCompaniesLogosUploadResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_logos_delete": {
     method: "DELETE",
     path: "/managing-companies/logos/delete/:mode",

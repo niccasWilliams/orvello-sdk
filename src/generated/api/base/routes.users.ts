@@ -29,6 +29,13 @@ export type UsersUpdateExternalQuery = undefined;
 export type UsersUpdateExternalBody = {
   firstName?: string;
   lastName?: string;
+  avatarStyle?: {
+  seed?: string;
+  hue?: number;
+  shape?: "round" | "organic" | "boxy" | "nub" | "cloud" | "sun" | "capsule" | "triangle" | "hexagon" | "droplet";
+  expression?: "idle" | "happy" | "sad" | "mad" | "surprised" | "wink" | "sleepy" | "smug" | "unsure" | "scared" | "love" | "shy" | "sick" | "thinking";
+  background?: "none" | "squircle" | "circle";
+} | null;
 };
 export type UsersUpdateExternalResponseData = NodeBillUser;
 export type UsersUpdateExternalResponse = import("../types").ApiEnvelope<UsersUpdateExternalResponseData>;
@@ -86,6 +93,7 @@ export type UsersSearchResponseData = PaginatedResult<NodeBillUser>;
 export type UsersSearchResponse = import("../types").ApiEnvelope<UsersSearchResponseData>;
 
 export const apiRoutes_users = {
+  // Contract source: explicit
   "users_create": {
     method: "POST",
     path: "/users/create",
@@ -104,6 +112,7 @@ export const apiRoutes_users = {
       responseData: UsersCreateResponseData;
     },
   },
+  // Contract source: explicit
   "users_delete_external": {
     method: "DELETE",
     path: "/users/delete/external/:frontendUserId",
@@ -121,6 +130,7 @@ export const apiRoutes_users = {
       responseData: UsersDeleteExternalResponseData;
     },
   },
+  // Contract source: explicit
   "users_update_external": {
     method: "PUT",
     path: "/users/update/external/:frontendUserId",
@@ -139,6 +149,7 @@ export const apiRoutes_users = {
       responseData: UsersUpdateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "users_delete": {
     method: "DELETE",
     path: "/users/delete/:userId",
@@ -156,6 +167,7 @@ export const apiRoutes_users = {
       responseData: UsersDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "users_list": {
     method: "GET",
     path: "/users/getAll",
@@ -173,6 +185,7 @@ export const apiRoutes_users = {
       responseData: UsersListResponseData;
     },
   },
+  // Contract source: explicit
   "users_get_by_email": {
     method: "GET",
     path: "/users/getByEmail/:email",
@@ -190,6 +203,7 @@ export const apiRoutes_users = {
       responseData: UsersGetByEmailResponseData;
     },
   },
+  // Contract source: explicit
   "users_get_by_external_user_id": {
     method: "GET",
     path: "/users/getByExternalUserId/:externalUserId",
@@ -207,6 +221,7 @@ export const apiRoutes_users = {
       responseData: UsersGetByExternalUserIdResponseData;
     },
   },
+  // Contract source: explicit
   "users_get_by_id": {
     method: "GET",
     path: "/users/getById/:userId",
@@ -225,6 +240,7 @@ export const apiRoutes_users = {
       responseData: UsersGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "users_search": {
     method: "GET",
     path: "/users/search",

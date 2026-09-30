@@ -23,6 +23,7 @@ export type SettingsUpdateResponseData = AppSettings;
 export type SettingsUpdateResponse = import("../types").ApiEnvelope<SettingsUpdateResponseData>;
 
 export const apiRoutes_settings = {
+  // Contract source: explicit
   "settings_list": {
     method: "GET",
     path: "/settings/getAll",
@@ -40,6 +41,7 @@ export const apiRoutes_settings = {
       responseData: SettingsListResponseData;
     },
   },
+  // Contract source: explicit
   "settings_update": {
     method: "PUT",
     path: "/settings/update/:settingId/:key",

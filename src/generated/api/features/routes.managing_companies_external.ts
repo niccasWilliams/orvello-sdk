@@ -43,6 +43,7 @@ export type ManagingCompaniesCurrentExternalResponseData = {
 export type ManagingCompaniesCurrentExternalResponse = import("../types").ApiEnvelope<ManagingCompaniesCurrentExternalResponseData>;
 
 export const apiRoutes_managing_companies_external = {
+  // Contract source: explicit
   "managing_companies_current_external": {
     method: "GET",
     path: "/managing-companies/external/current",

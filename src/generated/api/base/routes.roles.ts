@@ -85,6 +85,7 @@ export type RoleAssignmentsGetUserAssignmentsResponseData = RoleAssignment[];
 export type RoleAssignmentsGetUserAssignmentsResponse = import("../types").ApiEnvelope<RoleAssignmentsGetUserAssignmentsResponseData>;
 
 export const apiRoutes_roles = {
+  // Contract source: explicit
   "roles_create": {
     method: "POST",
     path: "/roles/create",
@@ -103,6 +104,7 @@ export const apiRoutes_roles = {
       responseData: RolesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "roles_delete": {
     method: "DELETE",
     path: "/roles/delete/:roleId",
@@ -120,6 +122,7 @@ export const apiRoutes_roles = {
       responseData: RolesDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "roles_update": {
     method: "PUT",
     path: "/roles/update/:roleId",
@@ -138,6 +141,7 @@ export const apiRoutes_roles = {
       responseData: RolesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "roles_get_by_id": {
     method: "GET",
     path: "/roles/getById/:roleId",
@@ -155,6 +159,7 @@ export const apiRoutes_roles = {
       responseData: RolesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "roles_list": {
     method: "GET",
     path: "/roles/getAll",
@@ -172,6 +177,7 @@ export const apiRoutes_roles = {
       responseData: RolesListResponseData;
     },
   },
+  // Contract source: explicit
   "role_assignments_create": {
     method: "POST",
     path: "/role-assignments/create/:userId/:roleId",
@@ -190,6 +196,7 @@ export const apiRoutes_roles = {
       responseData: RoleAssignmentsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "role_assignments_revoke": {
     method: "DELETE",
     path: "/role-assignments/delete/:userId/:roleId",
@@ -207,6 +214,7 @@ export const apiRoutes_roles = {
       responseData: RoleAssignmentsRevokeResponseData;
     },
   },
+  // Contract source: explicit
   "role_assignments_list": {
     method: "GET",
     path: "/role-assignments/getAll",
@@ -224,6 +232,7 @@ export const apiRoutes_roles = {
       responseData: RoleAssignmentsListResponseData;
     },
   },
+  // Contract source: explicit
   "role_assignments_get_user_assignments": {
     method: "GET",
     path: "/role-assignments/getUserAssignments/:userId",

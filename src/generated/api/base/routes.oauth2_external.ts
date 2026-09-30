@@ -297,6 +297,7 @@ export type Oauth2ExternalClientsDeleteResponseData = null;
 export type Oauth2ExternalClientsDeleteResponse = import("../types").ApiEnvelope<Oauth2ExternalClientsDeleteResponseData>;
 
 export const apiRoutes_oauth2_external = {
+  // Contract source: explicit
   "oauth2_external_clients_list": {
     method: "GET",
     path: "/oauth/clients/external/list",
@@ -313,6 +314,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsListResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_get": {
     method: "GET",
     path: "/oauth/clients/external/:idOrClientId",
@@ -329,6 +331,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsGetResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_create": {
     method: "POST",
     path: "/oauth/clients/external",
@@ -345,6 +348,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_update": {
     method: "PUT",
     path: "/oauth/clients/external/:idOrClientId",
@@ -361,6 +365,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_rotate": {
     method: "POST",
     path: "/oauth/clients/external/:idOrClientId/rotate",
@@ -377,6 +382,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsRotateResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_retire": {
     method: "POST",
     path: "/oauth/clients/external/:idOrClientId/retire",
@@ -393,6 +399,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsRetireResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_rollback": {
     method: "POST",
     path: "/oauth/clients/external/:idOrClientId/rollback",
@@ -409,6 +416,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsRollbackResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_revoke": {
     method: "POST",
     path: "/oauth/clients/external/:idOrClientId/revoke",
@@ -425,6 +433,7 @@ export const apiRoutes_oauth2_external = {
       responseData: Oauth2ExternalClientsRevokeResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_external_clients_delete": {
     method: "DELETE",
     path: "/oauth/clients/external/:idOrClientId",

@@ -426,6 +426,26 @@ describe("OrvelloClient - PDF & Binary Handling", () => {
     const blob = await client.invoices.downloadPdfFromUrl("/invoices/50/pdf");
     expect(blob).toBeInstanceOf(Blob);
   });
+
+  it("sends the credential with a PDF URL on the service, never to a foreign host", async () => {
+    const seen: Array<{ url: string; auth: string | null }> = [];
+    const mockFetch = vi.fn(async (url: string, init?: RequestInit) => {
+      seen.push({ url, auth: new Headers(init?.headers).get("Authorization") });
+      return new Response(new Uint8Array([0x25]), { status: 200, headers: { "content-type": "application/pdf" } });
+    });
+
+    const client = createOrvelloClient({
+      baseUrl: "https://bill.example.com",
+      auth: "tok",
+      fetch: mockFetch as unknown as typeof fetch,
+    });
+
+    await client.invoices.downloadPdfFromUrl("/invoices/external/50/pdf");
+    await client.invoices.downloadPdfFromUrl("https://storage.example.net/signed/50.pdf?sig=x");
+
+    expect(seen[0]).toEqual({ url: "https://bill.example.com/invoices/external/50/pdf", auth: "Bearer tok" });
+    expect(seen[1]).toEqual({ url: "https://storage.example.net/signed/50.pdf?sig=x", auth: null });
+  });
 });
 
 describe("OrvelloClient - Domain Modules & Endpoints", () => {

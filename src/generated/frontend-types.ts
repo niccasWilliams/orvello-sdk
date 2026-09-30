@@ -96,7 +96,7 @@ export type NodeBillUser = {
   deletionRequestedAt: Date | null;
   /**
    * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
-   * User?"). Nicht öffentlich, nicht in Audit-Exports.
+   * NodeBillUser?"). Nicht öffentlich, nicht in Audit-Exports.
    */
   deletionReason: string | null;
   /**
@@ -105,6 +105,12 @@ export type NodeBillUser = {
    * bekommen aber keine Mails oder Benachrichtigungen und koennen sich nicht per Passwort anmelden.
    */
   isSystemAccount: boolean;
+  /**
+   * Gewaehlter Avatar (blobatar), Pruefung in routes/auth/users/user/avatar-style.ts. Im
+   * williams-Modus spiegelt das Frontend seinen Wert hierher, im direct-Modus setzt ihn der
+   * Nutzer selbst ueber PATCH /auth/me/profile. null = nie gewaehlt.
+   */
+  avatarStyle: AvatarStyle | null;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -132,7 +138,7 @@ export type UserInsert = {
   deletionRequestedAt?: Date | null;
   /**
    * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
-   * User?"). Nicht öffentlich, nicht in Audit-Exports.
+   * NodeBillUser?"). Nicht öffentlich, nicht in Audit-Exports.
    */
   deletionReason?: string | null;
   /**
@@ -141,11 +147,25 @@ export type UserInsert = {
    * bekommen aber keine Mails oder Benachrichtigungen und koennen sich nicht per Passwort anmelden.
    */
   isSystemAccount?: boolean;
+  /**
+   * Gewaehlter Avatar (blobatar), Pruefung in routes/auth/users/user/avatar-style.ts. Im
+   * williams-Modus spiegelt das Frontend seinen Wert hierher, im direct-Modus setzt ihn der
+   * Nutzer selbst ueber PATCH /auth/me/profile. null = nie gewaehlt.
+   */
+  avatarStyle?: AvatarStyle | null;
   createdAt: Date;
   updatedAt?: Date | null;
 };
 
 export type NodeBillUserId = number;
+
+export type UserFrontendIdentity = {
+  id: number;
+  frontendAppId: string;
+  externalUserId: string;
+  userId: number;
+  createdAt: Date;
+};
 
 export type UserSyncAuditRow = {
   id: number;
@@ -227,12 +247,28 @@ export type AuthEmailVerificationTokenInsert = {
   createdAt: Date;
 };
 
+export type AvatarShape = | "round" | "organic" | "boxy" | "nub" | "cloud" | "sun" | "capsule" | "triangle" | "hexagon" | "droplet";
+
+export type AvatarExpression = | "idle" | "happy" | "sad" | "mad" | "surprised" | "wink" | "sleepy" | "smug" | "unsure" | "scared"
+  | "love" | "shy" | "sick" | "thinking";
+
+export type AvatarBackground = "none" | "squircle" | "circle";
+
+export type AvatarStyle = {
+  seed?: string;
+  hue?: number;
+  shape?: AvatarShape;
+  expression?: AvatarExpression;
+  background?: AvatarBackground;
+};
+
 export type DirectAuthUser = {
   id: number;
   email: string | null;
   name: string | null;
   firstName: string | null;
   lastName: string | null;
+  avatarStyle: AvatarStyle | null;
   emailVerified: boolean;
   emailVerifiedAt: Date | null;
   createdAt: Date;
@@ -336,7 +372,7 @@ export type Webhook = {
   originUrl: string | null;
   createdAt: Date;
   processedAt: Date | null;
-  /** User-Agent Header */
+  /** NodeBillUser-Agent Header */
   userAgent: string | null;
   /** Webhook signature für Verifizierung */
   signature: string | null;
@@ -552,7 +588,7 @@ export type WorkflowQueue = {
   createdBy: WorkflowCreatedBy;
   /**
    * Abort & Cleanup System
-   * User requested abort
+   * NodeBillUser requested abort
    */
   abortRequested: boolean;
   /** Cleanup function identifier */
@@ -973,7 +1009,7 @@ export type Invoice = {
   vatTreatment: VatTreatment | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
   vatLegalRef: string | null;
-  /** User-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
+  /** NodeBillUser-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
   vatNote: string | null;
   /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom: any | null;
@@ -1077,7 +1113,7 @@ export type InvoiceInsert = {
   vatTreatment?: VatTreatment | null;
   /** "UStG §19", "UStG §4 Nr. 1", etc. */
   vatLegalRef?: string | null;
-  /** User-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
+  /** NodeBillUser-facing note (e.g., "Gemäß §19 UStG wird keine Umsatzsteuer berechnet") */
   vatNote?: string | null;
   /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom?: any | null;
@@ -2178,6 +2214,13 @@ export type PaymentAccount = {
   /** ISO-date for incremental sync start */
   paypalSyncCursor: string | null;
   /**
+   * PayPal hat den Zugang abgelehnt (401 invalid_client oder fehlende Berechtigung).
+   * Der Stundenjob laesst das Konto dann aus, bis neue Zugangsdaten gespeichert sind
+   * oder ein manueller Abruf wieder klappt. Sonst meldet er denselben Zustand stuendlich.
+   */
+  paypalReauthRequired: boolean;
+  paypalLastError: string | null;
+  /**
    * opening balance — Anfangssaldo ab Tracking-Start (Enterprise-Buchhaltung)
    * numeric string, e.g. "12345.67"
    */
@@ -2229,6 +2272,13 @@ export type PaymentAccountInsert = {
   paypalLastSyncAt?: Date | null;
   /** ISO-date for incremental sync start */
   paypalSyncCursor?: string | null;
+  /**
+   * PayPal hat den Zugang abgelehnt (401 invalid_client oder fehlende Berechtigung).
+   * Der Stundenjob laesst das Konto dann aus, bis neue Zugangsdaten gespeichert sind
+   * oder ein manueller Abruf wieder klappt. Sonst meldet er denselben Zustand stuendlich.
+   */
+  paypalReauthRequired?: boolean;
+  paypalLastError?: string | null;
   /**
    * opening balance — Anfangssaldo ab Tracking-Start (Enterprise-Buchhaltung)
    * numeric string, e.g. "12345.67"
@@ -4335,7 +4385,7 @@ export type OAuth2Client = {
   validTo: Date | null;
   /**
    * Audit
-   * User ID who created this client
+   * NodeBillUser ID who created this client
    */
   createdBy: number;
   createdAt: Date;
@@ -4422,7 +4472,7 @@ export type OAuth2ClientInsert = {
   validTo?: Date | null;
   /**
    * Audit
-   * User ID who created this client
+   * NodeBillUser ID who created this client
    */
   createdBy: number;
   createdAt?: Date;

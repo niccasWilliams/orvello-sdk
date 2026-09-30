@@ -99,6 +99,7 @@ export type DocumentsSetLockResponseData = Document;
 export type DocumentsSetLockResponse = import("../types").ApiEnvelope<DocumentsSetLockResponseData>;
 
 export const apiRoutes_documents = {
+  // Contract source: explicit
   "documents_get_by_id": {
     method: "GET",
     path: "/documents/admin/byId/:documentId",
@@ -115,6 +116,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "documents_get_full_by_id": {
     method: "GET",
     path: "/documents/admin/byId/:documentId/full",
@@ -131,6 +133,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsGetFullByIdResponseData;
     },
   },
+  // Contract source: explicit
   "documents_search": {
     method: "GET",
     path: "/documents/admin/search",
@@ -147,6 +150,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsSearchResponseData;
     },
   },
+  // Contract source: explicit
   "documents_download_url": {
     method: "GET",
     path: "/documents/admin/byId/:documentId/download-url",
@@ -163,6 +167,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsDownloadUrlResponseData;
     },
   },
+  // Contract source: explicit
   "documents_stream": {
     method: "GET",
     path: "/documents/admin/stream/:documentId",
@@ -179,6 +184,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsStreamResponseData;
     },
   },
+  // Contract source: explicit
   "documents_create": {
     method: "POST",
     path: "/documents/admin/create",
@@ -196,6 +202,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "documents_assign": {
     method: "POST",
     path: "/documents/admin/assign",
@@ -212,6 +219,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsAssignResponseData;
     },
   },
+  // Contract source: explicit
   "documents_delete_assignment": {
     method: "DELETE",
     path: "/documents/admin/assignments/:assignmentId",
@@ -228,6 +236,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsDeleteAssignmentResponseData;
     },
   },
+  // Contract source: explicit
   "documents_delete": {
     method: "DELETE",
     path: "/documents/admin/delete/:documentId",
@@ -244,6 +253,7 @@ export const apiRoutes_documents = {
       responseData: DocumentsDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "documents_set_lock": {
     method: "PUT",
     path: "/documents/admin/lock/:documentId",

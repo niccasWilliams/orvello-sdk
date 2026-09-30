@@ -18,13 +18,20 @@ export type AppInfoHealthResponseData = {
   message?: string;
   details?: Record<string, any>;
 }>;
+  dependencies: Array<{
+  name: string;
+  status: "ok" | "warning" | "error";
+  latencyMs: number | null;
+  message?: string;
+  details?: Record<string, any>;
+}>;
 };
 export type AppInfoHealthResponse = import("../types").ApiEnvelope<AppInfoHealthResponseData>;
 
 export type AppInfoManifestParams = undefined;
 export type AppInfoManifestQuery = undefined;
 export type AppInfoManifestBody = undefined;
-export type AppInfoManifestResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type AppInfoManifestResponseData = { appId: string; manifestVersion: string; [key: string]: unknown };
 export type AppInfoManifestResponse = import("../types").ApiEnvelope<AppInfoManifestResponseData>;
 
 export type AppInfoGetParams = undefined;
@@ -44,6 +51,7 @@ export type AppInfoOwnPermissionsGetResponseData = Permission[];
 export type AppInfoOwnPermissionsGetResponse = import("../types").ApiEnvelope<AppInfoOwnPermissionsGetResponseData>;
 
 export const apiRoutes_app_info = {
+  // Contract source: explicit
   "app_info_health": {
     method: "GET",
     path: "/app-info/health",
@@ -62,6 +70,7 @@ export const apiRoutes_app_info = {
       responseData: AppInfoHealthResponseData;
     },
   },
+  // Contract source: explicit
   "app_info_manifest": {
     method: "GET",
     path: "/app-info/manifest",
@@ -79,6 +88,7 @@ export const apiRoutes_app_info = {
       responseData: AppInfoManifestResponseData;
     },
   },
+  // Contract source: explicit
   "app_info_get": {
     method: "GET",
     path: "/app-info",
@@ -96,6 +106,7 @@ export const apiRoutes_app_info = {
       responseData: AppInfoGetResponseData;
     },
   },
+  // Contract source: explicit
   "app_info_own_permissions_get": {
     method: "GET",
     path: "/app-info/ownPermissions",

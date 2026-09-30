@@ -29,6 +29,7 @@ export type UserActivityOverviewGetResponseData = { data: Array<{ user: NodeBill
 export type UserActivityOverviewGetResponse = import("../types").ApiEnvelope<UserActivityOverviewGetResponseData>;
 
 export const apiRoutes_user_activity = {
+  // Contract source: explicit
   "user_activity_users_stats_list": {
     method: "GET",
     path: "/user-activity/users",
@@ -46,6 +47,7 @@ export const apiRoutes_user_activity = {
       responseData: UserActivityUsersStatsListResponseData;
     },
   },
+  // Contract source: explicit
   "user_activity_overview_get": {
     method: "POST",
     path: "/user-activity/user/:userId",

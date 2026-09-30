@@ -68,6 +68,7 @@ export type AdminVatGetCompanySettingsHistoryResponseData = VatSettingsHistory[]
 export type AdminVatGetCompanySettingsHistoryResponse = import("../types").ApiEnvelope<AdminVatGetCompanySettingsHistoryResponseData>;
 
 export const apiRoutes_admin = {
+  // Contract source: explicit
   "admin_vat_get_system_settings": {
     method: "GET",
     path: "/admin/vat/system-settings",
@@ -83,6 +84,7 @@ export const apiRoutes_admin = {
       responseData: AdminVatGetSystemSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "admin_vat_get_system_settings_history": {
     method: "GET",
     path: "/admin/vat/system-settings/history",
@@ -99,6 +101,7 @@ export const apiRoutes_admin = {
       responseData: AdminVatGetSystemSettingsHistoryResponseData;
     },
   },
+  // Contract source: explicit
   "admin_vat_update_system_settings": {
     method: "PUT",
     path: "/admin/vat/system-settings/:id",
@@ -115,6 +118,7 @@ export const apiRoutes_admin = {
       responseData: AdminVatUpdateSystemSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "admin_vat_create_system_settings": {
     method: "POST",
     path: "/admin/vat/system-settings",
@@ -131,6 +135,7 @@ export const apiRoutes_admin = {
       responseData: AdminVatCreateSystemSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "admin_vat_update_company_settings": {
     method: "PUT",
     path: "/admin/vat/company/:companyId/settings",
@@ -147,6 +152,7 @@ export const apiRoutes_admin = {
       responseData: AdminVatUpdateCompanySettingsResponseData;
     },
   },
+  // Contract source: explicit
   "admin_vat_get_company_settings_history": {
     method: "GET",
     path: "/admin/vat/company/:companyId/settings-history",

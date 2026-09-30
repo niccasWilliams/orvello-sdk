@@ -33,6 +33,7 @@ export type LogsDeleteBulkResponseData = null;
 export type LogsDeleteBulkResponse = import("../types").ApiEnvelope<LogsDeleteBulkResponseData>;
 
 export const apiRoutes_logs = {
+  // Contract source: explicit
   "logs_search": {
     method: "GET",
     path: "/app-logs/search",
@@ -50,6 +51,7 @@ export const apiRoutes_logs = {
       responseData: LogsSearchResponseData;
     },
   },
+  // Contract source: explicit
   "logs_delete": {
     method: "DELETE",
     path: "/app-logs/delete/:logId",
@@ -67,6 +69,7 @@ export const apiRoutes_logs = {
       responseData: LogsDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "logs_delete_bulk": {
     method: "DELETE",
     path: "/app-logs/delete/mass/:logIds",

@@ -1268,6 +1268,7 @@ export type ManagingCompaniesDeleteResponseData = null;
 export type ManagingCompaniesDeleteResponse = import("../types").ApiEnvelope<ManagingCompaniesDeleteResponseData>;
 
 export const apiRoutes_managing_companies = {
+  // Contract source: explicit
   "managing_companies_user_assignments_assign": {
     method: "POST",
     path: "/managing-companies/user-assignments/assign",
@@ -1286,6 +1287,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsAssignResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_user_assignments_revoke": {
     method: "POST",
     path: "/managing-companies/user-assignments/revoke",
@@ -1304,6 +1306,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsRevokeResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_user_assignments_update": {
     method: "PUT",
     path: "/managing-companies/user-assignments/update/:assignmentId",
@@ -1322,6 +1325,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_user_assignments_cost_centers_add": {
     method: "POST",
     path: "/managing-companies/user-assignments/cost-centers/add",
@@ -1340,6 +1344,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsCostCentersAddResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_user_assignments_cost_centers_remove": {
     method: "POST",
     path: "/managing-companies/user-assignments/cost-centers/remove",
@@ -1358,6 +1363,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsCostCentersRemoveResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_user_assignments_list": {
     method: "GET",
     path: "/managing-companies/user-assignments/list/:companyId",
@@ -1376,6 +1382,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUserAssignmentsListResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_create": {
     method: "POST",
     path: "/managing-companies/cost-centers/create",
@@ -1394,6 +1401,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersCreateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_my": {
     method: "GET",
     path: "/managing-companies/cost-centers/my/:managingCompanyId",
@@ -1412,6 +1420,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersMyResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_by_id": {
     method: "GET",
     path: "/managing-companies/cost-centers/byId/:id",
@@ -1430,6 +1439,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersByIdResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_logos_settings": {
     method: "GET",
     path: "/managing-companies/cost-centers/logos/settings/:id",
@@ -1448,6 +1458,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersLogosSettingsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_logos_upload": {
     method: "POST",
     path: "/managing-companies/cost-centers/logos/upload/:id/:mode",
@@ -1467,6 +1478,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersLogosUploadResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_logos_delete": {
     method: "DELETE",
     path: "/managing-companies/cost-centers/logos/delete/:id/:mode",
@@ -1485,6 +1497,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersLogosDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_logos_urls": {
     method: "GET",
     path: "/managing-companies/cost-centers/logos/urls/:id",
@@ -1503,6 +1516,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersLogosUrlsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_by_ids": {
     method: "GET",
     path: "/managing-companies/cost-centers/by-ids",
@@ -1521,6 +1535,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersByIdsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_update": {
     method: "PUT",
     path: "/managing-companies/cost-centers/update/:id",
@@ -1539,6 +1554,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_delete": {
     method: "DELETE",
     path: "/managing-companies/cost-centers/delete/:id",
@@ -1557,6 +1573,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_cost_centers_list": {
     method: "GET",
     path: "/managing-companies/cost-centers/list/:managingCompanyId",
@@ -1575,6 +1592,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCostCentersListResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_selected_set": {
     method: "POST",
     path: "/managing-companies/selected/set/:companyId",
@@ -1593,6 +1611,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesSelectedSetResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_selected_current": {
     method: "GET",
     path: "/managing-companies/selected/current",
@@ -1611,6 +1630,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesSelectedCurrentResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_vat_settings_get": {
     method: "GET",
     path: "/managing-companies/vat-settings/:companyId",
@@ -1629,6 +1649,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesVatSettingsGetResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_vat_settings_upsert": {
     method: "POST",
     path: "/managing-companies/vat-settings/:companyId",
@@ -1647,6 +1668,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesVatSettingsUpsertResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_vat_settings_decision_upsert": {
     method: "PUT",
     path: "/managing-companies/vat-settings/:companyId/decisions/:decisionKey",
@@ -1665,6 +1687,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesVatSettingsDecisionUpsertResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_vat_settings_tax_alerts": {
     method: "GET",
     path: "/managing-companies/vat-settings/:companyId/tax-alerts",
@@ -1683,6 +1706,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesVatSettingsTaxAlertsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_pending_user": {
     method: "GET",
     path: "/managing-companies/invites/pending/user",
@@ -1701,6 +1725,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesPendingUserResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_pending_company": {
     method: "GET",
     path: "/managing-companies/invites/pending/company/:managingCompanyId",
@@ -1719,6 +1744,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesPendingCompanyResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_pending_company_preview": {
     method: "GET",
     path: "/managing-companies/invites/pending/company/:managingCompanyId/preview",
@@ -1737,6 +1763,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesPendingCompanyPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_accept": {
     method: "POST",
     path: "/managing-companies/invites/accept/:token",
@@ -1755,6 +1782,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesAcceptResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_reject": {
     method: "POST",
     path: "/managing-companies/invites/reject/:token",
@@ -1773,6 +1801,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesRejectResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invites_cancel": {
     method: "DELETE",
     path: "/managing-companies/invites/cancel/:inviteId",
@@ -1791,6 +1820,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvitesCancelResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_create": {
     method: "POST",
     path: "/managing-companies/api-keys/create",
@@ -1809,6 +1839,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysCreateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_update": {
     method: "PUT",
     path: "/managing-companies/api-keys/update/:apiKeyId",
@@ -1827,6 +1858,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_delete": {
     method: "DELETE",
     path: "/managing-companies/api-keys/delete/:apiKeyId",
@@ -1845,6 +1877,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_revoke": {
     method: "POST",
     path: "/managing-companies/api-keys/revoke/:apiKeyId",
@@ -1863,6 +1896,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysRevokeResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_by_id": {
     method: "GET",
     path: "/managing-companies/api-keys/byId/:apiKeyId",
@@ -1881,6 +1915,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysByIdResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_api_keys_list": {
     method: "GET",
     path: "/managing-companies/api-keys/list",
@@ -1899,6 +1934,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesApiKeysListResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_layouts_catalog": {
     method: "GET",
     path: "/managing-companies/invoice-layouts/catalog",
@@ -1917,6 +1953,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceLayoutsCatalogResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_layouts_effective": {
     method: "GET",
     path: "/managing-companies/invoice-layouts/effective",
@@ -1935,6 +1972,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceLayoutsEffectiveResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_layouts_preview": {
     method: "GET",
     path: "/managing-companies/invoice-layouts/preview",
@@ -1953,6 +1991,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceLayoutsPreviewResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_layouts_previews": {
     method: "GET",
     path: "/managing-companies/invoice-layouts/previews",
@@ -1971,6 +2010,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceLayoutsPreviewsResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_transparency_context": {
     method: "GET",
     path: "/managing-companies/invoice-transparency/:managingCompanyId/context",
@@ -1989,6 +2029,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTransparencyContextResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_transparency_quote": {
     method: "POST",
     path: "/managing-companies/invoice-transparency/:managingCompanyId/quote",
@@ -2007,6 +2048,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTransparencyQuoteResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_item_type_configs_create": {
     method: "POST",
     path: "/managing-companies/invoice-transparency/:managingCompanyId/item-type-configs",
@@ -2025,6 +2067,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesItemTypeConfigsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_item_type_configs_update": {
     method: "PUT",
     path: "/managing-companies/invoice-transparency/:managingCompanyId/item-type-configs/:value",
@@ -2043,6 +2086,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesItemTypeConfigsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_item_type_configs_archive": {
     method: "POST",
     path: "/managing-companies/invoice-transparency/:managingCompanyId/item-type-configs/:value/archive",
@@ -2061,6 +2105,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesItemTypeConfigsArchiveResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_list": {
     method: "GET",
     path: "/managing-companies/invoice-templates/:managingCompanyId/list",
@@ -2079,6 +2124,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesListResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_get": {
     method: "GET",
     path: "/managing-companies/invoice-templates/:managingCompanyId/:templateId",
@@ -2097,6 +2143,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesGetResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_create": {
     method: "POST",
     path: "/managing-companies/invoice-templates/:managingCompanyId/create",
@@ -2115,6 +2162,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_from_invoice": {
     method: "POST",
     path: "/managing-companies/invoice-templates/:managingCompanyId/from-invoice",
@@ -2133,6 +2181,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesFromInvoiceResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_update": {
     method: "PUT",
     path: "/managing-companies/invoice-templates/:managingCompanyId/:templateId",
@@ -2151,6 +2200,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_archive": {
     method: "POST",
     path: "/managing-companies/invoice-templates/:managingCompanyId/:templateId/archive",
@@ -2169,6 +2219,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesArchiveResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_invoice_templates_duplicate": {
     method: "POST",
     path: "/managing-companies/invoice-templates/:managingCompanyId/:templateId/duplicate",
@@ -2187,6 +2238,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesInvoiceTemplatesDuplicateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_create": {
     method: "POST",
     path: "/managing-companies",
@@ -2205,6 +2257,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesCreateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_list": {
     method: "GET",
     path: "/managing-companies",
@@ -2223,6 +2276,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesListResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_get_by_id": {
     method: "GET",
     path: "/managing-companies/:id",
@@ -2241,6 +2295,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesGetByIdResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_update": {
     method: "PUT",
     path: "/managing-companies/:id",
@@ -2259,6 +2314,7 @@ export const apiRoutes_managing_companies = {
       responseData: ManagingCompaniesUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "managing_companies_delete": {
     method: "DELETE",
     path: "/managing-companies/:id",

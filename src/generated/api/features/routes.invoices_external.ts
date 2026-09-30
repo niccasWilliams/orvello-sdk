@@ -259,6 +259,7 @@ export type InvoicesDeleteExternalResponseData = null;
 export type InvoicesDeleteExternalResponse = import("../types").ApiEnvelope<InvoicesDeleteExternalResponseData>;
 
 export const apiRoutes_invoices_external = {
+  // Contract source: explicit
   "invoices_search_external": {
     method: "GET",
     path: "/invoices/external",
@@ -277,6 +278,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesSearchExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_pending_external": {
     method: "GET",
     path: "/invoices/external/pending",
@@ -295,6 +297,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesPendingExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_overdue_external": {
     method: "GET",
     path: "/invoices/external/overdue",
@@ -313,6 +316,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesOverdueExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_get_by_id_external": {
     method: "GET",
     path: "/invoices/external/:invoiceId",
@@ -331,6 +335,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesGetByIdExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_status_policy_external": {
     method: "GET",
     path: "/invoices/external/:invoiceId/status-policy",
@@ -349,6 +354,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesStatusPolicyExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_view_pdf_external": {
     method: "GET",
     path: "/invoices/external/:invoiceId/pdf",
@@ -367,6 +373,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesViewPdfExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_download_pdf_external": {
     method: "GET",
     path: "/invoices/external/:invoiceId/download",
@@ -385,6 +392,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesDownloadPdfExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_create_external": {
     method: "POST",
     path: "/invoices/external",
@@ -404,6 +412,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesCreateExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_update_status_external": {
     method: "PUT",
     path: "/invoices/external/:invoiceId/status",
@@ -422,6 +431,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesUpdateStatusExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_credit_note_preview_external": {
     method: "POST",
     path: "/invoices/external/:invoiceId/credit-note/preview",
@@ -440,6 +450,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesCreditNotePreviewExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_credit_note_issue_external": {
     method: "POST",
     path: "/invoices/external/:invoiceId/credit-note/issue",
@@ -458,6 +469,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesCreditNoteIssueExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_send_email_external": {
     method: "POST",
     path: "/invoices/external/:invoiceId/send-email",
@@ -476,6 +488,7 @@ export const apiRoutes_invoices_external = {
       responseData: InvoicesSendEmailExternalResponseData;
     },
   },
+  // Contract source: explicit
   "invoices_delete_external": {
     method: "DELETE",
     path: "/invoices/external/:invoiceId",

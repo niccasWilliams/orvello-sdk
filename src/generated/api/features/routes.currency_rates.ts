@@ -29,6 +29,7 @@ export type CurrencyRatesGetResponseData = {
 export type CurrencyRatesGetResponse = import("../types").ApiEnvelope<CurrencyRatesGetResponseData>;
 
 export const apiRoutes_currency_rates = {
+  // Contract source: explicit
   "currency_rates_get": {
     method: "GET",
     path: "/currency-rates/:fromCurrency/:toCurrency",

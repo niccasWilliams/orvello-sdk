@@ -111,6 +111,7 @@ export type Oauth2ScopesListResponseData = Record<string, Array<string>>;
 export type Oauth2ScopesListResponse = import("../types").ApiEnvelope<Oauth2ScopesListResponseData>;
 
 export const apiRoutes_oauth2 = {
+  // Contract source: explicit
   "oauth2_token": {
     method: "POST",
     path: "/oauth/token",
@@ -127,6 +128,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2TokenResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_revoke": {
     method: "POST",
     path: "/oauth/revoke",
@@ -143,6 +145,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2RevokeResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_clients_create": {
     method: "POST",
     path: "/oauth/clients/create",
@@ -159,6 +162,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2ClientsCreateResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_clients_list": {
     method: "GET",
     path: "/oauth/clients/list",
@@ -175,6 +179,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2ClientsListResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_clients_revoke": {
     method: "DELETE",
     path: "/oauth/clients/revoke/:id",
@@ -191,6 +196,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2ClientsRevokeResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_clients_audit": {
     method: "GET",
     path: "/oauth/clients/audit/:id",
@@ -207,6 +213,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2ClientsAuditResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_clients_update": {
     method: "PUT",
     path: "/oauth/clients/update/:id",
@@ -223,6 +230,7 @@ export const apiRoutes_oauth2 = {
       responseData: Oauth2ClientsUpdateResponseData;
     },
   },
+  // Contract source: explicit
   "oauth2_scopes_list": {
     method: "GET",
     path: "/oauth/scopes",

@@ -987,10 +987,16 @@ export class OrvelloClient {
         : `${baseUrl}${pdfUrl.startsWith("/") ? "" : "/"}${pdfUrl}`;
 
       const doFetch = this.doFetch;
-      const authHeader = await this.getAuthHeader();
       const headers = new Headers(options?.headers);
-      if (authHeader && !headers.has("Authorization")) {
-        headers.set("Authorization", authHeader);
+      // Das Credential geht nur an den Dienst selbst. Eine absolute Adresse auf einem
+      // anderen Host (etwa ein vorsignierter Speicher-Link) bekommt es nicht: dort
+      // waere es ein Leck, und ein Speicher mit eigener Signatur lehnt eine zweite
+      // Anmeldung ohnehin ab.
+      if (new URL(targetUrl).origin === new URL(baseUrl).origin) {
+        const authHeader = await this.getAuthHeader();
+        if (authHeader && !headers.has("Authorization")) {
+          headers.set("Authorization", authHeader);
+        }
       }
 
       const resp = await doFetch(targetUrl, {

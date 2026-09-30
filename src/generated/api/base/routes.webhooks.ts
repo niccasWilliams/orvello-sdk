@@ -39,6 +39,7 @@ export type WebhooksDeleteBulkResponseData = null;
 export type WebhooksDeleteBulkResponse = import("../types").ApiEnvelope<WebhooksDeleteBulkResponseData>;
 
 export const apiRoutes_webhooks = {
+  // Contract source: explicit
   "webhooks_search": {
     method: "GET",
     path: "/webhooks/search",
@@ -56,6 +57,7 @@ export const apiRoutes_webhooks = {
       responseData: WebhooksSearchResponseData;
     },
   },
+  // Contract source: explicit
   "webhooks_delete": {
     method: "DELETE",
     path: "/webhooks/delete/:webhookId",
@@ -73,6 +75,7 @@ export const apiRoutes_webhooks = {
       responseData: WebhooksDeleteResponseData;
     },
   },
+  // Contract source: explicit
   "webhooks_delete_bulk": {
     method: "DELETE",
     path: "/webhooks/delete/mass/:webhookIds",

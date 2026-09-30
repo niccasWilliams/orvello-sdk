@@ -42,39 +42,6 @@ export type EntitlementsAssignBody = {
 export type EntitlementsAssignResponseData = { created: boolean; externalUserId: string; externalIdentifier: string; entitlementType: 'role' | 'area'; validFrom: Date; expiresAt: Date | null };
 export type EntitlementsAssignResponse = import("../types").ApiEnvelope<EntitlementsAssignResponseData>;
 
-export type EntitlementsGetStateParams = {
-  userId: string;
-  type: "role" | "area";
-  identifier: string;
-};
-export type EntitlementsGetStateQuery = undefined;
-export type EntitlementsGetStateBody = undefined;
-export type EntitlementsGetStateResponseData = { externalUserId: string; externalIdentifier: string; entitlementType: 'role' | 'area'; validFrom: Date; expiresAt: Date | null };
-export type EntitlementsGetStateResponse = import("../types").ApiEnvelope<EntitlementsGetStateResponseData>;
-
-export type EntitlementsUpdateStateParams = {
-  userId: string;
-  type: "role" | "area";
-  identifier: string;
-};
-export type EntitlementsUpdateStateQuery = undefined;
-export type EntitlementsUpdateStateBody = {
-  validFrom?: string | null;
-  expiresAt?: string | null;
-};
-export type EntitlementsUpdateStateResponseData = { success: boolean; externalUserId: string; externalIdentifier: string; entitlementType: 'role' | 'area'; validFrom: Date; expiresAt: Date | null };
-export type EntitlementsUpdateStateResponse = import("../types").ApiEnvelope<EntitlementsUpdateStateResponseData>;
-
-export type EntitlementsRevokeParams = {
-  userId: string;
-  type: "role" | "area";
-  identifier: string;
-};
-export type EntitlementsRevokeQuery = undefined;
-export type EntitlementsRevokeBody = undefined;
-export type EntitlementsRevokeResponseData = { success: boolean; revoked: boolean };
-export type EntitlementsRevokeResponse = import("../types").ApiEnvelope<EntitlementsRevokeResponseData>;
-
 export type EntitlementsGetAllParams = undefined;
 export type EntitlementsGetAllQuery = {
 
@@ -118,6 +85,39 @@ export type EntitlementsUsageOveragesPullBody = undefined;
 export type EntitlementsUsageOveragesPullResponseData = Array<Record<string, unknown>>;
 export type EntitlementsUsageOveragesPullResponse = import("../types").ApiEnvelope<EntitlementsUsageOveragesPullResponseData>;
 
+export type EntitlementsGetStateParams = {
+  userId: string;
+  type: "role" | "area";
+  identifier: string;
+};
+export type EntitlementsGetStateQuery = undefined;
+export type EntitlementsGetStateBody = undefined;
+export type EntitlementsGetStateResponseData = { externalUserId: string; externalIdentifier: string; entitlementType: 'role' | 'area'; validFrom: Date; expiresAt: Date | null };
+export type EntitlementsGetStateResponse = import("../types").ApiEnvelope<EntitlementsGetStateResponseData>;
+
+export type EntitlementsUpdateStateParams = {
+  userId: string;
+  type: "role" | "area";
+  identifier: string;
+};
+export type EntitlementsUpdateStateQuery = undefined;
+export type EntitlementsUpdateStateBody = {
+  validFrom?: string | null;
+  expiresAt?: string | null;
+};
+export type EntitlementsUpdateStateResponseData = { success: boolean; externalUserId: string; externalIdentifier: string; entitlementType: 'role' | 'area'; validFrom: Date; expiresAt: Date | null };
+export type EntitlementsUpdateStateResponse = import("../types").ApiEnvelope<EntitlementsUpdateStateResponseData>;
+
+export type EntitlementsRevokeParams = {
+  userId: string;
+  type: "role" | "area";
+  identifier: string;
+};
+export type EntitlementsRevokeQuery = undefined;
+export type EntitlementsRevokeBody = undefined;
+export type EntitlementsRevokeResponseData = { success: boolean; revoked: boolean };
+export type EntitlementsRevokeResponse = import("../types").ApiEnvelope<EntitlementsRevokeResponseData>;
+
 export type EntitlementsGetByIdParams = {
   id: number;
 };
@@ -127,6 +127,7 @@ export type EntitlementsGetByIdResponseData = Role;
 export type EntitlementsGetByIdResponse = import("../types").ApiEnvelope<EntitlementsGetByIdResponseData>;
 
 export const apiRoutes_entitlements = {
+  // Contract source: explicit
   "entitlements_list": {
     method: "GET",
     path: "/entitlements",
@@ -145,6 +146,7 @@ export const apiRoutes_entitlements = {
       responseData: EntitlementsListResponseData;
     },
   },
+  // Contract source: explicit
   "entitlements_assign": {
     method: "POST",
     path: "/entitlements",
@@ -164,6 +166,102 @@ export const apiRoutes_entitlements = {
       responseData: EntitlementsAssignResponseData;
     },
   },
+  // Contract source: explicit
+  "entitlements_getAll": {
+    method: "GET",
+    path: "/entitlements/getAll",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
+    meta: {
+      tags: ["entitlements"],
+      summary: "Alias for listing entitlements",
+      description: "Alias endpoint for backwards compatibility.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: EntitlementsGetAllParams;
+      query: EntitlementsGetAllQuery;
+      body: EntitlementsGetAllBody;
+      response: EntitlementsGetAllResponse;
+      responseData: EntitlementsGetAllResponseData;
+    },
+  },
+  // Contract source: explicit
+  "entitlements_getAssigned": {
+    method: "GET",
+    path: "/entitlements/assigned",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
+    meta: {
+      tags: ["entitlements"],
+      summary: "Get role assignments (legacy)",
+      description: "Legacy endpoint for active role assignments.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: EntitlementsGetAssignedParams;
+      query: EntitlementsGetAssignedQuery;
+      body: EntitlementsGetAssignedBody;
+      response: EntitlementsGetAssignedResponse;
+      responseData: EntitlementsGetAssignedResponseData;
+    },
+  },
+  // Contract source: explicit
+  "entitlements_getUserEntitlements": {
+    method: "GET",
+    path: "/entitlements/user/:userId",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
+    meta: {
+      tags: ["entitlements"],
+      summary: "Get active user entitlements (legacy)",
+      description: "Legacy endpoint returning active user roles with permissions.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: EntitlementsGetUserEntitlementsParams;
+      query: EntitlementsGetUserEntitlementsQuery;
+      body: EntitlementsGetUserEntitlementsBody;
+      response: EntitlementsGetUserEntitlementsResponse;
+      responseData: EntitlementsGetUserEntitlementsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "entitlements_context_get_by_shop_assignment": {
+    method: "GET",
+    path: "/entitlements/context/by-shop-assignment/:shopAssignmentId",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
+    meta: {
+      tags: ["entitlements"],
+      summary: "Get entitlement sync context by shop assignment id",
+      description: "Returns the persisted entitlement-sync context row (shop linkage + local assignment references) for a given x-shop-assignment-id.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: EntitlementsContextGetByShopAssignmentParams;
+      query: EntitlementsContextGetByShopAssignmentQuery;
+      body: EntitlementsContextGetByShopAssignmentBody;
+      response: EntitlementsContextGetByShopAssignmentResponse;
+      responseData: EntitlementsContextGetByShopAssignmentResponseData;
+    },
+  },
+  // Contract source: explicit
+  "entitlements_usage_overages_pull": {
+    method: "GET",
+    path: "/entitlements/usage-overages",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
+    meta: {
+      tags: ["entitlements"],
+      summary: "Pull usage overages",
+      description: "Returns deterministic usage-overage events for shop-initiated pull billing sync. Endpoint is idempotent via stable externalEventId per event snapshot.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: EntitlementsUsageOveragesPullParams;
+      query: EntitlementsUsageOveragesPullQuery;
+      body: EntitlementsUsageOveragesPullBody;
+      response: EntitlementsUsageOveragesPullResponse;
+      responseData: EntitlementsUsageOveragesPullResponseData;
+    },
+  },
+  // Contract source: explicit
   "entitlements_get_state": {
     method: "GET",
     path: "/entitlements/:userId/:type/:identifier",
@@ -182,6 +280,7 @@ export const apiRoutes_entitlements = {
       responseData: EntitlementsGetStateResponseData;
     },
   },
+  // Contract source: explicit
   "entitlements_update_state": {
     method: "PUT",
     path: "/entitlements/:userId/:type/:identifier",
@@ -201,6 +300,7 @@ export const apiRoutes_entitlements = {
       responseData: EntitlementsUpdateStateResponseData;
     },
   },
+  // Contract source: explicit
   "entitlements_revoke": {
     method: "DELETE",
     path: "/entitlements/:userId/:type/:identifier",
@@ -219,96 +319,7 @@ export const apiRoutes_entitlements = {
       responseData: EntitlementsRevokeResponseData;
     },
   },
-  "entitlements_getAll": {
-    method: "GET",
-    path: "/entitlements/getAll",
-    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
-    meta: {
-      tags: ["entitlements"],
-      summary: "Alias for listing entitlements",
-      description: "Alias endpoint for backwards compatibility.",
-      validated: {"params":false,"query":true,"body":false},
-    },
-    types: null as unknown as {
-      params: EntitlementsGetAllParams;
-      query: EntitlementsGetAllQuery;
-      body: EntitlementsGetAllBody;
-      response: EntitlementsGetAllResponse;
-      responseData: EntitlementsGetAllResponseData;
-    },
-  },
-  "entitlements_getAssigned": {
-    method: "GET",
-    path: "/entitlements/assigned",
-    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
-    meta: {
-      tags: ["entitlements"],
-      summary: "Get role assignments (legacy)",
-      description: "Legacy endpoint for active role assignments.",
-      validated: {"params":false,"query":true,"body":false},
-    },
-    types: null as unknown as {
-      params: EntitlementsGetAssignedParams;
-      query: EntitlementsGetAssignedQuery;
-      body: EntitlementsGetAssignedBody;
-      response: EntitlementsGetAssignedResponse;
-      responseData: EntitlementsGetAssignedResponseData;
-    },
-  },
-  "entitlements_getUserEntitlements": {
-    method: "GET",
-    path: "/entitlements/user/:userId",
-    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
-    meta: {
-      tags: ["entitlements"],
-      summary: "Get active user entitlements (legacy)",
-      description: "Legacy endpoint returning active user roles with permissions.",
-      validated: {"params":true,"query":false,"body":false},
-    },
-    types: null as unknown as {
-      params: EntitlementsGetUserEntitlementsParams;
-      query: EntitlementsGetUserEntitlementsQuery;
-      body: EntitlementsGetUserEntitlementsBody;
-      response: EntitlementsGetUserEntitlementsResponse;
-      responseData: EntitlementsGetUserEntitlementsResponseData;
-    },
-  },
-  "entitlements_context_get_by_shop_assignment": {
-    method: "GET",
-    path: "/entitlements/context/by-shop-assignment/:shopAssignmentId",
-    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
-    meta: {
-      tags: ["entitlements"],
-      summary: "Get entitlement sync context by shop assignment id",
-      description: "Returns the persisted entitlement-sync context row (shop linkage + local assignment references) for a given x-shop-assignment-id.",
-      validated: {"params":true,"query":false,"body":false},
-    },
-    types: null as unknown as {
-      params: EntitlementsContextGetByShopAssignmentParams;
-      query: EntitlementsContextGetByShopAssignmentQuery;
-      body: EntitlementsContextGetByShopAssignmentBody;
-      response: EntitlementsContextGetByShopAssignmentResponse;
-      responseData: EntitlementsContextGetByShopAssignmentResponseData;
-    },
-  },
-  "entitlements_usage_overages_pull": {
-    method: "GET",
-    path: "/entitlements/usage-overages",
-    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":false,"allowApiKey":true},
-    meta: {
-      tags: ["entitlements"],
-      summary: "Pull usage overages",
-      description: "Returns deterministic usage-overage events for shop-initiated pull billing sync. Endpoint is idempotent via stable externalEventId per event snapshot.",
-      validated: {"params":false,"query":true,"body":false},
-    },
-    types: null as unknown as {
-      params: EntitlementsUsageOveragesPullParams;
-      query: EntitlementsUsageOveragesPullQuery;
-      body: EntitlementsUsageOveragesPullBody;
-      response: EntitlementsUsageOveragesPullResponse;
-      responseData: EntitlementsUsageOveragesPullResponseData;
-    },
-  },
+  // Contract source: explicit
   "entitlements_getById": {
     method: "GET",
     path: "/entitlements/:id",

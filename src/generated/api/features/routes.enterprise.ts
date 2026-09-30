@@ -342,6 +342,7 @@ export type EnterpriseOnboardingSkipStepResponseData = {
 export type EnterpriseOnboardingSkipStepResponse = import("../types").ApiEnvelope<EnterpriseOnboardingSkipStepResponseData>;
 
 export const apiRoutes_enterprise = {
+  // Contract source: explicit
   "enterprise_onboarding_state_get": {
     method: "GET",
     path: "/apps/enterprise/onboarding/state",
@@ -360,6 +361,7 @@ export const apiRoutes_enterprise = {
       responseData: EnterpriseOnboardingStateGetResponseData;
     },
   },
+  // Contract source: explicit
   "enterprise_onboarding_complete_step": {
     method: "POST",
     path: "/apps/enterprise/onboarding/complete-step",
@@ -379,6 +381,7 @@ export const apiRoutes_enterprise = {
       responseData: EnterpriseOnboardingCompleteStepResponseData;
     },
   },
+  // Contract source: explicit
   "enterprise_onboarding_skip_step": {
     method: "POST",
     path: "/apps/enterprise/onboarding/skip-step",

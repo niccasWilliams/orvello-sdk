@@ -239,6 +239,7 @@ export type DunningUpdateSettingsExternalResponseData = {
 export type DunningUpdateSettingsExternalResponse = import("../types").ApiEnvelope<DunningUpdateSettingsExternalResponseData>;
 
 export const apiRoutes_dunning_external = {
+  // Contract source: explicit
   "dunning_suggestions_external": {
     method: "GET",
     path: "/invoices/external/dunning/suggestions",
@@ -257,6 +258,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningSuggestionsExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_preview_external": {
     method: "POST",
     path: "/invoices/external/dunning/:invoiceId/preview",
@@ -275,6 +277,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningPreviewExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_notice_pdf_external": {
     method: "GET",
     path: "/invoices/external/dunning/notices/:noticeId/pdf",
@@ -293,6 +296,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningNoticePdfExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_notice_download_external": {
     method: "GET",
     path: "/invoices/external/dunning/notices/:noticeId/download",
@@ -311,6 +315,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningNoticeDownloadExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_get_settings_external": {
     method: "GET",
     path: "/invoices/external/dunning/settings",
@@ -329,6 +334,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningGetSettingsExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_issue_external": {
     method: "POST",
     path: "/invoices/external/dunning/:invoiceId/issue",
@@ -347,6 +353,7 @@ export const apiRoutes_dunning_external = {
       responseData: DunningIssueExternalResponseData;
     },
   },
+  // Contract source: explicit
   "dunning_update_settings_external": {
     method: "PUT",
     path: "/invoices/external/dunning/settings",
