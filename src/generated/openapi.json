@@ -9400,7 +9400,7 @@
           "invoices-external"
         ],
         "summary": "Create invoice (external API)",
-        "description": "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation.",
+        "description": "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation. Optional idempotencyKey durably replays the original creation response within the authenticated tenant and OAuth client/API key. Changed validated payload returns 409; current cost-center access is checked again. Keys do not expire. With idempotencyKey, paidAt is rejected (400). The stored creation response is not current payment evidence.",
         "responses": {
           "201": {
             "description": "JSON response",
@@ -9458,6 +9458,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
                   "companyId": {
                     "anyOf": [
                       {
