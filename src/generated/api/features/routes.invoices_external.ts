@@ -33,6 +33,24 @@ export type InvoicesPaymentEvidenceExternalResponseData = {
 };
 export type InvoicesPaymentEvidenceExternalResponse = import("../types").ApiEnvelope<InvoicesPaymentEvidenceExternalResponseData>;
 
+export type InvoicesPaymentInstructionsExternalParams = {
+  invoiceId: number;
+};
+export type InvoicesPaymentInstructionsExternalQuery = undefined;
+export type InvoicesPaymentInstructionsExternalBody = undefined;
+export type InvoicesPaymentInstructionsExternalResponseData = {
+  invoiceId: number;
+  reference: string;
+  accountOwner: string;
+  iban: string;
+  bic: string | null;
+  bankName: string | null;
+  currency: string;
+  invoiceAmount: string;
+  createdAt: string;
+};
+export type InvoicesPaymentInstructionsExternalResponse = import("../types").ApiEnvelope<InvoicesPaymentInstructionsExternalResponseData>;
+
 export type InvoicesSearchExternalParams = undefined;
 export type InvoicesSearchExternalQuery = {
   search?: string;
@@ -306,6 +324,25 @@ export const apiRoutes_invoices_external = {
       body: InvoicesPaymentEvidenceExternalBody;
       response: InvoicesPaymentEvidenceExternalResponse;
       responseData: InvoicesPaymentEvidenceExternalResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_payment_instructions_external": {
+    method: "GET",
+    path: "/invoices/external/:invoiceId/payment-instructions",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"viewer","scopes":["invoices:read"]},
+    meta: {
+      tags: ["invoices-external"],
+      summary: "Read immutable bank payment instructions",
+      description: "Reference and recipient frozen on first issue. Decimal amount is a string. Historical invoices without a snapshot return 409; no reference is created by reading. This is not evidence of payment or permission to provision.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesPaymentInstructionsExternalParams;
+      query: InvoicesPaymentInstructionsExternalQuery;
+      body: InvoicesPaymentInstructionsExternalBody;
+      response: InvoicesPaymentInstructionsExternalResponse;
+      responseData: InvoicesPaymentInstructionsExternalResponseData;
     },
   },
   // Contract source: explicit

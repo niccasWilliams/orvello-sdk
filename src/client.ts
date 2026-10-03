@@ -3,6 +3,7 @@ import type {
   InvoicesCreateExternalResponseData,
   InvoicesGetByIdExternalResponseData,
   InvoicesPaymentEvidenceExternalResponseData,
+  InvoicesPaymentInstructionsExternalResponseData,
   InvoicesSearchExternalQuery,
   InvoicesSearchExternalResponseData,
   InvoicesPendingExternalResponseData,
@@ -895,6 +896,13 @@ export class OrvelloClient {
 
   // ── Invoices ─────────────────────────────────────────────────────────────
   public invoices = {
+    /** Frozen recipient and reference; historical invoices without a snapshot return 409. */
+    getPaymentInstructions: (id: number, options?: RequestOptions) =>
+      this.request<InvoicesPaymentInstructionsExternalResponseData>(`/invoices/external/${id}/payment-instructions`, {
+        method: "GET",
+        ...options,
+      }),
+
     /** Bank evidence, distinct from accounting status; this never initiates a bank call. */
     getPaymentEvidence: (id: number, options?: RequestOptions) =>
       this.request<InvoicesPaymentEvidenceExternalResponseData>(`/invoices/external/${id}/payment-evidence`, {

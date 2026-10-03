@@ -418,3 +418,11 @@ allocations separately from invoice status. Amounts remain decimal strings. Use
 `bankPaymentConfirmed`, `state` and `issues` together; a manual `paid` mark alone is
 not bank evidence. `revision` is a content digest, not an ordered event version.
 This call neither imports bank transactions nor initiates payments.
+
+### Frozen bank payment instructions
+
+`client.invoices.getPaymentInstructions(invoiceId)` reads the invoice's frozen bank
+reference and recipient. The amount is a decimal string. Existing invoices without a
+snapshot return HTTP 409; the SDK does not invent instructions. This read is not payment
+evidence and must not trigger provisioning. Use `getPaymentEvidence` for bank coverage.
+The matching Bills endpoint and schema must be deployed before using this operation.

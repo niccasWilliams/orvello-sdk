@@ -197,6 +197,12 @@ export type AuthRefreshToken = {
   replacedByTokenHash: string | null;
   userAgent: string | null;
   ipAddress: string | null;
+  deviceId: string | null;
+  deviceName: string | null;
+  deviceModel: string | null;
+  deviceOs: string | null;
+  appVersion: string | null;
+  platform: string | null;
   createdAt: Date;
 };
 
@@ -208,6 +214,12 @@ export type AuthRefreshTokenInsert = {
   replacedByTokenHash?: string | null;
   userAgent?: string | null;
   ipAddress?: string | null;
+  deviceId?: string | null;
+  deviceName?: string | null;
+  deviceModel?: string | null;
+  deviceOs?: string | null;
+  appVersion?: string | null;
+  platform?: string | null;
   createdAt: Date;
 };
 
@@ -642,6 +654,38 @@ export type PaginatedUsersWithActivityOverview = {
     availableStatusCodes: number[];
   };
 };
+
+export type DirectAuthSession = {
+  id: number;
+  userAgent: string | null;
+  ipAddress: string | null;
+  deviceId: string | null;
+  deviceName: string | null;
+  deviceModel: string | null;
+  deviceOs: string | null;
+  appVersion: string | null;
+  platform: string | null;
+  createdAt: Date;
+  expiresAt: Date;
+  isCurrent: boolean;
+};
+
+export type DirectAuthSessionListResponse = {
+  sessions: DirectAuthSession[];
+};
+
+export type DirectAuthOkResponse = {
+  ok: true;
+};
+
+export type DirectAuthMfaChallenge = {
+  mfaRequired: true;
+  challengeToken: string;
+  methods: ("totp" | "recovery")[];
+  expiresAt: string;
+};
+
+export type DirectAuthLoginResponse = DirectAuthResponse | DirectAuthMfaChallenge;
 
 
 // ============================================================================
