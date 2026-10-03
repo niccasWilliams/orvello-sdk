@@ -951,12 +951,18 @@ export class OrvelloClient {
         ...options,
       }),
 
-    create: (body: InvoicesCreateExternalBody, options?: RequestOptions) =>
-      this.request<InvoicesCreateExternalResponseData>("/invoices/external", {
+    create: async (body: InvoicesCreateExternalBody, options?: RequestOptions) => {
+      if (body.idempotencyKey !== undefined && options?.idempotencyKey !== undefined
+          && body.idempotencyKey !== options.idempotencyKey) {
+        throw new Error("Invoice body and request options contain different idempotency keys");
+      }
+      const idempotencyKey = body.idempotencyKey ?? options?.idempotencyKey;
+      return this.request<InvoicesCreateExternalResponseData>("/invoices/external", {
         method: "POST",
-        body: JSON.stringify(body),
+        body: JSON.stringify({ ...body, ...(idempotencyKey !== undefined ? { idempotencyKey } : {}) }),
         ...options,
-      }),
+      });
+    },
 
     updateStatus: (id: number, body: InvoicesUpdateStatusExternalBody, options?: RequestOptions) =>
       this.request<InvoicesUpdateStatusExternalResponseData>(`/invoices/external/${id}/status`, {

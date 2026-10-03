@@ -188,6 +188,7 @@ export type InvoicesDownloadPdfExternalResponse = Blob;
 export type InvoicesCreateExternalParams = undefined;
 export type InvoicesCreateExternalQuery = undefined;
 export type InvoicesCreateExternalBody = {
+  idempotencyKey?: string;
   companyId?: number | null;
   costCenterId?: number | null;
   paymentAccountId?: number | null;
@@ -551,7 +552,7 @@ export const apiRoutes_invoices_external = {
     meta: {
       tags: ["invoices-external"],
       summary: "Create invoice (external API)",
-      description: "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation.",
+      description: "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation. Optional idempotencyKey durably replays the original creation response within the authenticated tenant and OAuth client/API key. Changed validated payload returns 409; current cost-center access is checked again. Keys do not expire. With idempotencyKey, paidAt is rejected (400). The stored creation response is not current payment evidence.",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },

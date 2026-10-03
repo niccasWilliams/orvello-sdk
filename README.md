@@ -436,3 +436,23 @@ UUID and reject unknown schema versions. Replay does not acknowledge/delete even
 Re-read `getPaymentEvidence(invoiceId)` before acting on historical coverage.
 A later event can revoke it. Invoices without frozen instructions are not enrolled.
 Available with Bills payment-event journal migration 0041 and the matching API deployment.
+
+### Durable invoice creation (0.6.0)
+
+With Bills migration 0042 and its matching deployment, pass a
+stable `idempotencyKey` in `invoices.create`'s body (or in request options; the SDK
+copies it into the body). Persist the key **and the complete original request**
+before sending. Retries must not regenerate invoice dates or change optional fields.
+The SDK rejects conflicting body/options keys before a network call.
+
+The scope is the authenticated Bills tenant plus OAuth client ID or API-key ID.
+Rotating an OAuth secret preserves it; replacing a client or API-key record does not.
+Reuse returns the original creation response, including its invoice ID, after checking
+current cost-center access. A changed validated body returns 409. Keys never expire;
+keyed invoices cannot be deleted. The response is an issuance receipt, not a current
+payment status: read current payment evidence before commerce actions.
+
+This initial contract rejects `paidAt` combined with a key. Existing unkeyed calls
+retain their behavior and do not gain idempotency. A standalone HTTP Idempotency-Key
+header is not sufficient for this endpoint; the canonical field is in the body.
+Available from SDK 0.6.0. Deploy Bills migration 0042 before using keyed creation.
