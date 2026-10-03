@@ -1,3 +1,8 @@
+## 0.4.0
+
+- Add frozen bank instructions with `invoices.getPaymentInstructions()`: exact decimal amount, original recipient and separate payment reference. Historical invoices without a snapshot return 409.
+- Refresh the Bills contract, including the current direct-auth/MFA base routes.
+
 ## 0.3.0
 
 - Add typed invoice bank-payment evidence and `invoices.getPaymentEvidence()`. Keeps decimal amounts, negative proof, tenant authorization and upstream failures intact.
