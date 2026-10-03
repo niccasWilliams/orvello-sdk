@@ -8718,6 +8718,153 @@
         ]
       }
     },
+    "/invoices/external/:invoiceId/payment-instructions": {
+      "get": {
+        "operationId": "invoices_payment_instructions_external",
+        "tags": [
+          "invoices-external"
+        ],
+        "summary": "Read immutable bank payment instructions",
+        "description": "Reference and recipient frozen on first issue. Decimal amount is a string. Historical invoices without a snapshot return 409; no reference is created by reading. This is not evidence of payment or permission to provision.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "reference": {
+                              "type": "string"
+                            },
+                            "accountOwner": {
+                              "type": "string"
+                            },
+                            "iban": {
+                              "type": "string"
+                            },
+                            "bic": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "bankName": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "currency": {
+                              "type": "string"
+                            },
+                            "invoiceAmount": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "invoiceId",
+                            "reference",
+                            "accountOwner",
+                            "iban",
+                            "bic",
+                            "bankName",
+                            "currency",
+                            "invoiceAmount",
+                            "createdAt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "viewer"
+        },
+        "x-scopes": [
+          "invoices:read"
+        ]
+      }
+    },
     "/invoices/external": {
       "get": {
         "operationId": "invoices_search_external",
