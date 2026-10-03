@@ -435,4 +435,4 @@ returns durable events ordered by per-invoice `version`, plus `nextVersion` and
 UUID and reject unknown schema versions. Replay does not acknowledge/delete events.
 Re-read `getPaymentEvidence(invoiceId)` before acting on historical coverage.
 A later event can revoke it. Invoices without frozen instructions are not enrolled.
-This endpoint requires the matching Bills migration/deployment before SDK release.
+Available with Bills payment-event journal migration 0041 and the matching API deployment.
