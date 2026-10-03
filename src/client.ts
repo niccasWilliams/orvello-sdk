@@ -3,6 +3,8 @@ import type {
   InvoicesCreateExternalResponseData,
   InvoicesGetByIdExternalResponseData,
   InvoicesPaymentEvidenceExternalResponseData,
+  InvoicesPaymentEventsExternalResponseData,
+  InvoicesPaymentEventsExternalQuery,
   InvoicesPaymentInstructionsExternalResponseData,
   InvoicesSearchExternalQuery,
   InvoicesSearchExternalResponseData,
@@ -896,6 +898,14 @@ export class OrvelloClient {
 
   // ── Invoices ─────────────────────────────────────────────────────────────
   public invoices = {
+    /** Durable per-invoice replay. Commit the cursor with processing; re-read evidence before commerce actions. */
+    getPaymentEvents: (id: number, query?: InvoicesPaymentEventsExternalQuery, options?: RequestOptions) =>
+      this.request<InvoicesPaymentEventsExternalResponseData>(`/invoices/external/${id}/payment-events`, {
+        method: "GET",
+        query: query as Record<string, unknown>,
+        ...options,
+      }),
+
     /** Frozen recipient and reference; historical invoices without a snapshot return 409. */
     getPaymentInstructions: (id: number, options?: RequestOptions) =>
       this.request<InvoicesPaymentInstructionsExternalResponseData>(`/invoices/external/${id}/payment-instructions`, {

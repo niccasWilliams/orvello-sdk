@@ -426,3 +426,13 @@ reference and recipient. The amount is a decimal string. Existing invoices witho
 snapshot return HTTP 409; the SDK does not invent instructions. This read is not payment
 evidence and must not trigger provisioning. Use `getPaymentEvidence` for bank coverage.
 The matching Bills endpoint and schema must be deployed before using this operation.
+
+### Replay bank payment evidence events
+
+`client.invoices.getPaymentEvents(invoiceId, { afterVersion: 0, limit: 50 })`
+returns durable events ordered by per-invoice `version`, plus `nextVersion` and
+`hasMore`. Store the cursor atomically with inbox processing, deduplicate by event
+UUID and reject unknown schema versions. Replay does not acknowledge/delete events.
+Re-read `getPaymentEvidence(invoiceId)` before acting on historical coverage.
+A later event can revoke it. Invoices without frozen instructions are not enrolled.
+This endpoint requires the matching Bills migration/deployment before SDK release.
