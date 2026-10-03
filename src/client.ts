@@ -1,5 +1,7 @@
 import type {
   InvoicesCreateExternalBody,
+  InvoicesPreviewExternalBody,
+  InvoicesPreviewExternalResponseData,
   InvoicesCreateExternalResponseData,
   InvoicesGetByIdExternalResponseData,
   InvoicesPaymentEvidenceExternalResponseData,
@@ -949,6 +951,11 @@ export class OrvelloClient {
       this.request<InvoicesStatusPolicyExternalResponseData>(`/invoices/external/${id}/status-policy`, {
         method: "GET",
         ...options,
+      }),
+
+    preview: (body: InvoicesPreviewExternalBody, options?: RequestOptions) =>
+      this.request<InvoicesPreviewExternalResponseData>("/invoices/external/preview", {
+        ...options, method: "POST", body: JSON.stringify(body),
       }),
 
     create: async (body: InvoicesCreateExternalBody, options?: RequestOptions) => {

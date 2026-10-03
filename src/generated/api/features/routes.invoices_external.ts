@@ -3,6 +3,113 @@
 
 import type { CustomerCompany, Invoice, PaginatedResult } from "../../frontend-types";
 
+export type InvoicesPreviewExternalParams = undefined;
+export type InvoicesPreviewExternalQuery = undefined;
+export type InvoicesPreviewExternalBody = {
+  idempotencyKey?: string;
+  companyId?: number | null;
+  costCenterId?: number | null;
+  paymentAccountId?: number | null;
+  bankFallbackAccountId?: number | null;
+  customerName?: string | null;
+  customerStreet?: string | null;
+  customerStreetNr?: string | null;
+  customerZip?: string | null;
+  customerCity?: string | null;
+  customerCountry?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  customerUstId?: string | null;
+  invoiceDate: string;
+  dueDate: string;
+  performedAt?: string | null;
+  currency: string;
+  notes?: string | null;
+  paymentTermsDays?: number | null;
+  paymentTermsText?: string | null;
+  earlyPaymentDiscountPercent?: number | null;
+  earlyPaymentDiscountDays?: number | null;
+  paymentMethod?: string | null;
+  paymentProvider?: string | null;
+  paidAt?: string | null;
+  productType?: "standard" | "reduced" | "custom";
+  customVatRate?: number;
+  vatOverrideReason?: string;
+  lineItems: Array<{
+  title: string;
+  description?: string | null;
+  quantity: number;
+  unitPriceNet?: string;
+  unitPriceGross?: string;
+  itemType?: string | null;
+  sortOrder?: number;
+  productType?: "standard" | "reduced" | "custom";
+  taxRate?: number;
+}>;
+  language?: string;
+  issueImmediately?: boolean;
+  generatePdf?: boolean;
+  quoteHash?: string;
+  quoteVersion?: string;
+};
+export type InvoicesPreviewExternalResponseData = {
+  quoteVersion: string;
+  quoteHash: string;
+  computedAt: string;
+  totals: {
+  net: string;
+  tax: string;
+  gross: string;
+  currency: string;
+};
+  vat: {
+  requestedProductType: "standard" | "reduced" | "custom";
+  effectiveTreatment: string;
+  effectiveRate: number;
+  legalReference: string | null;
+  note: string | null;
+  isMixedRates: boolean;
+};
+  lineItems: Array<{
+  index: number;
+  title: string;
+  quantity: number;
+  unitPriceNet: string;
+  netAmount: string;
+  taxAmount: string;
+  grossAmount: string;
+  effectiveTaxRate: number;
+  taxSource: {
+  mode: string;
+  reason: {
+  key: string;
+  defaultMessage: string;
+  params?: Record<string, string | number | boolean | null>;
+};
+};
+}>;
+  warnings: Array<{
+  code: string;
+  severity: "info" | "warning" | "critical";
+  title: {
+  key: string;
+  defaultMessage: string;
+  params?: Record<string, string | number | boolean | null>;
+};
+  message: {
+  key: string;
+  defaultMessage: string;
+  params?: Record<string, string | number | boolean | null>;
+};
+  recommendation?: {
+  key: string;
+  defaultMessage: string;
+  params?: Record<string, string | number | boolean | null>;
+} | null;
+}>;
+};
+export type InvoicesPreviewExternalResponse = import("../types").ApiEnvelope<InvoicesPreviewExternalResponseData>;
+
 export type InvoicesPaymentEventsExternalParams = {
   invoiceId: number;
 };
@@ -221,7 +328,8 @@ export type InvoicesCreateExternalBody = {
   title: string;
   description?: string | null;
   quantity: number;
-  unitPriceNet: string;
+  unitPriceNet?: string;
+  unitPriceGross?: string;
   itemType?: string | null;
   sortOrder?: number;
   productType?: "standard" | "reduced" | "custom";
@@ -354,6 +462,25 @@ export type InvoicesDeleteExternalResponseData = null;
 export type InvoicesDeleteExternalResponse = import("../types").ApiEnvelope<InvoicesDeleteExternalResponseData>;
 
 export const apiRoutes_invoices_external = {
+  // Contract source: explicit
+  "invoices_preview_external": {
+    method: "POST",
+    path: "/invoices/external/preview",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"viewer","scopes":["invoices:read"]},
+    meta: {
+      tags: ["invoices-external"],
+      summary: "Calculate net, VAT and gross using current accounting facts",
+      description: "Same calculation as invoice creation. Accepts exactly one net or gross unit price. Gross prices keep the agreed EUR total. No invoice or payment is created. The quote is a dated observation; creation revalidates quoteHash and quoteVersion. Missing tax facts fail closed.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesPreviewExternalParams;
+      query: InvoicesPreviewExternalQuery;
+      body: InvoicesPreviewExternalBody;
+      response: InvoicesPreviewExternalResponse;
+      responseData: InvoicesPreviewExternalResponseData;
+    },
+  },
   // Contract source: explicit
   "invoices_payment_events_external": {
     method: "GET",

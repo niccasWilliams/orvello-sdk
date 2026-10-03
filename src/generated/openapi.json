@@ -8486,6 +8486,789 @@
         ]
       }
     },
+    "/invoices/external/preview": {
+      "post": {
+        "operationId": "invoices_preview_external",
+        "tags": [
+          "invoices-external"
+        ],
+        "summary": "Calculate net, VAT and gross using current accounting facts",
+        "description": "Same calculation as invoice creation. Accepts exactly one net or gross unit price. Gross prices keep the agreed EUR total. No invoice or payment is created. The quote is a dated observation; creation revalidates quoteHash and quoteVersion. Missing tax facts fail closed.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "quoteVersion": {
+                              "type": "string"
+                            },
+                            "quoteHash": {
+                              "type": "string"
+                            },
+                            "computedAt": {
+                              "type": "string"
+                            },
+                            "totals": {
+                              "type": "object",
+                              "properties": {
+                                "net": {
+                                  "type": "string",
+                                  "pattern": "^\\d+\\.\\d{2}$"
+                                },
+                                "tax": {
+                                  "type": "string",
+                                  "pattern": "^\\d+\\.\\d{2}$"
+                                },
+                                "gross": {
+                                  "type": "string",
+                                  "pattern": "^\\d+\\.\\d{2}$"
+                                },
+                                "currency": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "net",
+                                "tax",
+                                "gross",
+                                "currency"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "vat": {
+                              "type": "object",
+                              "properties": {
+                                "requestedProductType": {
+                                  "type": "string",
+                                  "enum": [
+                                    "standard",
+                                    "reduced",
+                                    "custom"
+                                  ]
+                                },
+                                "effectiveTreatment": {
+                                  "type": "string"
+                                },
+                                "effectiveRate": {
+                                  "type": "number"
+                                },
+                                "legalReference": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "note": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "isMixedRates": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "requestedProductType",
+                                "effectiveTreatment",
+                                "effectiveRate",
+                                "legalReference",
+                                "note",
+                                "isMixedRates"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "lineItems": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "index": {
+                                    "type": "integer"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "quantity": {
+                                    "type": "number"
+                                  },
+                                  "unitPriceNet": {
+                                    "type": "string"
+                                  },
+                                  "netAmount": {
+                                    "type": "string",
+                                    "pattern": "^\\d+\\.\\d{2}$"
+                                  },
+                                  "taxAmount": {
+                                    "type": "string",
+                                    "pattern": "^\\d+\\.\\d{2}$"
+                                  },
+                                  "grossAmount": {
+                                    "type": "string",
+                                    "pattern": "^\\d+\\.\\d{2}$"
+                                  },
+                                  "effectiveTaxRate": {
+                                    "type": "number"
+                                  },
+                                  "taxSource": {
+                                    "type": "object",
+                                    "properties": {
+                                      "mode": {
+                                        "type": "string"
+                                      },
+                                      "reason": {
+                                        "type": "object",
+                                        "properties": {
+                                          "key": {
+                                            "type": "string"
+                                          },
+                                          "defaultMessage": {
+                                            "type": "string"
+                                          },
+                                          "params": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "boolean"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "key",
+                                          "defaultMessage"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "required": [
+                                      "mode",
+                                      "reason"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "index",
+                                  "title",
+                                  "quantity",
+                                  "unitPriceNet",
+                                  "netAmount",
+                                  "taxAmount",
+                                  "grossAmount",
+                                  "effectiveTaxRate",
+                                  "taxSource"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "severity": {
+                                    "type": "string",
+                                    "enum": [
+                                      "info",
+                                      "warning",
+                                      "critical"
+                                    ]
+                                  },
+                                  "title": {
+                                    "type": "object",
+                                    "properties": {
+                                      "key": {
+                                        "type": "string"
+                                      },
+                                      "defaultMessage": {
+                                        "type": "string"
+                                      },
+                                      "params": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "anyOf": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "number"
+                                            },
+                                            {
+                                              "type": "boolean"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "key",
+                                      "defaultMessage"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "message": {
+                                    "type": "object",
+                                    "properties": {
+                                      "key": {
+                                        "type": "string"
+                                      },
+                                      "defaultMessage": {
+                                        "type": "string"
+                                      },
+                                      "params": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "anyOf": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "number"
+                                            },
+                                            {
+                                              "type": "boolean"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "key",
+                                      "defaultMessage"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "recommendation": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "key": {
+                                            "type": "string"
+                                          },
+                                          "defaultMessage": {
+                                            "type": "string"
+                                          },
+                                          "params": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "number"
+                                                },
+                                                {
+                                                  "type": "boolean"
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "key",
+                                          "defaultMessage"
+                                        ],
+                                        "additionalProperties": false
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "code",
+                                  "severity",
+                                  "title",
+                                  "message"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "quoteVersion",
+                            "quoteHash",
+                            "computedAt",
+                            "totals",
+                            "vat",
+                            "lineItems",
+                            "warnings"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "companyId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "costCenterId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paymentAccountId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "bankFallbackAccountId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerName": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerStreet": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerStreetNr": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerZip": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerCity": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerCountry": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerEmail": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerPhone": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "customerUstId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "invoiceDate": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "dueDate": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "performedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "currency": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 3
+                  },
+                  "notes": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paymentTermsDays": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 365
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paymentTermsText": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "earlyPaymentDiscountPercent": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "earlyPaymentDiscountDays": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 365
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paymentMethod": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 50
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paymentProvider": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 50
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "paidAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "productType": {
+                    "type": "string",
+                    "enum": [
+                      "standard",
+                      "reduced",
+                      "custom"
+                    ]
+                  },
+                  "customVatRate": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "vatOverrideReason": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "lineItems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "unitPriceNet": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "unitPriceGross": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9]\\d{0,9})\\.\\d{2}$"
+                        },
+                        "itemType": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "sortOrder": {
+                          "type": "integer"
+                        },
+                        "productType": {
+                          "type": "string",
+                          "enum": [
+                            "standard",
+                            "reduced",
+                            "custom"
+                          ]
+                        },
+                        "taxRate": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "quantity"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "issueImmediately": {
+                    "type": "boolean"
+                  },
+                  "generatePdf": {
+                    "type": "boolean"
+                  },
+                  "quoteHash": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{64}$"
+                  },
+                  "quoteVersion": {
+                    "type": "string",
+                    "maxLength": 32
+                  }
+                },
+                "required": [
+                  "invoiceDate",
+                  "dueDate",
+                  "currency",
+                  "lineItems"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "viewer"
+        },
+        "x-scopes": [
+          "invoices:read"
+        ]
+      }
+    },
     "/invoices/external/:invoiceId/payment-events": {
       "get": {
         "operationId": "invoices_payment_events_external",
@@ -9756,6 +10539,10 @@
                           "type": "string",
                           "minLength": 1
                         },
+                        "unitPriceGross": {
+                          "type": "string",
+                          "pattern": "^(0|[1-9]\\d{0,9})\\.\\d{2}$"
+                        },
                         "itemType": {
                           "anyOf": [
                             {
@@ -9785,8 +10572,7 @@
                       },
                       "required": [
                         "title",
-                        "quantity",
-                        "unitPriceNet"
+                        "quantity"
                       ],
                       "additionalProperties": false
                     }

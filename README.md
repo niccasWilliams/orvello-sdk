@@ -456,3 +456,13 @@ This initial contract rejects `paidAt` combined with a key. Existing unkeyed cal
 retain their behavior and do not gain idempotency. A standalone HTTP Idempotency-Key
 header is not sufficient for this endpoint; the canonical field is in the body.
 Available from SDK 0.6.0. Deploy Bills migration 0042 before using keyed creation.
+
+### Agreed gross prices and accounting preview (0.7.0)
+
+Invoice lines accept exactly one `unitPriceNet` or `unitPriceGross` (EUR, two decimal
+places). Bills derives the tax component from its accounting rules without changing
+the gross customer price. `client.invoices.preview(body)` returns dated net, VAT and
+gross amounts as decimal strings, per-line explanations and `quoteHash`/`quoteVersion`.
+Supply those quote fields to creation to detect changes. Missing tax facts fail closed.
+A quote does not create an invoice, confirm payment or calculate spendable cash.
+Requires the matching Bills gross-price API; no new database migration.
