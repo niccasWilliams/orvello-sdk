@@ -3,6 +3,36 @@
 
 import type { CustomerCompany, Invoice, PaginatedResult } from "../../frontend-types";
 
+export type InvoicesPaymentEvidenceExternalParams = {
+  invoiceId: number;
+};
+export type InvoicesPaymentEvidenceExternalQuery = undefined;
+export type InvoicesPaymentEvidenceExternalBody = undefined;
+export type InvoicesPaymentEvidenceExternalResponseData = {
+  invoiceId: number;
+  invoiceNumber: string;
+  currency: string;
+  invoiceStatus: string;
+  paidSource: string | null;
+  receivingAccountId: number | null;
+  invoiceAmount: string;
+  bankReceivedAmount: string;
+  bankRefundedAmount: string;
+  bankNetAmount: string;
+  nonCashSettlementAmount: string;
+  outstandingBankAmount: string;
+  overpaidBankAmount: string;
+  state: "unpaid" | "partial" | "covered" | "overpaid" | "review_required" | "ineligible";
+  bankPaymentConfirmed: boolean;
+  issues: Array<"missing_receiving_account" | "invalid_invoice_amount" | "ineligible_invoice" | "missing_payment" | "wrong_account" | "currency_mismatch" | "invalid_amount" | "unsupported_source" | "invalid_direction" | "payment_overallocated" | "non_cash_settlement" | "status_without_bank_evidence" | "negative_bank_balance">;
+  bankAllocationIds: Array<number>;
+  excludedAllocationIds: Array<number>;
+  reversedAllocationCount: number;
+  revision: string;
+  observedAt: string;
+};
+export type InvoicesPaymentEvidenceExternalResponse = import("../types").ApiEnvelope<InvoicesPaymentEvidenceExternalResponseData>;
+
 export type InvoicesSearchExternalParams = undefined;
 export type InvoicesSearchExternalQuery = {
   search?: string;
@@ -259,6 +289,25 @@ export type InvoicesDeleteExternalResponseData = null;
 export type InvoicesDeleteExternalResponse = import("../types").ApiEnvelope<InvoicesDeleteExternalResponseData>;
 
 export const apiRoutes_invoices_external = {
+  // Contract source: explicit
+  "invoices_payment_evidence_external": {
+    method: "GET",
+    path: "/invoices/external/:invoiceId/payment-evidence",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"viewer","scopes":["invoices:read"]},
+    meta: {
+      tags: ["invoices-external"],
+      summary: "Read bank payment evidence for an invoice",
+      description: "Consistent read-only snapshot of imported bank payments and refunds. Separates cash from discounts, writeoffs and manual paid marks. Decimal amounts are strings. bankPaymentConfirmed requires full matching-account/currency bank coverage without unresolved issues. revision is a content digest, not an ordered event version. No bank import or payment is initiated.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesPaymentEvidenceExternalParams;
+      query: InvoicesPaymentEvidenceExternalQuery;
+      body: InvoicesPaymentEvidenceExternalBody;
+      response: InvoicesPaymentEvidenceExternalResponse;
+      responseData: InvoicesPaymentEvidenceExternalResponseData;
+    },
+  },
   // Contract source: explicit
   "invoices_search_external": {
     method: "GET",

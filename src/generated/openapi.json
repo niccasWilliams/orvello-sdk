@@ -8486,6 +8486,238 @@
         ]
       }
     },
+    "/invoices/external/:invoiceId/payment-evidence": {
+      "get": {
+        "operationId": "invoices_payment_evidence_external",
+        "tags": [
+          "invoices-external"
+        ],
+        "summary": "Read bank payment evidence for an invoice",
+        "description": "Consistent read-only snapshot of imported bank payments and refunds. Separates cash from discounts, writeoffs and manual paid marks. Decimal amounts are strings. bankPaymentConfirmed requires full matching-account/currency bank coverage without unresolved issues. revision is a content digest, not an ordered event version. No bank import or payment is initiated.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "invoiceNumber": {
+                              "type": "string"
+                            },
+                            "currency": {
+                              "type": "string"
+                            },
+                            "invoiceStatus": {
+                              "type": "string"
+                            },
+                            "paidSource": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "receivingAccountId": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "exclusiveMinimum": 0
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "invoiceAmount": {
+                              "type": "string"
+                            },
+                            "bankReceivedAmount": {
+                              "type": "string"
+                            },
+                            "bankRefundedAmount": {
+                              "type": "string"
+                            },
+                            "bankNetAmount": {
+                              "type": "string"
+                            },
+                            "nonCashSettlementAmount": {
+                              "type": "string"
+                            },
+                            "outstandingBankAmount": {
+                              "type": "string"
+                            },
+                            "overpaidBankAmount": {
+                              "type": "string"
+                            },
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "unpaid",
+                                "partial",
+                                "covered",
+                                "overpaid",
+                                "review_required",
+                                "ineligible"
+                              ]
+                            },
+                            "bankPaymentConfirmed": {
+                              "type": "boolean"
+                            },
+                            "issues": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "missing_receiving_account",
+                                  "invalid_invoice_amount",
+                                  "ineligible_invoice",
+                                  "missing_payment",
+                                  "wrong_account",
+                                  "currency_mismatch",
+                                  "invalid_amount",
+                                  "unsupported_source",
+                                  "invalid_direction",
+                                  "payment_overallocated",
+                                  "non_cash_settlement",
+                                  "status_without_bank_evidence",
+                                  "negative_bank_balance"
+                                ]
+                              }
+                            },
+                            "bankAllocationIds": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              }
+                            },
+                            "excludedAllocationIds": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              }
+                            },
+                            "reversedAllocationCount": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "revision": {
+                              "type": "string",
+                              "pattern": "^[a-f0-9]{64}$"
+                            },
+                            "observedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "invoiceId",
+                            "invoiceNumber",
+                            "currency",
+                            "invoiceStatus",
+                            "paidSource",
+                            "receivingAccountId",
+                            "invoiceAmount",
+                            "bankReceivedAmount",
+                            "bankRefundedAmount",
+                            "bankNetAmount",
+                            "nonCashSettlementAmount",
+                            "outstandingBankAmount",
+                            "overpaidBankAmount",
+                            "state",
+                            "bankPaymentConfirmed",
+                            "issues",
+                            "bankAllocationIds",
+                            "excludedAllocationIds",
+                            "reversedAllocationCount",
+                            "revision",
+                            "observedAt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "viewer"
+        },
+        "x-scopes": [
+          "invoices:read"
+        ]
+      }
+    },
     "/invoices/external": {
       "get": {
         "operationId": "invoices_search_external",

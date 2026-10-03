@@ -239,6 +239,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "invoices_list_overdue": ["GET", "/invoices/overdue", "b", "frontend_permission_http", 2],
   "invoices_list_pending": ["GET", "/invoices/pending", "b", "frontend_permission_http", 2],
   "invoices_overdue_external": ["GET", "/invoices/external/overdue", "b", "unified_bearer", 2, ["invoices:read"]],
+  "invoices_payment_evidence_external": ["GET", "/invoices/external/:invoiceId/payment-evidence", "b", "unified_bearer", 1, ["invoices:read"]],
   "invoices_payment_reconciliation": ["GET", "/invoices/:invoiceId/payment-reconciliation", "b", "frontend_permission_http", 1],
   "invoices_pending_external": ["GET", "/invoices/external/pending", "b", "unified_bearer", 2, ["invoices:read"]],
   "invoices_repair_pdf": ["POST", "/invoices/:invoiceId/repair-pdf", "b", "frontend_bearer_http", 1],

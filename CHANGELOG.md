@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Add typed invoice bank-payment evidence and `invoices.getPaymentEvidence()`. Keeps decimal amounts, negative proof, tenant authorization and upstream failures intact.
+
 # Changelog
 
 ## 0.2.4 - 2026-09-30

@@ -2,6 +2,7 @@ import type {
   InvoicesCreateExternalBody,
   InvoicesCreateExternalResponseData,
   InvoicesGetByIdExternalResponseData,
+  InvoicesPaymentEvidenceExternalResponseData,
   InvoicesSearchExternalQuery,
   InvoicesSearchExternalResponseData,
   InvoicesPendingExternalResponseData,
@@ -894,6 +895,13 @@ export class OrvelloClient {
 
   // ── Invoices ─────────────────────────────────────────────────────────────
   public invoices = {
+    /** Bank evidence, distinct from accounting status; this never initiates a bank call. */
+    getPaymentEvidence: (id: number, options?: RequestOptions) =>
+      this.request<InvoicesPaymentEvidenceExternalResponseData>(`/invoices/external/${id}/payment-evidence`, {
+        method: "GET",
+        ...options,
+      }),
+
     search: (query?: InvoicesSearchExternalQuery, options?: RequestOptions) =>
       this.request<InvoicesSearchExternalResponseData>("/invoices/external", {
         method: "GET",

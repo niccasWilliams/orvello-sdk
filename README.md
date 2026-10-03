@@ -411,3 +411,10 @@ import type {
 ## License
 
 MIT
+# Bank payment evidence
+
+`await client.invoices.getPaymentEvidence(invoiceId)` reads authoritative bank
+allocations separately from invoice status. Amounts remain decimal strings. Use
+`bankPaymentConfirmed`, `state` and `issues` together; a manual `paid` mark alone is
+not bank evidence. `revision` is a content digest, not an ordered event version.
+This call neither imports bank transactions nor initiates payments.
