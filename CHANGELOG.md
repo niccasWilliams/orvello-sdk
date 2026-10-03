@@ -1,3 +1,9 @@
+## 0.5.0
+
+- Add `invoices.getPaymentEvents()` for durable per-invoice replay with exclusive version cursors and bounded pagination.
+- Preserve exact decimal evidence and API failures; document atomic inbox/cursor processing and current-evidence verification before commerce actions.
+- Requires Bills payment-event journal migration 0041 and the matching deployed API.
+
 ## 0.4.0
 
 - Add frozen bank instructions with `invoices.getPaymentInstructions()`: exact decimal amount, original recipient and separate payment reference. Historical invoices without a snapshot return 409.

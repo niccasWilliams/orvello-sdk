@@ -3,6 +3,52 @@
 
 import type { CustomerCompany, Invoice, PaginatedResult } from "../../frontend-types";
 
+export type InvoicesPaymentEventsExternalParams = {
+  invoiceId: number;
+};
+export type InvoicesPaymentEventsExternalQuery = {
+  afterVersion?: number;
+  limit?: number;
+};
+export type InvoicesPaymentEventsExternalBody = undefined;
+export type InvoicesPaymentEventsExternalResponseData = {
+  events: Array<{
+  id: string;
+  type: "invoice.payment_evidence.changed";
+  schemaVersion: 1;
+  invoiceId: number;
+  version: number;
+  cause: string;
+  occurredAt: string;
+  evidence: {
+  invoiceId: number;
+  invoiceNumber: string;
+  currency: string;
+  invoiceStatus: string;
+  paidSource: string | null;
+  receivingAccountId: number | null;
+  invoiceAmount: string;
+  bankReceivedAmount: string;
+  bankRefundedAmount: string;
+  bankNetAmount: string;
+  nonCashSettlementAmount: string;
+  outstandingBankAmount: string;
+  overpaidBankAmount: string;
+  state: "unpaid" | "partial" | "covered" | "overpaid" | "review_required" | "ineligible";
+  bankPaymentConfirmed: boolean;
+  issues: Array<"missing_receiving_account" | "invalid_invoice_amount" | "ineligible_invoice" | "missing_payment" | "wrong_account" | "currency_mismatch" | "invalid_amount" | "unsupported_source" | "invalid_direction" | "payment_overallocated" | "non_cash_settlement" | "status_without_bank_evidence" | "negative_bank_balance">;
+  bankAllocationIds: Array<number>;
+  excludedAllocationIds: Array<number>;
+  reversedAllocationCount: number;
+  revision: string;
+  observedAt: string;
+};
+}>;
+  nextVersion: number;
+  hasMore: boolean;
+};
+export type InvoicesPaymentEventsExternalResponse = import("../types").ApiEnvelope<InvoicesPaymentEventsExternalResponseData>;
+
 export type InvoicesPaymentEvidenceExternalParams = {
   invoiceId: number;
 };
@@ -307,6 +353,25 @@ export type InvoicesDeleteExternalResponseData = null;
 export type InvoicesDeleteExternalResponse = import("../types").ApiEnvelope<InvoicesDeleteExternalResponseData>;
 
 export const apiRoutes_invoices_external = {
+  // Contract source: explicit
+  "invoices_payment_events_external": {
+    method: "GET",
+    path: "/invoices/external/:invoiceId/payment-events",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"viewer","scopes":["invoices:read"]},
+    meta: {
+      tags: ["invoices-external"],
+      summary: "Replay durable bank payment evidence events",
+      description: "Per-invoice ordered journal, afterVersion exclusive. Replay does not acknowledge or delete events. Consumers persist their cursor atomically with processing and re-read current payment evidence before commerce actions. Historical invoices without frozen instructions are not enrolled. No global cursor or delivery-order promise across invoices.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesPaymentEventsExternalParams;
+      query: InvoicesPaymentEventsExternalQuery;
+      body: InvoicesPaymentEventsExternalBody;
+      response: InvoicesPaymentEventsExternalResponse;
+      responseData: InvoicesPaymentEventsExternalResponseData;
+    },
+  },
   // Contract source: explicit
   "invoices_payment_evidence_external": {
     method: "GET",
