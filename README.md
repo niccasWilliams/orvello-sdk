@@ -437,9 +437,9 @@ Re-read `getPaymentEvidence(invoiceId)` before acting on historical coverage.
 A later event can revoke it. Invoices without frozen instructions are not enrolled.
 Available with Bills payment-event journal migration 0041 and the matching API deployment.
 
-### Durable invoice creation (prepared contract)
+### Durable invoice creation (0.6.0)
 
-After the corresponding Bills creation-receipt migration and deployment, pass a
+With Bills migration 0042 and its matching deployment, pass a
 stable `idempotencyKey` in `invoices.create`'s body (or in request options; the SDK
 copies it into the body). Persist the key **and the complete original request**
 before sending. Retries must not regenerate invoice dates or change optional fields.
@@ -455,4 +455,4 @@ payment status: read current payment evidence before commerce actions.
 This initial contract rejects `paidAt` combined with a key. Existing unkeyed calls
 retain their behavior and do not gain idempotency. A standalone HTTP Idempotency-Key
 header is not sufficient for this endpoint; the canonical field is in the body.
-This source change is unreleased until the backend migration is approved and live.
+Available from SDK 0.6.0. Deploy Bills migration 0042 before using keyed creation.
