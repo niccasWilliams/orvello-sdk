@@ -167,8 +167,12 @@ export interface OrvelloClientConfig {
    */
   managementApiKey?: ValueProvider<string>;
   /**
-   * Zusaetzliche Kopfzeilen fuer jede Anfrage. Wird vor der Auth-Kopfzeile
-   * angewandt, kann sie also nicht versehentlich ueberschreiben.
+   * Zusaetzliche Kopfzeilen fuer jede Anfrage an den Dienst: Geschaeftsaufrufe,
+   * Token-Tausch, Gesundheits- und Vertragsprobe, Preflight. Typischer Fall ist der
+   * Ausweis fuer eine Kante davor (Cloudflare Access), ohne den keiner dieser Wege
+   * durchkommt. Wird vor der Auth-Kopfzeile angewandt, kann sie also nicht
+   * versehentlich ueberschreiben. Andere Hosts (etwa ein vorsignierter
+   * Speicher-Link) bekommen sie nicht.
    */
   headers?: HeadersProvider;
   fetch?: typeof globalThis.fetch;
@@ -290,7 +294,13 @@ export class OrvelloClient {
     this.managementApiKey = config.managementApiKey ?? this.envManagementApiKey();
     this.extraHeaders = config.headers;
 
-    this.doFetch = config.fetch || globalThis.fetch;
+    const rawFetch = config.fetch || globalThis.fetch;
+    // Jeder Weg zum Dienst geht durch diese eine Stelle, auch Token-Tausch und Proben.
+    // Vorher bekam nur der Geschaeftsaufruf die Kopfzeilen, und hinter Cloudflare Access
+    // waere der Token-Tausch davor an der Kante abgeprallt.
+    this.doFetch = typeof rawFetch === "function"
+      ? ((input, init) => this.fetchWithServiceHeaders(rawFetch, input, init)) as typeof globalThis.fetch
+      : rawFetch;
     this.timeoutMs = config.timeoutMs ?? 15_000;
     this.maxRetries = config.maxRetries ?? 3;
     this.retryBaseDelayMs = config.retryBaseDelayMs ?? 500;
@@ -334,6 +344,51 @@ export class OrvelloClient {
   public async resolveBaseUrl(): Promise<string> {
     const val = typeof this.baseUrl === "function" ? await this.baseUrl() : this.baseUrl;
     return val.replace(/\/+$/, "");
+  }
+
+  /**
+   * Haengt die konfigurierten Kopfzeilen an, wenn die Anfrage an den Dienst selbst geht
+   * (Basis-Adresse oder eigener Token-Endpunkt). Schon gesetzte Kopfzeilen bleiben.
+   */
+  private async fetchWithServiceHeaders(
+    rawFetch: typeof globalThis.fetch,
+    input: Parameters<typeof globalThis.fetch>[0],
+    init?: Parameters<typeof globalThis.fetch>[1],
+  ): Promise<Response> {
+    const configured = await OrvelloClient.resolveValue(this.extraHeaders);
+    if (!configured || Object.keys(configured).length === 0) return rawFetch(input, init);
+
+    const target = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (!(await this.isServiceOrigin(target))) return rawFetch(input, init);
+
+    const headers = new Headers(init?.headers ?? (typeof input === "object" && "headers" in input ? input.headers : undefined));
+    for (const [name, value] of Object.entries(configured)) {
+      if (!headers.has(name)) headers.set(name, value);
+    }
+    return rawFetch(input, { ...init, headers });
+  }
+
+  private async isServiceOrigin(target: string): Promise<boolean> {
+    let origin: string;
+    try {
+      origin = new URL(target).origin;
+    } catch {
+      return false;
+    }
+    const own: string[] = [];
+    try {
+      own.push(new URL(await this.resolveBaseUrl()).origin);
+    } catch {
+      // Ohne aufloesbare Basis-Adresse gibt es keinen Dienst, dem die Kopfzeilen gehoeren.
+    }
+    if (typeof this.auth === "object" && "tokenUrl" in this.auth && this.auth.tokenUrl) {
+      try {
+        own.push(new URL(this.auth.tokenUrl).origin);
+      } catch {
+        // Ein kaputter Token-Endpunkt scheitert gleich beim Aufruf mit eigener Meldung.
+      }
+    }
+    return own.includes(origin);
   }
 
   private static async resolveValue<T>(provider: ValueProvider<T> | undefined): Promise<T | undefined> {

@@ -1,3 +1,10 @@
+## 0.7.1 - 2026-10-06
+
+- `headers` aus der Konfiguration gehen jetzt an jeden Weg zum Dienst: Token-Tausch,
+  `checkHealth`, `diagnose`, `preflight` und den Geschaeftsaufruf. Bisher bekam nur der
+  Geschaeftsaufruf sie. Hinter Cloudflare Access endete damit schon der Token-Tausch an der
+  Kante (TSK-000297). Ein fremder Host (vorsignierter Speicher-Link) bekommt sie weiterhin nicht.
+
 ## 0.5.0
 
 - Add `invoices.getPaymentEvents()` for durable per-invoice replay with exclusive version cursors and bounded pagination.
