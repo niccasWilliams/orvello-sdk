@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -43,82 +44,130 @@ export const apiMountPrefixes = {
 export const apiGroups = {
   base: [
   {
+    "key": "amp_mail",
+    "module": "./base/routes.amp_mail"
+  },
+  {
     "key": "app_info",
-    "module": "./routes.app_info"
+    "module": "./base/routes.app_info"
   },
   {
     "key": "auth",
-    "module": "./routes.auth"
+    "module": "./base/routes.auth"
   },
   {
     "key": "entitlements",
-    "module": "./routes.entitlements"
+    "module": "./base/routes.entitlements"
   },
   {
     "key": "internal",
-    "module": "./routes.internal"
+    "module": "./base/routes.internal"
+  },
+  {
+    "key": "logs",
+    "module": "./base/routes.logs"
+  },
+  {
+    "key": "oauth2",
+    "module": "./base/routes.oauth2"
+  },
+  {
+    "key": "oauth2_external",
+    "module": "./base/routes.oauth2_external"
   },
   {
     "key": "permissions",
-    "module": "./routes.permissions"
+    "module": "./base/routes.permissions"
   },
   {
     "key": "roles",
-    "module": "./routes.roles"
+    "module": "./base/routes.roles"
   },
   {
     "key": "security",
-    "module": "./routes.security"
+    "module": "./base/routes.security"
   },
   {
     "key": "settings",
-    "module": "./routes.settings"
+    "module": "./base/routes.settings"
   },
   {
     "key": "user_activity",
-    "module": "./routes.user_activity"
+    "module": "./base/routes.user_activity"
   },
   {
     "key": "users",
-    "module": "./routes.users"
+    "module": "./base/routes.users"
   },
   {
     "key": "webhooks",
-    "module": "./routes.webhooks"
+    "module": "./base/routes.webhooks"
   }
 ] as RouteGroup[],
   features: [
   {
     "key": "admin",
-    "module": "./routes.admin"
+    "module": "./features/routes.admin"
   },
   {
     "key": "bookkeeping",
-    "module": "./routes.bookkeeping"
+    "module": "./features/routes.bookkeeping"
   },
   {
     "key": "currency_rates",
-    "module": "./routes.currency_rates"
+    "module": "./features/routes.currency_rates"
   },
   {
     "key": "customer_companies",
-    "module": "./routes.customer_companies"
+    "module": "./features/routes.customer_companies"
+  },
+  {
+    "key": "customer_companies_external",
+    "module": "./features/routes.customer_companies_external"
+  },
+  {
+    "key": "document_library",
+    "module": "./features/routes.document_library"
   },
   {
     "key": "documents",
-    "module": "./routes.documents"
+    "module": "./features/routes.documents"
+  },
+  {
+    "key": "dunning_external",
+    "module": "./features/routes.dunning_external"
+  },
+  {
+    "key": "enterprise",
+    "module": "./features/routes.enterprise"
   },
   {
     "key": "exports",
-    "module": "./routes.exports"
+    "module": "./features/routes.exports"
   },
   {
     "key": "invoices",
-    "module": "./routes.invoices"
+    "module": "./features/routes.invoices"
+  },
+  {
+    "key": "invoices_external",
+    "module": "./features/routes.invoices_external"
   },
   {
     "key": "managing_companies",
-    "module": "./routes.managing_companies"
+    "module": "./features/routes.managing_companies"
+  },
+  {
+    "key": "managing_companies_external",
+    "module": "./features/routes.managing_companies_external"
+  },
+  {
+    "key": "managing_company_logos",
+    "module": "./features/routes.managing_company_logos"
+  },
+  {
+    "key": "work_tracking",
+    "module": "./features/routes.work_tracking"
   }
 ] as RouteGroup[],
   all: [
@@ -153,6 +202,10 @@ export const apiGroups = {
   {
     "key": "customer_companies_external",
     "module": "./features/routes.customer_companies_external"
+  },
+  {
+    "key": "document_library",
+    "module": "./features/routes.document_library"
   },
   {
     "key": "documents",
@@ -247,6 +300,7 @@ export const apiGroups = {
 
 /**
  * Hinweis:
- * - Diese Klassifikation ist best-effort (Prefix->GroupKey).
- * - Für exakte Zuordnung nutzt ihr am besten die Route-Pfade in openapi.json.
+ * - base: jede Route der Gruppe haengt unter einem Mount-Praefix aus src/routes.ts.
+ * - features: mindestens eine Route haengt unter einem Praefix aus src/individual-routes.ts.
+ * - Frontends konsumieren per Route-Schluessel (apiRoutes), nicht per Ordner.
  */

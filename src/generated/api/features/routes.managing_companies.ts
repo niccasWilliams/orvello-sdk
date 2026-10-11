@@ -1,7 +1,215 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { CompanyCostCenter, CompanyUserAssignment, CompanyUserInvite, FullSelectedCompany, ManagingCompany, PaginatedResult, UnsensitiveCompanyApiKey, UserSelectedCompany, VatSettings } from "../../frontend-types";
+import type { CompanyCostCenter, CompanyUserAssignment, CompanyUserInvite, FullSelectedCompany, ManagingCompany, PaginatedResult, UnsensitiveCompanyApiKey, UserSelectedCompany, VatSettings, VatSettingsHistory } from "../../frontend-types";
+
+export type ManagingCompaniesInvoiceNumberingGetParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesInvoiceNumberingGetQuery = undefined;
+export type ManagingCompaniesInvoiceNumberingGetBody = undefined;
+export type ManagingCompaniesInvoiceNumberingGetResponseData = {
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+}>;
+};
+export type ManagingCompaniesInvoiceNumberingGetResponse = import("../types").ApiEnvelope<ManagingCompaniesInvoiceNumberingGetResponseData>;
+
+export type ManagingCompaniesInvoiceNumberingSaveParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesInvoiceNumberingSaveQuery = undefined;
+export type ManagingCompaniesInvoiceNumberingSaveBody = {
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+  revision: number;
+  reason: string;
+};
+export type ManagingCompaniesInvoiceNumberingSaveResponseData = {
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+}>;
+};
+export type ManagingCompaniesInvoiceNumberingSaveResponse = import("../types").ApiEnvelope<ManagingCompaniesInvoiceNumberingSaveResponseData>;
+
+export type ManagingCompaniesInvoiceNumberingPreviewParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesInvoiceNumberingPreviewQuery = undefined;
+export type ManagingCompaniesInvoiceNumberingPreviewBody = {
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+  year: number;
+};
+export type ManagingCompaniesInvoiceNumberingPreviewResponseData = {
+  invoice: string;
+  credit_note: string;
+  cancellation: string;
+};
+export type ManagingCompaniesInvoiceNumberingPreviewResponse = import("../types").ApiEnvelope<ManagingCompaniesInvoiceNumberingPreviewResponseData>;
 
 export type ManagingCompaniesUserAssignmentsAssignParams = undefined;
 export type ManagingCompaniesUserAssignmentsAssignQuery = undefined;
@@ -236,6 +444,14 @@ export type ManagingCompaniesVatSettingsGetQuery = undefined;
 export type ManagingCompaniesVatSettingsGetBody = undefined;
 export type ManagingCompaniesVatSettingsGetResponseData = VatSettings | null;
 export type ManagingCompaniesVatSettingsGetResponse = import("../types").ApiEnvelope<ManagingCompaniesVatSettingsGetResponseData>;
+
+export type ManagingCompaniesVatSettingsHistoryParams = {
+  companyId: number;
+};
+export type ManagingCompaniesVatSettingsHistoryQuery = undefined;
+export type ManagingCompaniesVatSettingsHistoryBody = undefined;
+export type ManagingCompaniesVatSettingsHistoryResponseData = VatSettingsHistory[];
+export type ManagingCompaniesVatSettingsHistoryResponse = import("../types").ApiEnvelope<ManagingCompaniesVatSettingsHistoryResponseData>;
 
 export type ManagingCompaniesVatSettingsUpsertParams = {
   companyId: number;
@@ -1196,6 +1412,7 @@ export type ManagingCompaniesCreateBody = {
   companyZip?: string | null;
   companyCity?: string | null;
   companyCountry?: string | null;
+  emailSenderName?: string | null;
   companyEmail?: string | null;
   companyPhone?: string | null;
   companyWebsite?: string | null;
@@ -1243,6 +1460,7 @@ export type ManagingCompaniesUpdateBody = {
   companyZip?: string | null;
   companyCity?: string | null;
   companyCountry?: string | null;
+  emailSenderName?: string | null;
   companyEmail?: string | null;
   companyPhone?: string | null;
   companyWebsite?: string | null;
@@ -1268,6 +1486,60 @@ export type ManagingCompaniesDeleteResponseData = null;
 export type ManagingCompaniesDeleteResponse = import("../types").ApiEnvelope<ManagingCompaniesDeleteResponseData>;
 
 export const apiRoutes_managing_companies = {
+  // Contract source: explicit
+  "managing_companies_invoice_numbering_get": {
+    method: "GET",
+    path: "/managing-companies/invoice-numbering/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Nummernregeln und Änderungsverlauf",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesInvoiceNumberingGetParams;
+      query: ManagingCompaniesInvoiceNumberingGetQuery;
+      body: ManagingCompaniesInvoiceNumberingGetBody;
+      response: ManagingCompaniesInvoiceNumberingGetResponse;
+      responseData: ManagingCompaniesInvoiceNumberingGetResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_invoice_numbering_save": {
+    method: "PUT",
+    path: "/managing-companies/invoice-numbering/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Nummernregeln als Unternehmensadministrator ändern",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesInvoiceNumberingSaveParams;
+      query: ManagingCompaniesInvoiceNumberingSaveQuery;
+      body: ManagingCompaniesInvoiceNumberingSaveBody;
+      response: ManagingCompaniesInvoiceNumberingSaveResponse;
+      responseData: ManagingCompaniesInvoiceNumberingSaveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_invoice_numbering_preview": {
+    method: "POST",
+    path: "/managing-companies/invoice-numbering/:managingCompanyId/preview",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Nummern vorschauen ohne Reservierung",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesInvoiceNumberingPreviewParams;
+      query: ManagingCompaniesInvoiceNumberingPreviewQuery;
+      body: ManagingCompaniesInvoiceNumberingPreviewBody;
+      response: ManagingCompaniesInvoiceNumberingPreviewResponse;
+      responseData: ManagingCompaniesInvoiceNumberingPreviewResponseData;
+    },
+  },
   // Contract source: explicit
   "managing_companies_user_assignments_assign": {
     method: "POST",
@@ -1647,6 +1919,25 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesVatSettingsGetBody;
       response: ManagingCompaniesVatSettingsGetResponse;
       responseData: ManagingCompaniesVatSettingsGetResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_vat_settings_history": {
+    method: "GET",
+    path: "/managing-companies/vat-settings/:companyId/history",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","vat-settings"],
+      summary: "Verlauf der USt-Einstellungen lesen",
+      description: "Aenderungsverlauf (Besteuerungsverfahren, UStVA-Praeferenz, Begruendung) der USt-Einstellungen einer Managing Company, aelteste zuerst. Fuer jedes Mitglied der Firma; der Admin-Weg GET /admin/vat/company/:companyId/settings-history bleibt der Plattformverwaltung. Auth: Bearer.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesVatSettingsHistoryParams;
+      query: ManagingCompaniesVatSettingsHistoryQuery;
+      body: ManagingCompaniesVatSettingsHistoryBody;
+      response: ManagingCompaniesVatSettingsHistoryResponse;
+      responseData: ManagingCompaniesVatSettingsHistoryResponseData;
     },
   },
   // Contract source: explicit

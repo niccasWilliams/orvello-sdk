@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -11,6 +12,7 @@ export * from "./features/routes.bookkeeping";
 export * from "./features/routes.currency_rates";
 export * from "./features/routes.customer_companies";
 export * from "./features/routes.customer_companies_external";
+export * from "./features/routes.document_library";
 export * from "./features/routes.documents";
 export * from "./features/routes.dunning_external";
 export * from "./features/routes.enterprise";
@@ -43,6 +45,7 @@ import { apiRoutes_bookkeeping } from "./features/routes.bookkeeping";
 import { apiRoutes_currency_rates } from "./features/routes.currency_rates";
 import { apiRoutes_customer_companies } from "./features/routes.customer_companies";
 import { apiRoutes_customer_companies_external } from "./features/routes.customer_companies_external";
+import { apiRoutes_document_library } from "./features/routes.document_library";
 import { apiRoutes_documents } from "./features/routes.documents";
 import { apiRoutes_dunning_external } from "./features/routes.dunning_external";
 import { apiRoutes_enterprise } from "./features/routes.enterprise";
@@ -75,6 +78,7 @@ export type ApiRoutes =
   & typeof apiRoutes_currency_rates
   & typeof apiRoutes_customer_companies
   & typeof apiRoutes_customer_companies_external
+  & typeof apiRoutes_document_library
   & typeof apiRoutes_documents
   & typeof apiRoutes_dunning_external
   & typeof apiRoutes_enterprise
@@ -108,6 +112,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_currency_rates,
   ...apiRoutes_customer_companies,
   ...apiRoutes_customer_companies_external,
+  ...apiRoutes_document_library,
   ...apiRoutes_documents,
   ...apiRoutes_dunning_external,
   ...apiRoutes_enterprise,

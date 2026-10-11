@@ -5,6 +5,12 @@
   Geschaeftsaufruf sie. Hinter Cloudflare Access endete damit schon der Token-Tausch an der
   Kante (TSK-000297). Ein fremder Host (vorsignierter Speicher-Link) bekommt sie weiterhin nicht.
 
+## 0.7.2 - 2026-10-11
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: InvoicesDryRunExternalParams, InvoicesDryRunExternalQuery, InvoicesDryRunExternalBody, InvoicesDryRunExternalResponseData, InvoicesDryRunExternalResponse, DocumentLibrarySettingsParams, DocumentLibrarySettingsQuery, DocumentLibrarySettingsBody (+164)
+
 ## 0.5.0
 
 - Add `invoices.getPaymentEvents()` for durable per-invoice replay with exclusive version cursors and bounded pagination.

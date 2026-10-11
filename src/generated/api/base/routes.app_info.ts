@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -34,12 +35,20 @@ export type AppInfoManifestBody = undefined;
 export type AppInfoManifestResponseData = { appId: string; manifestVersion: string; [key: string]: unknown };
 export type AppInfoManifestResponse = import("../types").ApiEnvelope<AppInfoManifestResponseData>;
 
+export type AppInfoCapabilitiesParams = undefined;
+export type AppInfoCapabilitiesQuery = {
+
+};
+export type AppInfoCapabilitiesBody = undefined;
+export type AppInfoCapabilitiesResponseData = { mail: boolean; credits: boolean };
+export type AppInfoCapabilitiesResponse = import("../types").ApiEnvelope<AppInfoCapabilitiesResponseData>;
+
 export type AppInfoGetParams = undefined;
 export type AppInfoGetQuery = {
 
 };
 export type AppInfoGetBody = undefined;
-export type AppInfoGetResponseData = { appId: string; plannerUser: NodeBillUser; userRoles: Role[]; subscriptionLimits?: { planCode: string; sourceRoles: string[]; limits: Record<string, number | null> }; subscriptionUsage?: { planCode: string; sourceRoles: string[]; metrics: Record<string, { used: number; limit: number | null; remaining: number | null; canUse: boolean }> }; subscription?: { upgradeUrl: string | null } };
+export type AppInfoGetResponseData = { appId: string; plannerUser: NodeBillUser; userRoles: Role[]; subscriptionLimits?: { planCode: string; sourceRoles: string[]; limits: Record<string, number | null> }; subscriptionUsage?: { planCode: string; sourceRoles: string[]; metrics: Record<string, { used: number; limit: number | null; remaining: number | null; canUse: boolean }> }; subscriptionCredits?: { metrics: Record<string, { unit: string; label: string; remaining: number | null; pools: Array<{ type: string; total: number; remaining: number; expiresAt: string | null }>; behavior: "hard_block" | "pay_as_you_go" | "soft_warn" | null; payAsYouGoActive: boolean; maxOverageQuantity: number | null; overagePricePerUnit: number | null; syncedAt: string | null }> }; subscription?: { upgradeUrl: string | null }; capabilities: { mail: boolean; credits: boolean } };
 export type AppInfoGetResponse = import("../types").ApiEnvelope<AppInfoGetResponseData>;
 
 export type AppInfoOwnPermissionsGetParams = undefined;
@@ -86,6 +95,24 @@ export const apiRoutes_app_info = {
       body: AppInfoManifestBody;
       response: AppInfoManifestResponse;
       responseData: AppInfoManifestResponseData;
+    },
+  },
+  // Contract source: explicit
+  "app_info_capabilities": {
+    method: "GET",
+    path: "/app-info/capabilities",
+    auth: {"type":"public"},
+    meta: {
+      tags: ["app-info"],
+      summary: "Public app capabilities for the sign-in screen (mail: password registration, reset and verification; credits: the backend keeps credit balances)",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: AppInfoCapabilitiesParams;
+      query: AppInfoCapabilitiesQuery;
+      body: AppInfoCapabilitiesBody;
+      response: AppInfoCapabilitiesResponse;
+      responseData: AppInfoCapabilitiesResponseData;
     },
   },
   // Contract source: explicit

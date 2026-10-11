@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -344,6 +345,69 @@ export type InvoicesCreateExternalBody = {
 export type InvoicesCreateExternalResponseData = { invoice: Invoice; documentId: number | null; pdfUrl: string | null };
 export type InvoicesCreateExternalResponse = import("../types").ApiEnvelope<InvoicesCreateExternalResponseData>;
 
+export type InvoicesDryRunExternalParams = undefined;
+export type InvoicesDryRunExternalQuery = undefined;
+export type InvoicesDryRunExternalBody = {
+  idempotencyKey?: string;
+  companyId?: number | null;
+  costCenterId?: number | null;
+  paymentAccountId?: number | null;
+  bankFallbackAccountId?: number | null;
+  customerName?: string | null;
+  customerStreet?: string | null;
+  customerStreetNr?: string | null;
+  customerZip?: string | null;
+  customerCity?: string | null;
+  customerCountry?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  customerUstId?: string | null;
+  invoiceDate: string;
+  dueDate: string;
+  performedAt?: string | null;
+  currency: string;
+  notes?: string | null;
+  paymentTermsDays?: number | null;
+  paymentTermsText?: string | null;
+  earlyPaymentDiscountPercent?: number | null;
+  earlyPaymentDiscountDays?: number | null;
+  paymentMethod?: string | null;
+  paymentProvider?: string | null;
+  paidAt?: string | null;
+  productType?: "standard" | "reduced" | "custom";
+  customVatRate?: number;
+  vatOverrideReason?: string;
+  lineItems: Array<{
+  title: string;
+  description?: string | null;
+  quantity: number;
+  unitPriceNet?: string;
+  unitPriceGross?: string;
+  itemType?: string | null;
+  sortOrder?: number;
+  productType?: "standard" | "reduced" | "custom";
+  taxRate?: number;
+}>;
+  language?: string;
+  issueImmediately?: boolean;
+  generatePdf?: boolean;
+  quoteHash?: string;
+  quoteVersion?: string;
+};
+export type InvoicesDryRunExternalResponseData = {
+  ok: true;
+  persisted: false;
+  invoiceNumber: string;
+  status: string;
+  totalAmount: string;
+  netAmount: string | null;
+  taxAmount: string | null;
+  vatTreatment: string | null;
+  pdfGenerated: true;
+  checkedAt: string;
+};
+export type InvoicesDryRunExternalResponse = import("../types").ApiEnvelope<InvoicesDryRunExternalResponseData>;
+
 export type InvoicesUpdateStatusExternalParams = {
   invoiceId: number;
 };
@@ -679,7 +743,7 @@ export const apiRoutes_invoices_external = {
     meta: {
       tags: ["invoices-external"],
       summary: "Create invoice (external API)",
-      description: "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation. Optional idempotencyKey durably replays the original creation response within the authenticated tenant and OAuth client/API key. Changed validated payload returns 409; current cost-center access is checked again. Keys do not expire. With idempotencyKey, paidAt is rejected (400). The stored creation response is not current payment evidence.",
+      description: "Creates a new invoice via API Key or OAuth2. managingCompanyId is derived from the auth token. Includes full line item support, VAT calculation, and optional PDF generation. Optional idempotencyKey durably replays the original creation response within the authenticated tenant and OAuth client/API key. Changed validated payload returns 409; current cost-center access is checked again. Keys do not expire. With paidAt, invoice creation, paid status and the receipt commit atomically; a PDF download completes publication if needed. The stored creation response is not current payment evidence.",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
@@ -689,6 +753,26 @@ export const apiRoutes_invoices_external = {
       body: InvoicesCreateExternalBody;
       response: InvoicesCreateExternalResponse;
       responseData: InvoicesCreateExternalResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_dry_run_external": {
+    method: "POST",
+    path: "/invoices/external/dry-run",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"editor","scopes":["invoices:write"]},
+    meta: {
+      tags: ["invoices-external"],
+      summary: "Dry run an invoice creation end to end (external API)",
+      description: "Runs the full creation path of POST /invoices/external in one transaction: plan limit, VAT, number, line items, paid status (with paidAt), PDF, e-invoice, upload, year folder filing, document. Then rolls everything back and deletes the uploaded PDF. Nothing is persisted and no number is consumed. Same error responses as the real creation. idempotencyKey is ignored. Meant for scheduled canaries of consumers.",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesDryRunExternalParams;
+      query: InvoicesDryRunExternalQuery;
+      body: InvoicesDryRunExternalBody;
+      response: InvoicesDryRunExternalResponse;
+      responseData: InvoicesDryRunExternalResponseData;
     },
   },
   // Contract source: explicit

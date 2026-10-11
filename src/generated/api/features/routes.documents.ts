@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -54,6 +55,8 @@ export type DocumentsStreamResponse = Blob;
 export type DocumentsCreateParams = undefined;
 export type DocumentsCreateQuery = undefined;
 export type DocumentsCreateBody = {
+  companyId?: number;
+  folderId?: number;
   ownerType?: "company" | "user" | "invoice" | "internal" | "revenue" | "expense" | "asset" | "capital_movement";
   ownerId?: number;
 };

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `npm run types:generate` to regenerate this file
 
@@ -111,6 +112,14 @@ export type NodeBillUser = {
    * Nutzer selbst ueber PATCH /auth/me/profile. null = nie gewaehlt.
    */
   avatarStyle: AvatarStyle | null;
+  /**
+   * Profilbild im Speicher des Produkt-Backends (TSK-000194). Nur der Schluessel, die Adresse
+   * stellt /auth/me zeitlich begrenzt aus. Im williams-Modus spiegelt Next sein Bild hierher.
+   */
+  imageKey: string | null;
+  imageUpdatedAt: Date | null;
+  /** Sprache des Nutzers ("DE", "EN", ... wie SUPPORTED_LANGUAGES). null = nie gewaehlt. */
+  locale: string | null;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -153,6 +162,14 @@ export type UserInsert = {
    * Nutzer selbst ueber PATCH /auth/me/profile. null = nie gewaehlt.
    */
   avatarStyle?: AvatarStyle | null;
+  /**
+   * Profilbild im Speicher des Produkt-Backends (TSK-000194). Nur der Schluessel, die Adresse
+   * stellt /auth/me zeitlich begrenzt aus. Im williams-Modus spiegelt Next sein Bild hierher.
+   */
+  imageKey?: string | null;
+  imageUpdatedAt?: Date | null;
+  /** Sprache des Nutzers ("DE", "EN", ... wie SUPPORTED_LANGUAGES). null = nie gewaehlt. */
+  locale?: string | null;
   createdAt: Date;
   updatedAt?: Date | null;
 };
@@ -281,6 +298,9 @@ export type DirectAuthUser = {
   firstName: string | null;
   lastName: string | null;
   avatarStyle: AvatarStyle | null;
+  locale: Languages | null;
+  hasImage: boolean;
+  imageUpdatedAt: Date | null;
   emailVerified: boolean;
   emailVerifiedAt: Date | null;
   createdAt: Date;
@@ -295,6 +315,32 @@ export type DirectAuthRole = {
 export type DirectAuthMe = DirectAuthUser & {
   isAdmin: boolean;
   roles: DirectAuthRole[];
+  /** Zeitlich begrenzte Download-Adresse des Profilbilds, null ohne Bild oder ohne Speicher. */
+  imageUrl: string | null;
+  /** Verknuepfte externe Anmeldewege, ohne Subjekt. */
+  linkedProviders: DirectAuthLinkedProvider[];
+  /** Womit sich das Konto vor MFA-Aenderungen bestaetigt: Passwort, frischer Google-Code oder beides. */
+  reauthMethods: ("password" | "google")[];
+};
+
+export type DirectAuthLinkedProvider = {
+  provider: "google";
+  emailAtLink: string | null;
+  linkedAt: Date;
+};
+
+export type GoogleAuthClientKind = "web" | "android" | "ios";
+
+export type GoogleAuthClientStatus = {
+  kind: GoogleAuthClientKind;
+  state: "ready" | "absent" | "blocked";
+  reason: string | null;
+  clientId: string | null;
+  redirectUris: string[];
+};
+
+export type GoogleAuthConfigResponse = {
+  clients: GoogleAuthClientStatus[];
 };
 
 export type DirectAuthTokens = {
@@ -445,6 +491,8 @@ export type EntitlementSyncLink = {
   id: number;
   linkKey: string;
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId: string;
   externalIdentifier: string;
   entitlementType: EntitlementSyncType;
   userId: number | null;
@@ -505,6 +553,8 @@ export type UsageOverageEventId = number;
 export type ShopLimitConfig = {
   id: number;
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId: string;
   metricKey: string;
   includedQuantity: string;
   limitBehavior: string;
@@ -518,6 +568,8 @@ export type ShopLimitConfig = {
 
 export type ShopLimitConfigInsert = {
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId?: string;
   metricKey: string;
   includedQuantity?: string;
   limitBehavior?: string;
@@ -532,6 +584,8 @@ export type ShopLimitConfigInsert = {
 export type ShopCreditBalance = {
   id: number;
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId: string;
   metricKey: string;
   totalRemaining: string;
   localUsed: string;
@@ -543,6 +597,8 @@ export type ShopCreditBalance = {
 
 export type ShopCreditBalanceInsert = {
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId?: string;
   metricKey: string;
   totalRemaining?: string;
   localUsed?: string;
@@ -555,6 +611,8 @@ export type ShopCreditBalanceInsert = {
 export type CreditConsumptionQueueEntry = {
   id: number;
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId: string;
   metricKey: string;
   amount: string;
   idempotencyKey: string;
@@ -567,6 +625,8 @@ export type CreditConsumptionQueueEntry = {
 
 export type CreditConsumptionQueueInsert = {
   externalUserId: string;
+  /** Frontend des Shop-Kunden (lib/entitlements/grant-frontend.ts). Leer = Hauptfrontend. */
+  frontendAppId?: string;
   metricKey: string;
   amount: string;
   idempotencyKey: string;
@@ -703,7 +763,14 @@ export enum NodeBillAppPermissions {
   WebhookView = "webhook_view",
   WebhookDelete = "webhook_delete",
   LogView = "log_view",
-  LogDelete = "log_delete"
+  LogDelete = "log_delete",
+  DocumentsAccess = "documents_access",
+  DocumentsManage = "documents_manage",
+  DocumentsAdmin = "documents_admin",
+  BookkeepingAccess = "bookkeeping_access",
+  ManagingCompanyAdmin = "managing_company_admin",
+  WorkCreate = "work_create",
+  WorkValidate = "work_validate"
 }
 
 export type NodeBillAppPermissionValue = (typeof NodeBillAppPermissions)[keyof typeof NodeBillAppPermissions];
@@ -712,9 +779,54 @@ export type NodeBillAppPermissionValue = (typeof NodeBillAppPermissions)[keyof t
 // APP SETTINGS
 // ============================================================================
 
-// No settings defined
+export enum NodeBillAppSettingsKey {
+  ApplicationName = "application_name",
+  BillingPlanLimitManagingCompaniesBase = "billing_plan_limit_managing_companies_base",
+  BillingPlanLimitManagingCompaniesPremium = "billing_plan_limit_managing_companies_premium",
+  BillingPlanLimitManagingCompaniesEnterprise = "billing_plan_limit_managing_companies_enterprise",
+  BillingPlanLimitManagingCompaniesLegacy = "billing_plan_limit_managing_companies_legacy",
+  BillingPlanLimitDocumentStorageGbBase = "billing_plan_limit_document_storage_gb_base",
+  BillingPlanLimitDocumentStorageGbPremium = "billing_plan_limit_document_storage_gb_premium",
+  BillingPlanLimitDocumentStorageGbEnterprise = "billing_plan_limit_document_storage_gb_enterprise",
+  BillingPlanLimitDocumentStorageGbLegacy = "billing_plan_limit_document_storage_gb_legacy",
+  BillingStorageProviderCostEurPerGb = "billing_storage_provider_cost_eur_per_gb",
+  BillingStorageCustomerPriceEurPerGb = "billing_storage_customer_price_eur_per_gb",
+  BillingStorageHardLimitGbPerCompany = "billing_storage_hard_limit_gb_per_company",
+  BillingOverageCurrency = "billing_overage_currency",
+  BillingOveragePriceEurPerManagingCompany = "billing_overage_price_eur_per_managing_company",
+  BillingOveragePriceEurPerDocumentStorageGb = "billing_overage_price_eur_per_document_storage_gb",
+  BillingOverageNegativeCorrectionsEnabled = "billing_overage_negative_corrections_enabled",
+  BillingOveragePullDefaultLookbackDays = "billing_overage_pull_default_lookback_days",
+  BillingOveragePullMaxEvents = "billing_overage_pull_max_events",
+  DunningGlobalBaseRateBGB247 = "dunning_global_base_rate_bgb_247",
+  DunningPaymentReminderEnabled = "dunning_payment_reminder_enabled",
+  DunningPaymentReminderAfterDays = "dunning_payment_reminder_after_days"
+}
 
-
+export type NodeBillAppSettingsTypeMap = {
+    [NodeBillAppSettingsKey.ApplicationName]: string;
+    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesBase]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesPremium]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesEnterprise]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitManagingCompaniesLegacy]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbBase]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbPremium]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbEnterprise]: number;
+    [NodeBillAppSettingsKey.BillingPlanLimitDocumentStorageGbLegacy]: number;
+    [NodeBillAppSettingsKey.BillingStorageProviderCostEurPerGb]: number;
+    [NodeBillAppSettingsKey.BillingStorageCustomerPriceEurPerGb]: number;
+    [NodeBillAppSettingsKey.BillingStorageHardLimitGbPerCompany]: number;
+    [NodeBillAppSettingsKey.BillingOverageCurrency]: string;
+    [NodeBillAppSettingsKey.BillingOveragePriceEurPerManagingCompany]: number;
+    [NodeBillAppSettingsKey.BillingOveragePriceEurPerDocumentStorageGb]: number;
+    [NodeBillAppSettingsKey.BillingOverageNegativeCorrectionsEnabled]: boolean;
+    [NodeBillAppSettingsKey.BillingOveragePullDefaultLookbackDays]: number;
+    [NodeBillAppSettingsKey.BillingOveragePullMaxEvents]: number;
+    // Dunning
+    [NodeBillAppSettingsKey.DunningGlobalBaseRateBGB247]: number;
+    [NodeBillAppSettingsKey.DunningPaymentReminderEnabled]: boolean;
+    [NodeBillAppSettingsKey.DunningPaymentReminderAfterDays]: number;
+};
 
 // ============================================================================
 // SHARED UTILITY TYPES
@@ -954,6 +1066,10 @@ export type Document = {
   costCenterId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
+  title: string | null;
+  description: string | null;
+  folderId: number | null;
+  archivedAt: Date | null;
   fileName: string;
   fileType: string;
   fileSizeBytes: number;
@@ -972,6 +1088,10 @@ export type DocumentInsert = {
   costCenterId?: number | null;
   createdAt: Date;
   updatedAt?: Date | null;
+  title?: string | null;
+  description?: string | null;
+  folderId?: number | null;
+  archivedAt?: Date | null;
   fileName: string;
   fileType: string;
   fileSizeBytes: number;
@@ -1473,6 +1593,7 @@ export type ManagingCompany = {
   /** important for tax calculation and laws.. (urrently only germany supported, but we plan to expand later) */
   companyCountry: string | null;
   companyEmail: string | null;
+  emailSenderName: string | null;
   companyPhone: string | null;
   companyWebsite: string | null;
   companyCommercialRegister: string | null;
@@ -1526,6 +1647,7 @@ export type ManagingCompanyInsert = {
   /** important for tax calculation and laws.. (urrently only germany supported, but we plan to expand later) */
   companyCountry?: string | null;
   companyEmail?: string | null;
+  emailSenderName?: string | null;
   companyPhone?: string | null;
   companyWebsite?: string | null;
   companyCommercialRegister?: string | null;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
@@ -36,9 +37,28 @@ export type UsersUpdateExternalBody = {
   expression?: "idle" | "happy" | "sad" | "mad" | "surprised" | "wink" | "sleepy" | "smug" | "unsure" | "scared" | "love" | "shy" | "sick" | "thinking";
   background?: "none" | "squircle" | "circle";
 } | null;
+  locale?: string | null;
 };
 export type UsersUpdateExternalResponseData = NodeBillUser;
 export type UsersUpdateExternalResponse = import("../types").ApiEnvelope<UsersUpdateExternalResponseData>;
+
+export type UsersUpdateExternalImageParams = {
+  frontendUserId: number;
+};
+export type UsersUpdateExternalImageQuery = undefined;
+export type UsersUpdateExternalImageBody = {
+  image: string;
+};
+export type UsersUpdateExternalImageResponseData = NodeBillUser;
+export type UsersUpdateExternalImageResponse = import("../types").ApiEnvelope<UsersUpdateExternalImageResponseData>;
+
+export type UsersDeleteExternalImageParams = {
+  frontendUserId: number;
+};
+export type UsersDeleteExternalImageQuery = undefined;
+export type UsersDeleteExternalImageBody = undefined;
+export type UsersDeleteExternalImageResponseData = NodeBillUser;
+export type UsersDeleteExternalImageResponse = import("../types").ApiEnvelope<UsersDeleteExternalImageResponseData>;
 
 export type UsersDeleteParams = {
   userId: number;
@@ -147,6 +167,43 @@ export const apiRoutes_users = {
       body: UsersUpdateExternalBody;
       response: UsersUpdateExternalResponse;
       responseData: UsersUpdateExternalResponseData;
+    },
+  },
+  // Contract source: explicit
+  "users_update_external_image": {
+    method: "PUT",
+    path: "/users/update/external/:frontendUserId/image",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["users"],
+      summary: "Mirror the frontend user's profile image into this backend (base64)",
+      bodyContentType: "application/json",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: UsersUpdateExternalImageParams;
+      query: UsersUpdateExternalImageQuery;
+      body: UsersUpdateExternalImageBody;
+      response: UsersUpdateExternalImageResponse;
+      responseData: UsersUpdateExternalImageResponseData;
+    },
+  },
+  // Contract source: explicit
+  "users_delete_external_image": {
+    method: "DELETE",
+    path: "/users/update/external/:frontendUserId/image",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["users"],
+      summary: "Remove the mirrored profile image of the frontend user",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: UsersDeleteExternalImageParams;
+      query: UsersDeleteExternalImageQuery;
+      body: UsersDeleteExternalImageBody;
+      response: UsersDeleteExternalImageResponse;
+      responseData: UsersDeleteExternalImageResponseData;
     },
   },
   // Contract source: explicit

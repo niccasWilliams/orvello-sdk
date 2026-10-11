@@ -1,7 +1,8 @@
+/* eslint-disable */
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { DirectAuthLoginResponse, DirectAuthMe, DirectAuthOkResponse, DirectAuthRequestVerificationResponse, DirectAuthResponse, DirectAuthSessionListResponse, DirectAuthTokens, DirectAuthUser, DirectAuthVerifyEmailResponse } from "../../frontend-types";
+import type { DirectAuthLoginResponse, DirectAuthMe, DirectAuthOkResponse, DirectAuthRequestVerificationResponse, DirectAuthResponse, DirectAuthSessionListResponse, DirectAuthTokens, DirectAuthUser, DirectAuthVerifyEmailResponse, GoogleAuthConfigResponse } from "../../frontend-types";
 
 export type AuthMfaCompleteParams = undefined;
 export type AuthMfaCompleteQuery = undefined;
@@ -28,7 +29,14 @@ export type AuthMfaStatusResponse = import("../types").ApiEnvelope<AuthMfaStatus
 export type AuthMfaSetupParams = undefined;
 export type AuthMfaSetupQuery = undefined;
 export type AuthMfaSetupBody = {
-  password: string;
+  password?: string;
+  google?: {
+  clientKind: "web" | "android" | "ios";
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+  nonce: string;
+};
 };
 export type AuthMfaSetupResponseData = {
   secret: string;
@@ -52,7 +60,14 @@ export type AuthMfaEnableResponse = import("../types").ApiEnvelope<AuthMfaEnable
 export type AuthMfaDisableParams = undefined;
 export type AuthMfaDisableQuery = undefined;
 export type AuthMfaDisableBody = {
-  password: string;
+  password?: string;
+  google?: {
+  clientKind: "web" | "android" | "ios";
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+  nonce: string;
+};
   code: string;
   kind?: "totp" | "recovery";
 };
@@ -146,9 +161,75 @@ export type AuthMeProfileUpdateBody = {
   name?: string | null;
   firstName?: string | null;
   lastName?: string | null;
+  locale?: string | null;
 };
 export type AuthMeProfileUpdateResponseData = DirectAuthMe;
 export type AuthMeProfileUpdateResponse = import("../types").ApiEnvelope<AuthMeProfileUpdateResponseData>;
+
+export type AuthMeImageReplaceParams = undefined;
+export type AuthMeImageReplaceQuery = undefined;
+export type AuthMeImageReplaceBody = {
+  image: string;
+};
+export type AuthMeImageReplaceResponseData = DirectAuthMe;
+export type AuthMeImageReplaceResponse = import("../types").ApiEnvelope<AuthMeImageReplaceResponseData>;
+
+export type AuthMeImageDeleteParams = undefined;
+export type AuthMeImageDeleteQuery = {
+
+};
+export type AuthMeImageDeleteBody = undefined;
+export type AuthMeImageDeleteResponseData = DirectAuthMe;
+export type AuthMeImageDeleteResponse = import("../types").ApiEnvelope<AuthMeImageDeleteResponseData>;
+
+export type AuthGoogleConfigParams = undefined;
+export type AuthGoogleConfigQuery = {
+
+};
+export type AuthGoogleConfigBody = undefined;
+export type AuthGoogleConfigResponseData = GoogleAuthConfigResponse;
+export type AuthGoogleConfigResponse = import("../types").ApiEnvelope<AuthGoogleConfigResponseData>;
+
+export type AuthGoogleLoginParams = undefined;
+export type AuthGoogleLoginQuery = undefined;
+export type AuthGoogleLoginBody = {
+  clientKind: "web" | "android" | "ios";
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+  nonce: string;
+  device?: {
+  deviceId?: string;
+  deviceName?: string;
+  deviceModel?: string;
+  deviceOs?: string;
+  appVersion?: string;
+  platform?: "ios" | "android" | "web" | "expo";
+};
+};
+export type AuthGoogleLoginResponseData = DirectAuthLoginResponse;
+export type AuthGoogleLoginResponse = import("../types").ApiEnvelope<AuthGoogleLoginResponseData>;
+
+export type AuthGoogleLinkParams = undefined;
+export type AuthGoogleLinkQuery = undefined;
+export type AuthGoogleLinkBody = {
+  clientKind: "web" | "android" | "ios";
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+  nonce: string;
+  password: string;
+};
+export type AuthGoogleLinkResponseData = DirectAuthOkResponse;
+export type AuthGoogleLinkResponse = import("../types").ApiEnvelope<AuthGoogleLinkResponseData>;
+
+export type AuthGoogleUnlinkParams = undefined;
+export type AuthGoogleUnlinkQuery = undefined;
+export type AuthGoogleUnlinkBody = {
+  password: string;
+};
+export type AuthGoogleUnlinkResponseData = DirectAuthOkResponse;
+export type AuthGoogleUnlinkResponse = import("../types").ApiEnvelope<AuthGoogleUnlinkResponseData>;
 
 export type AuthPushTokenUpsertParams = undefined;
 export type AuthPushTokenUpsertQuery = undefined;
@@ -299,7 +380,7 @@ export const apiRoutes_auth = {
     auth: {"type":"frontend_bearer_http"},
     meta: {
       tags: ["auth"],
-      summary: "Prepare TOTP enrollment after rechecking the password",
+      summary: "Prepare TOTP enrollment after rechecking the password or a fresh Google sign-in",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
@@ -337,7 +418,7 @@ export const apiRoutes_auth = {
     auth: {"type":"frontend_bearer_http"},
     meta: {
       tags: ["auth"],
-      summary: "Disable MFA using both the password and a second factor",
+      summary: "Disable MFA using the password or a fresh Google sign-in, plus a second factor",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
@@ -450,7 +531,7 @@ export const apiRoutes_auth = {
     auth: {"type":"frontend_bearer_http"},
     meta: {
       tags: ["auth"],
-      summary: "Update the current user's own profile (name, avatar)",
+      summary: "Update the current user's own profile (name, avatar, locale)",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
@@ -460,6 +541,118 @@ export const apiRoutes_auth = {
       body: AuthMeProfileUpdateBody;
       response: AuthMeProfileUpdateResponse;
       responseData: AuthMeProfileUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_me_image_replace": {
+    method: "PUT",
+    path: "/auth/me/image",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Upload the current user's profile image (base64), stored in this backend",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthMeImageReplaceParams;
+      query: AuthMeImageReplaceQuery;
+      body: AuthMeImageReplaceBody;
+      response: AuthMeImageReplaceResponse;
+      responseData: AuthMeImageReplaceResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_me_image_delete": {
+    method: "DELETE",
+    path: "/auth/me/image",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Remove the current user's profile image",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: AuthMeImageDeleteParams;
+      query: AuthMeImageDeleteQuery;
+      body: AuthMeImageDeleteBody;
+      response: AuthMeImageDeleteResponse;
+      responseData: AuthMeImageDeleteResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_google_config": {
+    method: "GET",
+    path: "/auth/google/config",
+    auth: {"type":"public"},
+    meta: {
+      tags: ["auth"],
+      summary: "Public Google sign-in configuration per client kind (never a secret)",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: AuthGoogleConfigParams;
+      query: AuthGoogleConfigQuery;
+      body: AuthGoogleConfigBody;
+      response: AuthGoogleConfigResponse;
+      responseData: AuthGoogleConfigResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_google_login": {
+    method: "POST",
+    path: "/auth/google",
+    auth: {"type":"public"},
+    meta: {
+      tags: ["auth"],
+      summary: "Sign in with a Google authorization code obtained via system browser + PKCE",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthGoogleLoginParams;
+      query: AuthGoogleLoginQuery;
+      body: AuthGoogleLoginBody;
+      response: AuthGoogleLoginResponse;
+      responseData: AuthGoogleLoginResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_google_link": {
+    method: "POST",
+    path: "/auth/google/link",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Link a Google account to the current user (requires the current password)",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthGoogleLinkParams;
+      query: AuthGoogleLinkQuery;
+      body: AuthGoogleLinkBody;
+      response: AuthGoogleLinkResponse;
+      responseData: AuthGoogleLinkResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_google_unlink": {
+    method: "DELETE",
+    path: "/auth/google/link",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Unlink Google from the current user (requires the password, revokes all sessions)",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthGoogleUnlinkParams;
+      query: AuthGoogleUnlinkQuery;
+      body: AuthGoogleUnlinkBody;
+      response: AuthGoogleUnlinkResponse;
+      responseData: AuthGoogleUnlinkResponseData;
     },
   },
   // Contract source: explicit
