@@ -1,3 +1,7 @@
+## 0.7.3 - 2026-10-11
+
+- Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
+
 ## 0.7.1 - 2026-10-06
 
 - `headers` aus der Konfiguration gehen jetzt an jeden Weg zum Dienst: Token-Tausch,
