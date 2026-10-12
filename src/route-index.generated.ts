@@ -149,6 +149,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "bookkeeping_payments_create_manual_external": ["POST", "/bookkeeping/payments/external/manual", "b", "unified_bearer", 4, ["payments:write"]],
   "bookkeeping_payments_list_accounts_external": ["GET", "/bookkeeping/payments/external/accounts", "b", "unified_bearer", 2, ["payments:read"]],
   "bookkeeping_payments_settle_invoice_external": ["POST", "/bookkeeping/payments/external/settle-invoice", "b", "unified_bearer", 4, ["payments:write","invoices:write"]],
+  "bookkeeping_payments_settlement_fee_correction_external": ["POST", "/bookkeeping/payments/external/settle-invoice/fee-correction", "b", "unified_bearer", 4, ["payments:write","invoices:write"]],
   "bookkeeping_reports_asset_register": ["GET", "/bookkeeping/reports/assets", "b", "frontend_permission_http", 2],
   "bookkeeping_reports_category_breakdown": ["GET", "/bookkeeping/reports/category-breakdown", "b", "frontend_permission_http", 2],
   "bookkeeping_reports_euer": ["GET", "/bookkeeping/reports/euer", "b", "frontend_permission_http", 2],

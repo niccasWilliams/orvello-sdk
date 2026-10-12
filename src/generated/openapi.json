@@ -32637,6 +32637,15 @@
                   "feeVatRate": {
                     "type": "string",
                     "pattern": "^\\d+(\\.\\d{1,4})?$"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "sumup",
+                      "paypal",
+                      "stripe",
+                      "klarna"
+                    ]
                   }
                 },
                 "required": [
@@ -33386,7 +33395,7 @@
           "payments-external"
         ],
         "summary": "Settle invoice via external API",
-        "description": "One-shot settlement for shop/payment-provider flows: creates payment, allocates it to the invoice, and can auto-close shortfall as discount so no manual allocation step remains.",
+        "description": "One-shot settlement for shop/payment-provider flows. Preferred contract: grossAmount (customer payment, settles the invoice), feeAmount + feeProvider + feeReference (provider fee, booked as expense, never as customer discount), paidAt (actual payment time) and, for a payment currency other than the invoice currency, originalAmount/originalCurrency (documented gross in invoice currency; realized FX difference is recorded). Legacy contract (payoutAmount + bookedAt, optional closeGapStrategy=discount) keeps working unchanged; existing discounts are not reinterpreted. A changed fee for an already used reference is rejected with 409: use /settle-invoice/fee-correction.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -33504,6 +33513,10 @@
                     "type": "string",
                     "minLength": 1
                   },
+                  "paidAt": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "valueAt": {
                     "type": "string"
                   },
@@ -33516,6 +33529,54 @@
                         "type": "number"
                       }
                     ]
+                  },
+                  "grossAmount": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "feeAmount": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "feeProvider": {
+                    "type": "string",
+                    "enum": [
+                      "sumup",
+                      "paypal",
+                      "stripe",
+                      "klarna"
+                    ]
+                  },
+                  "feeReference": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "originalAmount": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "originalCurrency": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 3
                   },
                   "currency": {
                     "type": "string",
@@ -33563,9 +33624,195 @@
                 },
                 "required": [
                   "invoiceId",
+                  "paymentAccountId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "editor"
+        },
+        "x-scopes": [
+          "payments:write",
+          "invoices:write"
+        ]
+      }
+    },
+    "/bookkeeping/payments/external/settle-invoice/fee-correction": {
+      "post": {
+        "operationId": "bookkeeping_payments_settlement_fee_correction_external",
+        "tags": [
+          "bookkeeping",
+          "payments-external"
+        ],
+        "summary": "Correct the provider fee of an external settlement",
+        "description": "Later provider fee change (e.g. fee refund) on a settlement made with grossAmount/feeAmount. The original payment stays unchanged; the difference is booked on correctedAt as its own account movement with a signed fee receipt. Idempotent per correctionRef. Legacy net-payout settlements are refused (422): their fee was never documented.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "invoiceId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "paymentAccountId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "externalRef": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120
+                  },
+                  "feeAmount": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  },
+                  "correctedAt": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "correctionRef": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120
+                  },
+                  "feeReference": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "invoiceId",
                   "paymentAccountId",
-                  "bookedAt",
-                  "payoutAmount"
+                  "externalRef",
+                  "feeAmount",
+                  "correctedAt",
+                  "correctionRef"
                 ],
                 "additionalProperties": false
               }

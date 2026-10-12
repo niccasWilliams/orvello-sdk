@@ -62,8 +62,8 @@ export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capit
 export type PaymentAllocationKind = 'payment' | 'refund' | 'fee' | 'writeoff' | 'discount';
 export type IabStatus = 'active' | 'dissolved' | 'reversed' | 'warning';
 export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement';
-export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
-export type PaymentProvider = 'sumup';
+export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
+export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
 export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api';
 export type PaymentAccountBalanceType = 'bank_statement' | 'manual_count' | 'api_reported';
 export type TaxParamScope = 'global' | 'company';
@@ -2649,6 +2649,12 @@ export type Payment = {
   netAmount: string | null;
   feeExpenseId: number | null;
   /**
+   * Anbieter und Anbieter-Referenz der abgezogenen Gebuehr (TSK-000366 #725). Null bei
+   * Altzeilen: dort folgt der Anbieter aus dem Kontotyp (paypal/sumup) oder es gibt keinen.
+   */
+  feeProvider: PaymentProvider | null;
+  feeReference: string | null;
+  /**
    * FX context (informational — payment.amount is ALWAYS in account currency)
    * Records the original foreign-currency amount for audit/compliance.
    * GoBD: The actual bank movement (amount/currency) is authoritative and never converted.
@@ -2727,6 +2733,12 @@ export type PaymentInsert = {
   /** amount - feeAmount = what was actually received/sent */
   netAmount?: string | null;
   feeExpenseId?: number | null;
+  /**
+   * Anbieter und Anbieter-Referenz der abgezogenen Gebuehr (TSK-000366 #725). Null bei
+   * Altzeilen: dort folgt der Anbieter aus dem Kontotyp (paypal/sumup) oder es gibt keinen.
+   */
+  feeProvider?: PaymentProvider | null;
+  feeReference?: string | null;
   /**
    * FX context (informational — payment.amount is ALWAYS in account currency)
    * Records the original foreign-currency amount for audit/compliance.
@@ -2824,6 +2836,43 @@ export type PaymentAllocationInsert = {
 };
 
 export type PaymentAllocationId = number;
+
+export type PaymentFeeCorrection = {
+  id: number;
+  managingCompanyId: number;
+  paymentId: number;
+  correctionPaymentId: number;
+  expenseId: number;
+  provider: PaymentProvider;
+  providerReference: string | null;
+  /** Idempotenzschluessel des Aufrufers je Ursprungszahlung. */
+  correctionRef: string;
+  previousFeeAmount: string;
+  newFeeAmount: string;
+  /** Vorzeichenbehaftet: + mehr Gebuehr (Abfluss), - Gebuehrenerstattung (Zufluss). */
+  deltaAmount: string;
+  currency: string;
+  correctedAt: Date;
+  reason: string | null;
+  createdAt: Date;
+  createdBy: number | null;
+};
+
+export type PaymentAllocationFxResult = {
+  id: number;
+  managingCompanyId: number;
+  allocationId: number;
+  baseCurrency: string;
+  targetCurrency: string;
+  targetAmount: string;
+  bookRate: string;
+  bookRateProvider: string;
+  bookRateDate: string;
+  bookBaseAmount: string;
+  settledBaseAmount: string;
+  realizedDifference: string;
+  createdAt: Date;
+};
 
 export type ResolvedPaymentAllocation = {
     allocationId: number;

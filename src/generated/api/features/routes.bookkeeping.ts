@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -1677,6 +1677,7 @@ export type PaymentsUpdateFeeVatTreatmentQuery = undefined;
 export type PaymentsUpdateFeeVatTreatmentBody = {
   feeVatTreatment: "UNKNOWN" | "EXEMPT" | "INCLUSIVE_STANDARD" | "REVERSE_CHARGE_13B";
   feeVatRate?: string;
+  provider?: "sumup" | "paypal" | "stripe" | "klarna";
 };
 export type PaymentsUpdateFeeVatTreatmentResponseData = PaymentProviderConnection;
 export type PaymentsUpdateFeeVatTreatmentResponse = import("../types").ApiEnvelope<PaymentsUpdateFeeVatTreatmentResponseData>;
@@ -1763,9 +1764,16 @@ export type BookkeepingPaymentsSettleInvoiceExternalQuery = undefined;
 export type BookkeepingPaymentsSettleInvoiceExternalBody = {
   invoiceId: number;
   paymentAccountId: number;
-  bookedAt: string;
+  bookedAt?: string;
+  paidAt?: string;
   valueAt?: string;
-  payoutAmount: string | number;
+  payoutAmount?: string | number;
+  grossAmount?: string | number;
+  feeAmount?: string | number;
+  feeProvider?: "sumup" | "paypal" | "stripe" | "klarna";
+  feeReference?: string;
+  originalAmount?: string | number;
+  originalCurrency?: string;
   currency?: string;
   counterpartyName?: string;
   counterpartyIban?: string;
@@ -1779,8 +1787,23 @@ export type BookkeepingPaymentsSettleInvoiceExternalBody = {
   markInvoicePaid?: boolean;
   raw?: any;
 };
-export type BookkeepingPaymentsSettleInvoiceExternalResponseData = { createdPayment: boolean; idempotent: boolean; payment: Payment; allocations: PaymentAllocation[]; invoice: Invoice; closed: boolean; shortfallAmount: string; gapClosed: boolean };
+export type BookkeepingPaymentsSettleInvoiceExternalResponseData = { createdPayment: boolean; idempotent: boolean; settlementModel: "legacy_payout" | "gross_with_fee"; dateSource: "paidAt" | "bookedAt"; payment: Payment; allocations: PaymentAllocation[]; invoice: Invoice; closed: boolean; shortfallAmount: string; gapClosed: boolean; fee: { amount: string | null; currency: string | null; provider: string | null; reference: string | null; expenseId: number | null; status: "none" | "booked" | "already_booked" | "awaiting_configuration" | "missing_provider" }; fxResult: PaymentAllocationFxResult | null };
 export type BookkeepingPaymentsSettleInvoiceExternalResponse = import("../types").ApiEnvelope<BookkeepingPaymentsSettleInvoiceExternalResponseData>;
+
+export type BookkeepingPaymentsSettlementFeeCorrectionExternalParams = undefined;
+export type BookkeepingPaymentsSettlementFeeCorrectionExternalQuery = undefined;
+export type BookkeepingPaymentsSettlementFeeCorrectionExternalBody = {
+  invoiceId: number;
+  paymentAccountId: number;
+  externalRef: string;
+  feeAmount: string | number;
+  correctedAt: string;
+  correctionRef: string;
+  feeReference?: string;
+  reason?: string;
+};
+export type BookkeepingPaymentsSettlementFeeCorrectionExternalResponseData = { corrected: boolean; idempotent: boolean; correction: PaymentFeeCorrection | null; currentFee: string };
+export type BookkeepingPaymentsSettlementFeeCorrectionExternalResponse = import("../types").ApiEnvelope<BookkeepingPaymentsSettlementFeeCorrectionExternalResponseData>;
 
 export type BookkeepingAuditLogsParams = undefined;
 export type BookkeepingAuditLogsQuery = {
@@ -4827,7 +4850,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments-external"],
       summary: "Settle invoice via external API",
-      description: "One-shot settlement for shop/payment-provider flows: creates payment, allocates it to the invoice, and can auto-close shortfall as discount so no manual allocation step remains.",
+      description: "One-shot settlement for shop/payment-provider flows. Preferred contract: grossAmount (customer payment, settles the invoice), feeAmount + feeProvider + feeReference (provider fee, booked as expense, never as customer discount), paidAt (actual payment time) and, for a payment currency other than the invoice currency, originalAmount/originalCurrency (documented gross in invoice currency; realized FX difference is recorded). Legacy contract (payoutAmount + bookedAt, optional closeGapStrategy=discount) keeps working unchanged; existing discounts are not reinterpreted. A changed fee for an already used reference is rejected with 409: use /settle-invoice/fee-correction.",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
@@ -4837,6 +4860,26 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingPaymentsSettleInvoiceExternalBody;
       response: BookkeepingPaymentsSettleInvoiceExternalResponse;
       responseData: BookkeepingPaymentsSettleInvoiceExternalResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_payments_settlement_fee_correction_external": {
+    method: "POST",
+    path: "/bookkeeping/payments/external/settle-invoice/fee-correction",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"editor","scopes":["payments:write","invoices:write"]},
+    meta: {
+      tags: ["bookkeeping","payments-external"],
+      summary: "Correct the provider fee of an external settlement",
+      description: "Later provider fee change (e.g. fee refund) on a settlement made with grossAmount/feeAmount. The original payment stays unchanged; the difference is booked on correctedAt as its own account movement with a signed fee receipt. Idempotent per correctionRef. Legacy net-payout settlements are refused (422): their fee was never documented.",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingPaymentsSettlementFeeCorrectionExternalParams;
+      query: BookkeepingPaymentsSettlementFeeCorrectionExternalQuery;
+      body: BookkeepingPaymentsSettlementFeeCorrectionExternalBody;
+      response: BookkeepingPaymentsSettlementFeeCorrectionExternalResponse;
+      responseData: BookkeepingPaymentsSettlementFeeCorrectionExternalResponseData;
     },
   },
   // Contract source: explicit
