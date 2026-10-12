@@ -31,6 +31,7 @@ export * from "./base/routes.permissions";
 export * from "./base/routes.roles";
 export * from "./base/routes.security";
 export * from "./base/routes.settings";
+export * from "./features/routes.tax_years";
 export * from "./base/routes.user_activity";
 export * from "./base/routes.users";
 export * from "./base/routes.webhooks";
@@ -64,6 +65,7 @@ import { apiRoutes_permissions } from "./base/routes.permissions";
 import { apiRoutes_roles } from "./base/routes.roles";
 import { apiRoutes_security } from "./base/routes.security";
 import { apiRoutes_settings } from "./base/routes.settings";
+import { apiRoutes_tax_years } from "./features/routes.tax_years";
 import { apiRoutes_user_activity } from "./base/routes.user_activity";
 import { apiRoutes_users } from "./base/routes.users";
 import { apiRoutes_webhooks } from "./base/routes.webhooks";
@@ -97,6 +99,7 @@ export type ApiRoutes =
   & typeof apiRoutes_roles
   & typeof apiRoutes_security
   & typeof apiRoutes_settings
+  & typeof apiRoutes_tax_years
   & typeof apiRoutes_user_activity
   & typeof apiRoutes_users
   & typeof apiRoutes_webhooks
@@ -131,6 +134,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_roles,
   ...apiRoutes_security,
   ...apiRoutes_settings,
+  ...apiRoutes_tax_years,
   ...apiRoutes_user_activity,
   ...apiRoutes_users,
   ...apiRoutes_webhooks,

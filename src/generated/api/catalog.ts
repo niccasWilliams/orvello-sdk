@@ -37,7 +37,8 @@ export const apiMountPrefixes = {
   "/exports",
   "/invoices",
   "/managing-companies",
-  "/oauth"
+  "/oauth",
+  "/tax-years"
 ],
 } as const;
 
@@ -166,6 +167,10 @@ export const apiGroups = {
     "module": "./features/routes.managing_company_logos"
   },
   {
+    "key": "tax_years",
+    "module": "./features/routes.tax_years"
+  },
+  {
     "key": "work_tracking",
     "module": "./features/routes.work_tracking"
   }
@@ -278,6 +283,10 @@ export const apiGroups = {
   {
     "key": "settings",
     "module": "./base/routes.settings"
+  },
+  {
+    "key": "tax_years",
+    "module": "./features/routes.tax_years"
   },
   {
     "key": "user_activity",

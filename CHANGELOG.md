@@ -2,6 +2,12 @@
 
 - Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
 
+## 0.7.4 - 2026-10-12
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: TaxYearsGetParams, TaxYearsGetQuery, TaxYearsGetBody, TaxYearsGetResponseData, TaxYearsGetResponse, TaxYearsConfigureParams, TaxYearsConfigureQuery, TaxYearsConfigureBody (+18)
+
 ## 0.7.1 - 2026-10-06
 
 - `headers` aus der Konfiguration gehen jetzt an jeden Weg zum Dienst: Token-Tausch,

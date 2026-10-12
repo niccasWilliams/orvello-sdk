@@ -746,6 +746,13 @@ export type BookkeepingReportsEuerQuery = {
 };
 export type BookkeepingReportsEuerBody = undefined;
 export type BookkeepingReportsEuerResponseData = {
+  sourceFingerprint: string;
+  warnings: Array<{
+  code: string;
+  source: string;
+  documentId: number;
+  message: string;
+}>;
   year: number;
   period: {
   start: string;
