@@ -2,6 +2,34 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
+export type TaxYearsRemindersParams = undefined;
+export type TaxYearsRemindersQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type TaxYearsRemindersBody = undefined;
+export type TaxYearsRemindersResponseData = {
+  generatedAt: string;
+  ruleVersion: string;
+  reminders: Array<{
+  dedupeKey: string;
+  year: number;
+  stage: "d90" | "d30" | "d7" | "overdue";
+  deadline: string;
+  title: string;
+  body: string;
+  link: string;
+}>;
+};
+export type TaxYearsRemindersResponse = import("../types").ApiEnvelope<TaxYearsRemindersResponseData>;
+
+export type TaxYearsRemindersAcknowledgeParams = undefined;
+export type TaxYearsRemindersAcknowledgeQuery = undefined;
+export type TaxYearsRemindersAcknowledgeBody = {
+  dedupeKeys: Array<string>;
+};
+export type TaxYearsRemindersAcknowledgeResponseData = {
+  acknowledged: Array<string>;
+};
+export type TaxYearsRemindersAcknowledgeResponse = import("../types").ApiEnvelope<TaxYearsRemindersAcknowledgeResponseData>;
+
 export type TaxYearsGetParams = {
   year: string;
 };
@@ -157,6 +185,20 @@ export type TaxYearsGetResponseData = {
   status: "needs_input" | "in_preparation" | "ready_for_manual_transfer" | "submission_recorded" | "needs_review";
 };
   limitations: Array<string>;
+  deadlines: Array<{
+  key: "income_tax_return" | "income_tax_return_advised";
+  title: string;
+  date: string;
+  binding: boolean;
+  appliesWhen: string;
+  legalBasis: string;
+  sources: Array<{
+  label: string;
+  url: string;
+}>;
+  status: "running_year" | "upcoming" | "due_soon" | "overdue" | "submitted";
+  daysLeft: number | null;
+}>;
 };
 export type TaxYearsGetResponse = import("../types").ApiEnvelope<TaxYearsGetResponseData>;
 
@@ -332,6 +374,20 @@ export type TaxYearsConfigureResponseData = {
   status: "needs_input" | "in_preparation" | "ready_for_manual_transfer" | "submission_recorded" | "needs_review";
 };
   limitations: Array<string>;
+  deadlines: Array<{
+  key: "income_tax_return" | "income_tax_return_advised";
+  title: string;
+  date: string;
+  binding: boolean;
+  appliesWhen: string;
+  legalBasis: string;
+  sources: Array<{
+  label: string;
+  url: string;
+}>;
+  status: "running_year" | "upcoming" | "due_soon" | "overdue" | "submitted";
+  daysLeft: number | null;
+}>;
 };
 export type TaxYearsConfigureResponse = import("../types").ApiEnvelope<TaxYearsConfigureResponseData>;
 
@@ -542,6 +598,20 @@ export type TaxYearsReviewResponseData = {
   status: "needs_input" | "in_preparation" | "ready_for_manual_transfer" | "submission_recorded" | "needs_review";
 };
   limitations: Array<string>;
+  deadlines: Array<{
+  key: "income_tax_return" | "income_tax_return_advised";
+  title: string;
+  date: string;
+  binding: boolean;
+  appliesWhen: string;
+  legalBasis: string;
+  sources: Array<{
+  label: string;
+  url: string;
+}>;
+  status: "running_year" | "upcoming" | "due_soon" | "overdue" | "submitted";
+  daysLeft: number | null;
+}>;
 };
 export type TaxYearsReviewResponse = import("../types").ApiEnvelope<TaxYearsReviewResponseData>;
 
@@ -707,8 +777,30 @@ export type TaxYearsRecordSubmissionResponseData = {
   status: "needs_input" | "in_preparation" | "ready_for_manual_transfer" | "submission_recorded" | "needs_review";
 };
   limitations: Array<string>;
+  deadlines: Array<{
+  key: "income_tax_return" | "income_tax_return_advised";
+  title: string;
+  date: string;
+  binding: boolean;
+  appliesWhen: string;
+  legalBasis: string;
+  sources: Array<{
+  label: string;
+  url: string;
+}>;
+  status: "running_year" | "upcoming" | "due_soon" | "overdue" | "submitted";
+  daysLeft: number | null;
+}>;
 };
 export type TaxYearsRecordSubmissionResponse = import("../types").ApiEnvelope<TaxYearsRecordSubmissionResponseData>;
+
+export type TaxYearsEvidencePdfParams = {
+  year: string;
+};
+export type TaxYearsEvidencePdfQuery = undefined;
+export type TaxYearsEvidencePdfBody = undefined;
+export type TaxYearsEvidencePdfResponseData = Blob;
+export type TaxYearsEvidencePdfResponse = Blob;
 
 export type TaxYearsHistoryParams = {
   year: string;
@@ -971,6 +1063,42 @@ export type TaxYearsHistoryResponse = import("../types").ApiEnvelope<TaxYearsHis
 
 export const apiRoutes_tax_years = {
   // Contract source: explicit
+  "tax_years_reminders": {
+    method: "GET",
+    path: "/tax-years/reminders",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["tax-years"],
+      summary: "Fällige Frist-Erinnerungen des Nutzers",
+      description: "Lesend. Höchstens eine Erinnerung je abgeschlossenem Steuerjahr mit eigenem Betrieb und ohne dokumentierte Abgabe: 90, 30 und 7 Tage vor der gesetzlichen Frist ohne Steuerberatung sowie nach Ablauf. Bereits bestätigte Erinnerungen fehlen. dedupeKey ist stabil; nach der Zustellung mit tax_years_reminders_acknowledge bestätigen. Keine Aussage über die Abgabepflicht.",
+    },
+    types: null as unknown as {
+      params: TaxYearsRemindersParams;
+      query: TaxYearsRemindersQuery;
+      body: TaxYearsRemindersBody;
+      response: TaxYearsRemindersResponse;
+      responseData: TaxYearsRemindersResponseData;
+    },
+  },
+  // Contract source: explicit
+  "tax_years_reminders_acknowledge": {
+    method: "POST",
+    path: "/tax-years/reminders/acknowledgements",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["tax-years"],
+      summary: "Zustellung von Frist-Erinnerungen bestätigen",
+      description: "Idempotent. Bestätigt nur Schlüssel, die für den angemeldeten Nutzer gerade fällig sind; unbekannte werden ignoriert. Eine bestätigte Erinnerung wird nicht erneut geliefert.",
+    },
+    types: null as unknown as {
+      params: TaxYearsRemindersAcknowledgeParams;
+      query: TaxYearsRemindersAcknowledgeQuery;
+      body: TaxYearsRemindersAcknowledgeBody;
+      response: TaxYearsRemindersAcknowledgeResponse;
+      responseData: TaxYearsRemindersAcknowledgeResponseData;
+    },
+  },
+  // Contract source: explicit
   "tax_years_get": {
     method: "GET",
     path: "/tax-years/:year",
@@ -1044,6 +1172,25 @@ export const apiRoutes_tax_years = {
       body: TaxYearsRecordSubmissionBody;
       response: TaxYearsRecordSubmissionResponse;
       responseData: TaxYearsRecordSubmissionResponseData;
+    },
+  },
+  // Contract source: explicit
+  "tax_years_evidence_pdf": {
+    method: "GET",
+    path: "/tax-years/:year/evidence-pdf",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["tax-years"],
+      summary: "Nachweispaket des Steuerjahres als PDF",
+      description: "Fasst Situation, Fristen, Arbeitsschritte mit Prüfnotizen und Abgaben, Korrekturen mit Belegreferenzen und archivierte EÜR-Berechnungen zusammen. Betriebszahlen nur bei aktuell bestätigtem Verwaltungszugriff. Kein Steuerbescheid, enthält keine Originalbelege.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: TaxYearsEvidencePdfParams;
+      query: TaxYearsEvidencePdfQuery;
+      body: TaxYearsEvidencePdfBody;
+      response: TaxYearsEvidencePdfResponse;
+      responseData: TaxYearsEvidencePdfResponseData;
     },
   },
   // Contract source: explicit

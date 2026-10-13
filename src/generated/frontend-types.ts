@@ -333,7 +333,7 @@ export type GoogleAuthClientKind = "web" | "android" | "ios";
 
 export type GoogleAuthClientStatus = {
   kind: GoogleAuthClientKind;
-  state: "ready" | "absent" | "blocked";
+  state: "ready" | "absent" | "blocked" | "disabled";
   reason: string | null;
   clientId: string | null;
   redirectUris: string[];

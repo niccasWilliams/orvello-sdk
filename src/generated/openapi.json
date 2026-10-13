@@ -42194,6 +42194,238 @@
         ]
       }
     },
+    "/tax-years/reminders": {
+      "get": {
+        "operationId": "tax_years_reminders",
+        "tags": [
+          "tax-years"
+        ],
+        "summary": "Fällige Frist-Erinnerungen des Nutzers",
+        "description": "Lesend. Höchstens eine Erinnerung je abgeschlossenem Steuerjahr mit eigenem Betrieb und ohne dokumentierte Abgabe: 90, 30 und 7 Tage vor der gesetzlichen Frist ohne Steuerberatung sowie nach Ablauf. Bereits bestätigte Erinnerungen fehlen. dedupeKey ist stabil; nach der Zustellung mit tax_years_reminders_acknowledge bestätigen. Keine Aussage über die Abgabepflicht.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "generatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "ruleVersion": {
+                              "type": "string"
+                            },
+                            "reminders": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "dedupeKey": {
+                                    "type": "string"
+                                  },
+                                  "year": {
+                                    "type": "integer"
+                                  },
+                                  "stage": {
+                                    "type": "string",
+                                    "enum": [
+                                      "d90",
+                                      "d30",
+                                      "d7",
+                                      "overdue"
+                                    ]
+                                  },
+                                  "deadline": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "body": {
+                                    "type": "string"
+                                  },
+                                  "link": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "dedupeKey",
+                                  "year",
+                                  "stage",
+                                  "deadline",
+                                  "title",
+                                  "body",
+                                  "link"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "generatedAt",
+                            "ruleVersion",
+                            "reminders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
+    "/tax-years/reminders/acknowledgements": {
+      "post": {
+        "operationId": "tax_years_reminders_acknowledge",
+        "tags": [
+          "tax-years"
+        ],
+        "summary": "Zustellung von Frist-Erinnerungen bestätigen",
+        "description": "Idempotent. Bestätigt nur Schlüssel, die für den angemeldeten Nutzer gerade fällig sind; unbekannte werden ignoriert. Eine bestätigte Erinnerung wird nicht erneut geliefert.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "acknowledged": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "acknowledged"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dedupeKeys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  }
+                },
+                "required": [
+                  "dedupeKeys"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
     "/tax-years/:year": {
       "get": {
         "operationId": "tax_years_get",
@@ -43096,6 +43328,89 @@
                               "items": {
                                 "type": "string"
                               }
+                            },
+                            "deadlines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "income_tax_return",
+                                      "income_tax_return_advised"
+                                    ]
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "date": {
+                                    "type": "string",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                                  },
+                                  "binding": {
+                                    "type": "boolean"
+                                  },
+                                  "appliesWhen": {
+                                    "type": "string"
+                                  },
+                                  "legalBasis": {
+                                    "type": "string"
+                                  },
+                                  "sources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "label": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "format": "uri"
+                                        }
+                                      },
+                                      "required": [
+                                        "label",
+                                        "url"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "running_year",
+                                      "upcoming",
+                                      "due_soon",
+                                      "overdue",
+                                      "submitted"
+                                    ]
+                                  },
+                                  "daysLeft": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "title",
+                                  "date",
+                                  "binding",
+                                  "appliesWhen",
+                                  "legalBasis",
+                                  "sources",
+                                  "status",
+                                  "daysLeft"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -43107,7 +43422,8 @@
                             "tasks",
                             "businesses",
                             "summary",
-                            "limitations"
+                            "limitations",
+                            "deadlines"
                           ],
                           "additionalProperties": false
                         },
@@ -44048,6 +44364,89 @@
                               "items": {
                                 "type": "string"
                               }
+                            },
+                            "deadlines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "income_tax_return",
+                                      "income_tax_return_advised"
+                                    ]
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "date": {
+                                    "type": "string",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                                  },
+                                  "binding": {
+                                    "type": "boolean"
+                                  },
+                                  "appliesWhen": {
+                                    "type": "string"
+                                  },
+                                  "legalBasis": {
+                                    "type": "string"
+                                  },
+                                  "sources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "label": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "format": "uri"
+                                        }
+                                      },
+                                      "required": [
+                                        "label",
+                                        "url"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "running_year",
+                                      "upcoming",
+                                      "due_soon",
+                                      "overdue",
+                                      "submitted"
+                                    ]
+                                  },
+                                  "daysLeft": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "title",
+                                  "date",
+                                  "binding",
+                                  "appliesWhen",
+                                  "legalBasis",
+                                  "sources",
+                                  "status",
+                                  "daysLeft"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -44059,7 +44458,8 @@
                             "tasks",
                             "businesses",
                             "summary",
-                            "limitations"
+                            "limitations",
+                            "deadlines"
                           ],
                           "additionalProperties": false
                         },
@@ -45118,6 +45518,89 @@
                               "items": {
                                 "type": "string"
                               }
+                            },
+                            "deadlines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "income_tax_return",
+                                      "income_tax_return_advised"
+                                    ]
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "date": {
+                                    "type": "string",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                                  },
+                                  "binding": {
+                                    "type": "boolean"
+                                  },
+                                  "appliesWhen": {
+                                    "type": "string"
+                                  },
+                                  "legalBasis": {
+                                    "type": "string"
+                                  },
+                                  "sources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "label": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "format": "uri"
+                                        }
+                                      },
+                                      "required": [
+                                        "label",
+                                        "url"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "running_year",
+                                      "upcoming",
+                                      "due_soon",
+                                      "overdue",
+                                      "submitted"
+                                    ]
+                                  },
+                                  "daysLeft": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "title",
+                                  "date",
+                                  "binding",
+                                  "appliesWhen",
+                                  "legalBasis",
+                                  "sources",
+                                  "status",
+                                  "daysLeft"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -45129,7 +45612,8 @@
                             "tasks",
                             "businesses",
                             "summary",
-                            "limitations"
+                            "limitations",
+                            "deadlines"
                           ],
                           "additionalProperties": false
                         },
@@ -46364,6 +46848,89 @@
                               "items": {
                                 "type": "string"
                               }
+                            },
+                            "deadlines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "income_tax_return",
+                                      "income_tax_return_advised"
+                                    ]
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "date": {
+                                    "type": "string",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                                  },
+                                  "binding": {
+                                    "type": "boolean"
+                                  },
+                                  "appliesWhen": {
+                                    "type": "string"
+                                  },
+                                  "legalBasis": {
+                                    "type": "string"
+                                  },
+                                  "sources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "label": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "format": "uri"
+                                        }
+                                      },
+                                      "required": [
+                                        "label",
+                                        "url"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "running_year",
+                                      "upcoming",
+                                      "due_soon",
+                                      "overdue",
+                                      "submitted"
+                                    ]
+                                  },
+                                  "daysLeft": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "title",
+                                  "date",
+                                  "binding",
+                                  "appliesWhen",
+                                  "legalBasis",
+                                  "sources",
+                                  "status",
+                                  "daysLeft"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -46375,7 +46942,8 @@
                             "tasks",
                             "businesses",
                             "summary",
-                            "limitations"
+                            "limitations",
+                            "deadlines"
                           ],
                           "additionalProperties": false
                         },
@@ -46453,6 +47021,46 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
+    "/tax-years/:year/evidence-pdf": {
+      "get": {
+        "operationId": "tax_years_evidence_pdf",
+        "tags": [
+          "tax-years"
+        ],
+        "summary": "Nachweispaket des Steuerjahres als PDF",
+        "description": "Fasst Situation, Fristen, Arbeitsschritte mit Prüfnotizen und Abgaben, Korrekturen mit Belegreferenzen und archivierte EÜR-Berechnungen zusammen. Betriebszahlen nur bei aktuell bestätigtem Verwaltungszugriff. Kein Steuerbescheid, enthält keine Originalbelege.",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^20\\d{2}$"
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []

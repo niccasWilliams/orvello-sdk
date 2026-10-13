@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "appId": "node-bills",
+  "evidence": "source-capability",
+  "direct": {
+    "kind": "direct",
+    "audience": "node-bills",
+    "issuer": "node-bills:direct-auth"
+  }
+}
