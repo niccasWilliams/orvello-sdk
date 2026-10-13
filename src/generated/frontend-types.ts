@@ -2712,6 +2712,26 @@ export type Payment = {
    * zusammengefuehrt wurde; so findet eine Gebuehrenkorrektur den Abschluss und sein Konto.
    */
   externalSettlementRef: string | null;
+  /**
+   * ── Anbieter-Erstattung (TSK-000380) ─────────────────────────
+   * Eine abgerufene Erstattung (PayPal T1107) nennt die Transaktion, die sie erstattet
+   * (paypal_reference_id), und die Gebuehr, die der Anbieter dabei zurueckgibt. Die Gebuehr ist
+   * kein Abzug dieser Zahlung, sondern mindert die Gebuehr der Ursprungszahlung: sie wird dort
+   * als Gebuehrenkorrektur gebucht (payment_fee_corrections), genau einmal mit der des Shops.
+   */
+  refundOfReference: string | null;
+  refundedFeeAmount: string | null;
+  /**
+   * Gesetzt, sobald die zurueckgegebene Gebuehr an der Ursprungszahlung steht (vom Abruf oder
+   * schon vom Shop gebucht). Null mit refundedFeeAmount = wartet.
+   */
+  refundFeeResolvedAt: Date | null;
+  /**
+   * Die Gutschrift/das Storno, zu der diese Rueckzahlung gehoert. Zugeordnet ist sie als
+   * refund auf die Originalrechnung; Schluessel ist die Anbieter-Erstattungs-ID
+   * (= invoices.correction_idempotency_key der Gutschrift = bankTransactionId dieser Zahlung).
+   */
+  refundCreditNoteId: number | null;
   /** raw import data (for audit/debug) */
   raw: any | null;
   /**
@@ -2803,6 +2823,26 @@ export type PaymentInsert = {
    * zusammengefuehrt wurde; so findet eine Gebuehrenkorrektur den Abschluss und sein Konto.
    */
   externalSettlementRef?: string | null;
+  /**
+   * ── Anbieter-Erstattung (TSK-000380) ─────────────────────────
+   * Eine abgerufene Erstattung (PayPal T1107) nennt die Transaktion, die sie erstattet
+   * (paypal_reference_id), und die Gebuehr, die der Anbieter dabei zurueckgibt. Die Gebuehr ist
+   * kein Abzug dieser Zahlung, sondern mindert die Gebuehr der Ursprungszahlung: sie wird dort
+   * als Gebuehrenkorrektur gebucht (payment_fee_corrections), genau einmal mit der des Shops.
+   */
+  refundOfReference?: string | null;
+  refundedFeeAmount?: string | null;
+  /**
+   * Gesetzt, sobald die zurueckgegebene Gebuehr an der Ursprungszahlung steht (vom Abruf oder
+   * schon vom Shop gebucht). Null mit refundedFeeAmount = wartet.
+   */
+  refundFeeResolvedAt?: Date | null;
+  /**
+   * Die Gutschrift/das Storno, zu der diese Rueckzahlung gehoert. Zugeordnet ist sie als
+   * refund auf die Originalrechnung; Schluessel ist die Anbieter-Erstattungs-ID
+   * (= invoices.correction_idempotency_key der Gutschrift = bankTransactionId dieser Zahlung).
+   */
+  refundCreditNoteId?: number | null;
   /** raw import data (for audit/debug) */
   raw?: any | null;
   /**
