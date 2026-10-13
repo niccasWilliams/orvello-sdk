@@ -353,6 +353,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "managing_companies_logos_urls": ["GET", "/managing-companies/logos/urls", "b", "frontend_bearer_http", 2],
   "managing_companies_selected_current": ["GET", "/managing-companies/selected/current", "b", "frontend_bearer_http", 2],
   "managing_companies_selected_set": ["POST", "/managing-companies/selected/set/:companyId", "b", "frontend_bearer_http", 1],
+  "managing_companies_transfer_owner": ["PUT", "/managing-companies/:id/owner", "b", "frontend_permission_http", 5],
   "managing_companies_update": ["PUT", "/managing-companies/:id", "b", "frontend_permission_http", 5],
   "managing_companies_user_assignments_assign": ["POST", "/managing-companies/user-assignments/assign", "b", "frontend_permission_http", 4],
   "managing_companies_user_assignments_cost_centers_add": ["POST", "/managing-companies/user-assignments/cost-centers/add", "b", "frontend_permission_http", 4],

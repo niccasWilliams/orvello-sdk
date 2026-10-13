@@ -334,6 +334,7 @@ export type InvoicesCreateManualBody = {
   productType?: "standard" | "reduced" | "custom";
   customVatRate?: number;
   vatOverrideReason?: string;
+  acknowledgeSection14cLiability?: boolean;
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -407,6 +408,7 @@ export type InvoicesCreditNotePreviewBody = {
   reason: string;
   issueDate?: string;
   documentType?: "credit_note" | "cancellation";
+  idempotencyKey?: string;
   lineItems?: Array<{
   title: string;
   description?: string | null;
@@ -470,6 +472,7 @@ export type InvoicesCreditNoteIssueBody = {
   reason: string;
   issueDate?: string;
   documentType?: "credit_note" | "cancellation";
+  idempotencyKey?: string;
   lineItems?: Array<{
   title: string;
   description?: string | null;

@@ -12711,6 +12711,9 @@
                     "type": "string",
                     "maxLength": 500
                   },
+                  "acknowledgeSection14cLiability": {
+                    "type": "boolean"
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -14067,6 +14070,9 @@
                     "type": "string",
                     "maxLength": 500
                   },
+                  "acknowledgeSection14cLiability": {
+                    "type": "boolean"
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -15210,6 +15216,9 @@
                     "type": "string",
                     "maxLength": 500
                   },
+                  "acknowledgeSection14cLiability": {
+                    "type": "boolean"
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -15330,7 +15339,7 @@
           "invoices-external"
         ],
         "summary": "Update invoice status (external API)",
-        "description": "Changes invoice status (e.g., mark as paid). State machine rules are enforced server-side. GoBD-safe: issued invoices cannot be cancelled directly; use credit note/cancellation endpoints instead.",
+        "description": "Changes invoice status (e.g., mark as paid). State machine rules are enforced server-side. GoBD-safe: issued invoices cannot be cancelled directly; use credit note/cancellation endpoints instead. A paid status set here is stored with paidSource \"external\"; the optional source (api, sync, webhook) is kept in the audit log only.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -15786,6 +15795,11 @@
                       "cancellation"
                     ]
                   },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -15870,7 +15884,7 @@
           "invoices-external"
         ],
         "summary": "Issue credit note (external API)",
-        "description": "Issues a GoBD-compliant credit note or cancellation invoice. Generates PDF and creates an immutable document. Returns the new correction invoice.",
+        "description": "Issues a GoBD-compliant credit note or cancellation invoice. Generates PDF and creates an immutable document. Returns the new correction invoice. Optional idempotencyKey (max 200, e.g. the refund id): a retry with the same key on the same invoice returns the correction already issued (201, replayed: true) instead of booking a second one; the same key with a different body returns 409 IDEMPOTENCY_CONFLICT. Keys do not expire.",
         "responses": {
           "201": {
             "description": "JSON response",
@@ -15961,6 +15975,11 @@
                       "credit_note",
                       "cancellation"
                     ]
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
                   },
                   "lineItems": {
                     "type": "array",
@@ -16544,6 +16563,9 @@
                   "vatOverrideReason": {
                     "type": "string",
                     "maxLength": 500
+                  },
+                  "acknowledgeSection14cLiability": {
+                    "type": "boolean"
                   },
                   "lineItems": {
                     "type": "array",
@@ -17403,6 +17425,11 @@
                       "cancellation"
                     ]
                   },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -17570,6 +17597,11 @@
                       "credit_note",
                       "cancellation"
                     ]
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
                   },
                   "lineItems": {
                     "type": "array",
@@ -30940,7 +30972,8 @@
                       "bank",
                       "cash",
                       "paypal",
-                      "sumup"
+                      "sumup",
+                      "stripe"
                     ]
                   },
                   "name": {
@@ -31231,7 +31264,8 @@
                       "bank",
                       "cash",
                       "paypal",
-                      "sumup"
+                      "sumup",
+                      "stripe"
                     ]
                   },
                   "name": {
@@ -56309,6 +56343,9 @@
                     "type": "string",
                     "maxLength": 500
                   },
+                  "acknowledgeSection14cLiability": {
+                    "type": "boolean"
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -60751,6 +60788,136 @@
             }
           }
         ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/managing-companies/:id/owner": {
+      "put": {
+        "operationId": "managing_companies_transfer_owner",
+        "tags": [
+          "managing-companies"
+        ],
+        "summary": "Besitz einer Firma uebergeben",
+        "description": "Uebergibt den Besitz einer Managing Company an einen anderen Admin. Die Firma zaehlt nur gegen den Plan ihres Besitzers (Firmenzahl, Rechnungen je Monat, Speicher). Nur der jetzige Besitzer (oder ein Plattform-Admin) darf uebergeben; der neue Besitzer muss unbefristeter Admin sein und Platz in seinem Plan haben (sonst 403 PLAN_LIMIT_REACHED). Fehler: 403 COMPANY_OWNERSHIP_FORBIDDEN, 404 COMPANY_NOT_FOUND, 422 COMPANY_OWNER_MUST_BE_ADMIN. Erfordert `bookkeeping_access`.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "managingCompanyId": {
+                              "type": "integer"
+                            },
+                            "previousOwnerUserId": {
+                              "anyOf": [
+                                {
+                                  "type": "integer"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "ownerUserId": {
+                              "type": "integer"
+                            },
+                            "changed": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "managingCompanyId",
+                            "previousOwnerUserId",
+                            "ownerUserId",
+                            "changed"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "userId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "security": [
           {
             "frontendBearer": []

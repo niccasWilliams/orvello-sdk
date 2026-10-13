@@ -36,6 +36,7 @@ export type InvoicesPreviewExternalBody = {
   productType?: "standard" | "reduced" | "custom";
   customVatRate?: number;
   vatOverrideReason?: string;
+  acknowledgeSection14cLiability?: boolean;
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -325,6 +326,7 @@ export type InvoicesCreateExternalBody = {
   productType?: "standard" | "reduced" | "custom";
   customVatRate?: number;
   vatOverrideReason?: string;
+  acknowledgeSection14cLiability?: boolean;
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -377,6 +379,7 @@ export type InvoicesDryRunExternalBody = {
   productType?: "standard" | "reduced" | "custom";
   customVatRate?: number;
   vatOverrideReason?: string;
+  acknowledgeSection14cLiability?: boolean;
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -429,6 +432,7 @@ export type InvoicesCreditNotePreviewExternalBody = {
   reason: string;
   issueDate?: string;
   documentType?: "credit_note" | "cancellation";
+  idempotencyKey?: string;
   lineItems?: Array<{
   title: string;
   description?: string | null;
@@ -492,6 +496,7 @@ export type InvoicesCreditNoteIssueExternalBody = {
   reason: string;
   issueDate?: string;
   documentType?: "credit_note" | "cancellation";
+  idempotencyKey?: string;
   lineItems?: Array<{
   title: string;
   description?: string | null;
@@ -501,7 +506,7 @@ export type InvoicesCreditNoteIssueExternalBody = {
   sortOrder?: number;
 }>;
 };
-export type InvoicesCreditNoteIssueExternalResponseData = { invoice: Invoice; documentId: number; pdfUrl: string; originalInvoiceId: number };
+export type InvoicesCreditNoteIssueExternalResponseData = { invoice: Invoice; documentId: number; pdfUrl: string; originalInvoiceId: number; replayed: boolean };
 export type InvoicesCreditNoteIssueExternalResponse = import("../types").ApiEnvelope<InvoicesCreditNoteIssueExternalResponseData>;
 
 export type InvoicesSendEmailExternalParams = {
@@ -783,7 +788,7 @@ export const apiRoutes_invoices_external = {
     meta: {
       tags: ["invoices-external"],
       summary: "Update invoice status (external API)",
-      description: "Changes invoice status (e.g., mark as paid). State machine rules are enforced server-side. GoBD-safe: issued invoices cannot be cancelled directly; use credit note/cancellation endpoints instead.",
+      description: "Changes invoice status (e.g., mark as paid). State machine rules are enforced server-side. GoBD-safe: issued invoices cannot be cancelled directly; use credit note/cancellation endpoints instead. A paid status set here is stored with paidSource \"external\"; the optional source (api, sync, webhook) is kept in the audit log only.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -821,7 +826,7 @@ export const apiRoutes_invoices_external = {
     meta: {
       tags: ["invoices-external"],
       summary: "Issue credit note (external API)",
-      description: "Issues a GoBD-compliant credit note or cancellation invoice. Generates PDF and creates an immutable document. Returns the new correction invoice.",
+      description: "Issues a GoBD-compliant credit note or cancellation invoice. Generates PDF and creates an immutable document. Returns the new correction invoice. Optional idempotencyKey (max 200, e.g. the refund id): a retry with the same key on the same invoice returns the correction already issued (201, replayed: true) instead of booking a second one; the same key with a different body returns 409 IDEMPOTENCY_CONFLICT. Keys do not expire.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {

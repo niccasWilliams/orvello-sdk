@@ -55,7 +55,7 @@ export type WorkEntryStatus = 'pending' | 'approved' | 'rejected';
 export type WorkEntryType = 'work' | 'assistance' | 'service' | 'consultation' | 'planning' | 'administration' | 'meeting' | 'travel' | 'maintenance' | 'training' | 'support' | 'other';
 export type InvoiceDunningLevel = 'level1' | 'level2' | 'level3';
 export type InvoiceDunningDelivery = 'manual' | 'email' | 'letter';
-export type PaymentAccountType = 'bank' | 'cash' | 'paypal' | 'sumup';
+export type PaymentAccountType = 'bank' | 'cash' | 'paypal' | 'sumup' | 'stripe';
 export type PaymentDirection = 'in' | 'out';
 export type PaymentSource = 'bank_import' | 'manual' | 'transfer' | 'paypal_api' | 'sumup_api';
 export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capital_movement';
@@ -1135,6 +1135,13 @@ export type Invoice = {
   correctsInvoiceId: number | null;
   correctionReason: string | null;
   /**
+   * Idempotenz fuer Korrekturen (TSK-000366 #764): derselbe Schluessel an derselben Originalrechnung
+   * liefert die schon ausgestellte Korrektur zurueck statt eine zweite zu buchen. Der Hash haelt
+   * die Anfrage fest; ein anderer Inhalt unter demselben Schluessel ist ein Konflikt (409).
+   */
+  correctionIdempotencyKey: string | null;
+  correctionRequestHash: string | null;
+  /**
    * company
    * firma der das dokument gehört
    */
@@ -1187,7 +1194,7 @@ export type Invoice = {
    * Payment tracking (enterprise): we store *how* the invoice became paid.
    */
   paidAt: Date | null;
-  /** "manual" | "payments" | "external" | null */
+  /** "manual" | "payments" | "external" | null (Altbestand vor #764: "api") */
   paidSource: string | null;
   /** nullable; for audit/tracing (no FK to avoid ordering/cycles) */
   paidByPaymentId: number | null;
@@ -1238,6 +1245,13 @@ export type InvoiceInsert = {
   documentType?: InvoiceDocumentType;
   correctsInvoiceId?: number | null;
   correctionReason?: string | null;
+  /**
+   * Idempotenz fuer Korrekturen (TSK-000366 #764): derselbe Schluessel an derselben Originalrechnung
+   * liefert die schon ausgestellte Korrektur zurueck statt eine zweite zu buchen. Der Hash haelt
+   * die Anfrage fest; ein anderer Inhalt unter demselben Schluessel ist ein Konflikt (409).
+   */
+  correctionIdempotencyKey?: string | null;
+  correctionRequestHash?: string | null;
   /**
    * company
    * firma der das dokument gehört
@@ -1291,7 +1305,7 @@ export type InvoiceInsert = {
    * Payment tracking (enterprise): we store *how* the invoice became paid.
    */
   paidAt?: Date | null;
-  /** "manual" | "payments" | "external" | null */
+  /** "manual" | "payments" | "external" | null (Altbestand vor #764: "api") */
   paidSource?: string | null;
   /** nullable; for audit/tracing (no FK to avoid ordering/cycles) */
   paidByPaymentId?: number | null;
@@ -1631,6 +1645,13 @@ export type ManagingCompany = {
   invoiceLogoMode: string;
   /** default invoice layout variant for this company */
   invoiceLayoutVariant: string;
+  /**
+   * Besitzer der Firma (TSK-000366 #770): die Firma zaehlt nur gegen SEINEN Plan (Firmenzahl,
+   * Rechnungen je Monat, Speicher). Mit-Admins belegen nichts. Gesetzt bei der Anlage, geaendert
+   * nur ueber den Besitzerwechsel (company-ownership). Leer nur bei Bestand ohne Admin-Zeile;
+   * dann gilt wie frueher keine Grenze.
+   */
+  ownerUserId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -1685,6 +1706,13 @@ export type ManagingCompanyInsert = {
   invoiceLogoMode?: string;
   /** default invoice layout variant for this company */
   invoiceLayoutVariant?: string;
+  /**
+   * Besitzer der Firma (TSK-000366 #770): die Firma zaehlt nur gegen SEINEN Plan (Firmenzahl,
+   * Rechnungen je Monat, Speicher). Mit-Admins belegen nichts. Gesetzt bei der Anlage, geaendert
+   * nur ueber den Besitzerwechsel (company-ownership). Leer nur bei Bestand ohne Admin-Zeile;
+   * dann gilt wie frueher keine Grenze.
+   */
+  ownerUserId?: number | null;
   createdAt: Date;
   updatedAt?: Date | null;
 };
@@ -2678,6 +2706,12 @@ export type Payment = {
   endToEndId: string | null;
   /** provider specific id (if present) */
   bankTransactionId: string | null;
+  /**
+   * Externer Rechnungsabschluss, den diese Zahlung traegt: ext:settle:<invoiceId>:<externalRef>
+   * (TSK-000380 #785). Auch an einer vom Anbieter abgerufenen Zahlung, mit der ein Abschluss
+   * zusammengefuehrt wurde; so findet eine Gebuehrenkorrektur den Abschluss und sein Konto.
+   */
+  externalSettlementRef: string | null;
   /** raw import data (for audit/debug) */
   raw: any | null;
   /**
@@ -2763,6 +2797,12 @@ export type PaymentInsert = {
   endToEndId?: string | null;
   /** provider specific id (if present) */
   bankTransactionId?: string | null;
+  /**
+   * Externer Rechnungsabschluss, den diese Zahlung traegt: ext:settle:<invoiceId>:<externalRef>
+   * (TSK-000380 #785). Auch an einer vom Anbieter abgerufenen Zahlung, mit der ein Abschluss
+   * zusammengefuehrt wurde; so findet eine Gebuehrenkorrektur den Abschluss und sein Konto.
+   */
+  externalSettlementRef?: string | null;
   /** raw import data (for audit/debug) */
   raw?: any | null;
   /**

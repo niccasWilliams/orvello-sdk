@@ -876,6 +876,7 @@ export type ManagingCompaniesInvoiceTransparencyQuoteBody = {
   productType?: "standard" | "reduced" | "custom";
   customVatRate?: number;
   vatOverrideReason?: string;
+  acknowledgeSection14cLiability?: boolean;
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -1476,6 +1477,21 @@ export type ManagingCompaniesUpdateBody = {
 };
 export type ManagingCompaniesUpdateResponseData = ManagingCompany;
 export type ManagingCompaniesUpdateResponse = import("../types").ApiEnvelope<ManagingCompaniesUpdateResponseData>;
+
+export type ManagingCompaniesTransferOwnerParams = {
+  id: number;
+};
+export type ManagingCompaniesTransferOwnerQuery = undefined;
+export type ManagingCompaniesTransferOwnerBody = {
+  userId: number;
+};
+export type ManagingCompaniesTransferOwnerResponseData = {
+  managingCompanyId: number;
+  previousOwnerUserId: number | null;
+  ownerUserId: number;
+  changed: boolean;
+};
+export type ManagingCompaniesTransferOwnerResponse = import("../types").ApiEnvelope<ManagingCompaniesTransferOwnerResponseData>;
 
 export type ManagingCompaniesDeleteParams = {
   id: number;
@@ -2603,6 +2619,25 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesUpdateBody;
       response: ManagingCompaniesUpdateResponse;
       responseData: ManagingCompaniesUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_transfer_owner": {
+    method: "PUT",
+    path: "/managing-companies/:id/owner",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Besitz einer Firma uebergeben",
+      description: "Uebergibt den Besitz einer Managing Company an einen anderen Admin. Die Firma zaehlt nur gegen den Plan ihres Besitzers (Firmenzahl, Rechnungen je Monat, Speicher). Nur der jetzige Besitzer (oder ein Plattform-Admin) darf uebergeben; der neue Besitzer muss unbefristeter Admin sein und Platz in seinem Plan haben (sonst 403 PLAN_LIMIT_REACHED). Fehler: 403 COMPANY_OWNERSHIP_FORBIDDEN, 404 COMPANY_NOT_FOUND, 422 COMPANY_OWNER_MUST_BE_ADMIN. Erfordert `bookkeeping_access`.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesTransferOwnerParams;
+      query: ManagingCompaniesTransferOwnerQuery;
+      body: ManagingCompaniesTransferOwnerBody;
+      response: ManagingCompaniesTransferOwnerResponse;
+      responseData: ManagingCompaniesTransferOwnerResponseData;
     },
   },
   // Contract source: explicit

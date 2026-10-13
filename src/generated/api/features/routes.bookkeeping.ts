@@ -1494,7 +1494,7 @@ export type PaymentsListAccountsResponse = import("../types").ApiEnvelope<Paymen
 export type PaymentsCreateAccountParams = undefined;
 export type PaymentsCreateAccountQuery = undefined;
 export type PaymentsCreateAccountBody = {
-  type: "bank" | "cash" | "paypal" | "sumup";
+  type: "bank" | "cash" | "paypal" | "sumup" | "stripe";
   name: string;
   currency?: string;
   costCenterId?: number | null;
@@ -1525,7 +1525,7 @@ export type PaymentsUpdateAccountParams = {
 };
 export type PaymentsUpdateAccountQuery = undefined;
 export type PaymentsUpdateAccountBody = {
-  type?: "bank" | "cash" | "paypal" | "sumup";
+  type?: "bank" | "cash" | "paypal" | "sumup" | "stripe";
   name?: string;
   currency?: string;
   costCenterId?: number | null;
