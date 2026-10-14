@@ -39,6 +39,7 @@ export type AssetDisposalType = 'sale' | 'scrapping' | 'theft' | 'private_withdr
 export type VatRegime = 'kleinunternehmer' | 'regelbesteuert';
 export type VatAccountingMethod = 'SOLL' | 'IST';
 export type VatTreatment = 'KLEINUNTERNEHMER_0' | 'DE_STANDARD_19' | 'DE_REDUCED_7' | 'REVERSE_CHARGE_13B' | 'EU_B2B_0' | 'EXPORT_0' | 'EXEMPT_4' | 'CUSTOM';
+export type ExpenseVatTreatmentSource = 'receipt' | 'supplier_profile';
 export type InputVatEligibility = 'NONE' | 'FULL' | 'PARTIAL';
 export type FeeVatTreatment = 'UNKNOWN' | 'EXEMPT' | 'INCLUSIVE_STANDARD' | 'REVERSE_CHARGE_13B';
 export type FeeProposalStatus = 'PROPOSED' | 'CONFIRMED' | 'REJECTED';
@@ -61,8 +62,8 @@ export type PaymentSource = 'bank_import' | 'manual' | 'transfer' | 'paypal_api'
 export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capital_movement';
 export type PaymentAllocationKind = 'payment' | 'refund' | 'fee' | 'writeoff' | 'discount';
 export type IabStatus = 'active' | 'dissolved' | 'reversed' | 'warning';
-export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement';
-export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
+export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement' | 'supplier';
+export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
 export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
 export type FeeTreatmentScope = 'provider' | 'account_fee';
 export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api';
@@ -934,6 +935,42 @@ export type IapPayoutImportInsert = {
   /** null = Cron-Job */
   importedByUserId?: number | null;
   createdAt?: Date;
+};
+
+export type BookkeepingSupplier = {
+  id: number;
+  managingCompanyId: number;
+  name: string;
+  normalizedName: string;
+  /** ISO 3166-1 alpha-2, null = unbekannt. */
+  country: string | null;
+  vatId: string | null;
+  iban: string | null;
+  matchNames: string[];
+  notes: string | null;
+  isArchived: boolean;
+  createdAt: Date;
+  createdBy: number | null;
+  updatedAt: Date | null;
+};
+
+export type BookkeepingSupplierVatTreatmentPeriod = {
+  id: number;
+  managingCompanyId: number;
+  supplierId: number;
+  /** "supplier:<id>", wie scopeKey der Gebuehrenbehandlung. */
+  scopeKey: string;
+  validFrom: string;
+  vatTreatment: VatTreatment;
+  /** Fester Satz; null = Regelsatz (bzw. ermaessigter Satz bei DE_REDUCED_7) zum Belegdatum. */
+  vatRate: string | null;
+  origin: string;
+  note: string | null;
+  createdAt: Date;
+  createdBy: number | null;
+  supersededAt: Date | null;
+  supersededBy: number | null;
+  supersededByEntryId: number | null;
 };
 
 export type CustomerCompany = {
@@ -2258,6 +2295,10 @@ export type BookkeepingExpense = {
   inputVatRate: string | null;
   /** VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified) */
   vatTreatment: VatTreatment | null;
+  /** Herkunft der Behandlung (TSK-000382), siehe expenseVatTreatmentSourceEnum. */
+  vatTreatmentSource: ExpenseVatTreatmentSource | null;
+  /** Lieferant mit Steuerprofil (TSK-000382). vendor bleibt der Text vom Beleg. */
+  supplierId: number | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus: FeeProposalStatus | null;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
@@ -2359,6 +2400,10 @@ export type BookkeepingExpenseInsert = {
   inputVatRate?: string | null;
   /** VAT Treatment — enables §13b routing in UStVA (null = legacy/unclassified) */
   vatTreatment?: VatTreatment | null;
+  /** Herkunft der Behandlung (TSK-000382), siehe expenseVatTreatmentSourceEnum. */
+  vatTreatmentSource?: ExpenseVatTreatmentSource | null;
+  /** Lieferant mit Steuerprofil (TSK-000382). vendor bleibt der Text vom Beleg. */
+  supplierId?: number | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus?: FeeProposalStatus | null;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
@@ -5422,4 +5467,296 @@ export type FeeTreatmentApplyResultDto = {
   correctionNeeded: Array<{ expenseId: number; date: string; month: string }>;
   pendingFees: { booked: number; failed: number; awaitingConfiguration: PaymentProvider[]; missingProvider: number } | null;
   previewHash: string;
+};
+
+
+
+
+
+// ============================================================================
+// LIEFERANTEN-STEUERPROFIL (TSK-000382)
+// ============================================================================
+// Quelle: src/routes/bookkeeping/suppliers/supplier.types.ts
+
+export type SupplierVatTreatmentDto = "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0";
+
+export type SupplierLocationDto = "domestic" | "eu" | "third_country" | "unknown";
+
+export type SupplierTreatmentEntryDto = {
+  id: number;
+  validFrom: string;
+  /** Letzter Tag der Geltung (Tag vor dem naechsten Eintrag), null = bis auf Weiteres. */
+  validTo: string | null;
+  vatTreatment: VatTreatment;
+  /** Fester Satz; null = Regelsatz (DE_REDUCED_7: ermaessigter Satz) zum Belegdatum. */
+  vatRate: string | null;
+  /** Wirksamer Satz am ersten Tag. */
+  effectiveRateAtValidFrom: string | null;
+  origin: string;
+  note: string | null;
+  createdAt: string;
+  createdBy: number | null;
+  supersededAt: string | null;
+  supersededByEntryId: number | null;
+};
+
+export type SupplierTreatmentCurrentDto = {
+  vatTreatment: VatTreatment | null;
+  vatRate: string | null;
+  effectiveRate: string | null;
+  source: { kind: "entry"; entryId: number; validFrom: string } | { kind: "none" };
+};
+
+export type SupplierRecommendationDto = {
+  location: SupplierLocationDto;
+  recommendedTreatment: VatTreatment | null;
+  status: "unconfirmed" | "confirmed";
+  note: string;
+};
+
+export type SupplierReceiptCountsDto = {
+  /** Aktive Belege des Lieferanten. */
+  total: number;
+  /** Ohne Steuerbehandlung. */
+  untreated: number;
+  /** Behandlung aus dem Profil uebernommen. */
+  fromProfile: number;
+  /** Behandlung am Beleg gesetzt (gewinnt immer). */
+  ownTreatment: number;
+  earliestUntreated: string | null;
+};
+
+export type SupplierDto = {
+  id: number;
+  name: string;
+  country: string | null;
+  location: SupplierLocationDto;
+  vatId: string | null;
+  iban: string | null;
+  matchNames: string[];
+  notes: string | null;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+  current: SupplierTreatmentCurrentDto;
+  /** Geltende Eintraege, aeltester zuerst. */
+  entries: SupplierTreatmentEntryDto[];
+  /** Durch einen Eintrag mit demselben Tag ersetzte Eintraege (Nachweis). */
+  superseded: SupplierTreatmentEntryDto[];
+  recommendation: SupplierRecommendationDto;
+  receipts: SupplierReceiptCountsDto;
+};
+
+export type SupplierOverviewDto = {
+  asOf: string;
+  currency: string;
+  regimeToday: VatRegime | null;
+  treatments: SupplierVatTreatmentDto[];
+  recommendations: {
+    versionId: string;
+    validFrom: string;
+    sources: Array<{ norm: string; url: string; retrievedAt: string; covers: string }>;
+    openPoints: string[];
+  };
+  suppliers: SupplierDto[];
+};
+
+export type SupplierUpsertRequestDto = {
+  name: string;
+  country?: string | null;
+  vatId?: string | null;
+  iban?: string | null;
+  /** Weitere Schreibweisen fuer die Zuordnung (Beleg, Gegenpartei der Zahlung). */
+  matchNames?: string[];
+  notes?: string | null;
+  isArchived?: boolean;
+};
+
+export type SupplierTreatmentChangeRequestDto = {
+  validFrom: string;
+  vatTreatment: SupplierVatTreatmentDto;
+  vatRate?: string | null;
+  note?: string | null;
+};
+
+export type SupplierReceiptTaxFieldsDto = {
+  vatTreatment: VatTreatment | null;
+  netAmount: string;
+  taxAmount: string | null;
+  taxRate: string | null;
+  inputVatEligibility: InputVatEligibility | null;
+  inputVatAmount: string | null;
+};
+
+export type SupplierReceiptChangeDto = {
+  expenseId: number;
+  /** fill: Beleg ohne Behandlung bekommt die des Profils; reassess: Profil-Behandlung aendert sich. */
+  kind: "fill" | "reassess";
+  date: string;
+  month: string;
+  amount: string;
+  originalCurrency: string | null;
+  originalAmount: string | null;
+  vendor: string | null;
+  description: string;
+  confirmed: boolean;
+  /** In einer festgeschriebenen Periode: wird nicht umgebucht, sondern als Korrekturbedarf gemeldet. */
+  locked: boolean;
+  regime: VatRegime | null;
+  /** Fremdwaehrung: die UStVA verlangt den Kurs nach § 16 Abs. 6 UStG und bricht ohne ihn ab. */
+  fxEvidenceMissing: boolean;
+  before: SupplierReceiptTaxFieldsDto;
+  after: SupplierReceiptTaxFieldsDto;
+};
+
+export type SupplierReceiptConflictDto = {
+  expenseId: number;
+  date: string;
+  vendor: string | null;
+  amount: string;
+  originalCurrency: string | null;
+  locked: boolean;
+  code: string;
+  message: string;
+};
+
+export type SupplierVatFigureDeltaDto = { before: string; after: string; delta: string };
+
+export type SupplierVatMonthEffectDto = {
+  month: string;
+  regime: VatRegime | "mixed" | null;
+  locked: boolean;
+  receipts: number;
+  /** § 13b: Bemessungsgrundlage (KZ 46) und Steuer (KZ 47), auch beim Kleinunternehmer. */
+  kz46: SupplierVatFigureDeltaDto;
+  kz47: SupplierVatFigureDeltaDto;
+  /** Vorsteuer nur bei Regelbesteuerung: KZ 66 (Rechnungen), KZ 67 (§ 13b). */
+  kz66: SupplierVatFigureDeltaDto;
+  kz67: SupplierVatFigureDeltaDto;
+  /** Wirkung auf die Zahllast: + mehr Steuer, - weniger. */
+  payableDelta: string;
+};
+
+export type SupplierTreatmentPreviewDto = {
+  supplierId: number;
+  supplierName: string;
+  currency: string;
+  /** change: neuer Eintrag mit Gueltig-ab; backfill: bestehendes Profil auf Altbelege anwenden. */
+  mode: "change" | "backfill";
+  planned: {
+    validFrom: string;
+    vatTreatment: SupplierVatTreatmentDto;
+    vatRate: string | null;
+    effectiveRateAtValidFrom: string | null;
+    /** Erster Tag, ab dem wieder ein spaeterer Eintrag gilt; null = bis auf Weiteres. */
+    until: string | null;
+  } | null;
+  /** Behandlung, die bisher am validFrom galt (nur change). */
+  before: SupplierTreatmentCurrentDto | null;
+  /** Aktiver Eintrag mit demselben Tag, den dieser ersetzt. */
+  replaces: SupplierTreatmentEntryDto | null;
+  /** Schon genau so eingetragen und alle Belege passen: Anwenden aendert nichts. */
+  alreadyApplied: boolean;
+  receipts: {
+    /** Belege, fuer die der Eintrag (bzw. das Profil) gilt und die ihm folgen. */
+    inRange: number;
+    toChange: number;
+    unchanged: number;
+    locked: number;
+    conflicts: number;
+    /** Belege mit eigener Behandlung am Beleg: bleiben, wie sie sind. */
+    ownTreatment: number;
+    /** Belege ohne Behandlung, fuer deren Datum das Profil keinen Eintrag hat. */
+    withoutProfile: number;
+  };
+  changes: SupplierReceiptChangeDto[];
+  conflicts: SupplierReceiptConflictDto[];
+  vatEffect: SupplierVatMonthEffectDto[];
+  lockedPeriod: { lockedUntil: string | null; receipts: number; months: string[] };
+  fxEvidence: { receipts: number; months: string[] };
+  warnings: string[];
+  /** Beim Anwenden mitsenden: bestaetigt wird genau diese Vorschau. */
+  previewHash: string;
+};
+
+export type SupplierTreatmentApplyResultDto = {
+  status: "applied" | "already_applied";
+  entry: SupplierTreatmentEntryDto | null;
+  superseded: SupplierTreatmentEntryDto | null;
+  corrected: Array<{ expenseId: number; month: string }>;
+  /** Belege in festgeschriebenen Perioden: nicht umgebucht, Korrektur ausserhalb noetig. */
+  correctionNeeded: Array<{ expenseId: number; date: string; month: string }>;
+  /** Belege, die nicht zur Behandlung passen: bleiben unbehandelt, am Beleg entscheiden. */
+  conflicts: Array<{ expenseId: number; code: string }>;
+  previewHash: string;
+};
+
+export type SupplierMatchReasonDto = {
+  kind: "iban_equal" | "vendor_equal" | "counterparty_equal" | "vendor_contains" | "counterparty_contains";
+  value: string;
+  matched: string;
+};
+
+export type SupplierSuggestionExpenseDto = {
+  expenseId: number;
+  date: string;
+  vendor: string | null;
+  description: string;
+  amount: string;
+  originalCurrency: string | null;
+  originalAmount: string | null;
+  vatTreatment: VatTreatment | null;
+  strength: "strong" | "weak";
+  reasons: SupplierMatchReasonDto[];
+  /** Weitere Lieferanten, die ebenfalls passen: dann nie ohne Rueckfrage. */
+  alsoMatches: number[];
+};
+
+export type SupplierUntreatedGroupDto = {
+  supplierId: number;
+  name: string;
+  country: string | null;
+  current: SupplierTreatmentCurrentDto;
+  untreated: {
+    count: number;
+    amount: string;
+    earliestDate: string | null;
+    latestDate: string | null;
+    /** Davon in Fremdwaehrung (Kursnachweis nach § 16 Abs. 6 UStG fehlt). */
+    foreignCurrency: number;
+    /** Davon mit Profileintrag zum Belegdatum (Nachziehen moeglich). */
+    covered: number;
+  };
+  /** Belege ohne Lieferant, die zu diesem Lieferanten passen (Vorschlag). */
+  suggestions: SupplierSuggestionExpenseDto[];
+};
+
+export type UnknownVendorGroupDto = {
+  /** Haeufigste Schreibweise auf den Belegen. */
+  vendor: string;
+  normalized: string;
+  count: number;
+  untreated: number;
+  amount: string;
+  currencies: string[];
+  firstDate: string;
+  lastDate: string;
+};
+
+export type SupplierUntreatedOverviewDto = {
+  asOf: string;
+  currency: string;
+  /** Alle Ausgaben ohne Behandlung (aktiv). */
+  totalUntreated: number;
+  groups: SupplierUntreatedGroupDto[];
+  /** Belege ohne Lieferant und ohne Treffer, nach Belegtext gruppiert (Lieferant anlegen). */
+  unknownVendors: UnknownVendorGroupDto[];
+};
+
+export type SupplierAssignRequestDto = { expenseIds: number[] };
+
+export type SupplierAssignResultDto = {
+  assigned: Array<{ expenseId: number; reasons: SupplierMatchReasonDto[] }>;
+  /** Waren schon diesem Lieferanten zugeordnet. */
+  unchanged: number[];
 };

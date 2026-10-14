@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -294,6 +294,8 @@ export type BookkeepingExpensesCreateBody = {
   inputVatEligibility?: "NONE" | "FULL" | "PARTIAL";
   inputVatAmount?: string | number | null;
   inputVatRate?: string | number | null;
+  vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
+  supplierId?: number | null;
   createAsAsset?: boolean;
   asset?: {
   name?: string;
@@ -345,6 +347,8 @@ export type BookkeepingExpensesUpdateBody = {
   inputVatEligibility?: "NONE" | "FULL" | "PARTIAL";
   inputVatAmount?: string | number | null;
   inputVatRate?: string | number | null;
+  vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
+  supplierId?: number | null;
 };
 export type BookkeepingExpensesUpdateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
 export type BookkeepingExpensesUpdateResponse = import("../types").ApiEnvelope<BookkeepingExpensesUpdateResponseData>;
@@ -455,6 +459,8 @@ export type BookkeepingExpensesCreateExternalBody = {
   inputVatAmount?: string | number;
   inputVatRate?: string | number;
   costCenterId?: number | null;
+  vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0";
+  supplierId?: number;
 };
 export type BookkeepingExpensesCreateExternalResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
 export type BookkeepingExpensesCreateExternalResponse = import("../types").ApiEnvelope<BookkeepingExpensesCreateExternalResponseData>;
@@ -1440,6 +1446,8 @@ export type PaymentsBookBody = {
   isConfirmed?: boolean;
   vendor?: string | null;
   vendorInvoiceNumber?: string | null;
+  vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
+  supplierId?: number | null;
 };
 export type PaymentsBookResponseData = {
   targetType: "expense" | "revenue";
@@ -2860,6 +2868,103 @@ export type BookkeepingIapPayoutsListQuery = {
 export type BookkeepingIapPayoutsListBody = undefined;
 export type BookkeepingIapPayoutsListResponseData = { items: IapPayoutImport[] };
 export type BookkeepingIapPayoutsListResponse = import("../types").ApiEnvelope<BookkeepingIapPayoutsListResponseData>;
+
+export type SuppliersListParams = undefined;
+export type SuppliersListQuery = undefined;
+export type SuppliersListBody = undefined;
+export type SuppliersListResponseData = SupplierOverviewDto;
+export type SuppliersListResponse = import("../types").ApiEnvelope<SuppliersListResponseData>;
+
+export type SuppliersCreateParams = undefined;
+export type SuppliersCreateQuery = undefined;
+export type SuppliersCreateBody = {
+  name: string;
+  country?: string | null;
+  vatId?: string | null;
+  iban?: string | null;
+  matchNames?: Array<string>;
+  notes?: string | null;
+  isArchived?: boolean;
+};
+export type SuppliersCreateResponseData = SupplierDto;
+export type SuppliersCreateResponse = import("../types").ApiEnvelope<SuppliersCreateResponseData>;
+
+export type SuppliersUntreatedParams = undefined;
+export type SuppliersUntreatedQuery = undefined;
+export type SuppliersUntreatedBody = undefined;
+export type SuppliersUntreatedResponseData = SupplierUntreatedOverviewDto;
+export type SuppliersUntreatedResponse = import("../types").ApiEnvelope<SuppliersUntreatedResponseData>;
+
+export type SuppliersUpdateParams = {
+  id: number;
+};
+export type SuppliersUpdateQuery = undefined;
+export type SuppliersUpdateBody = {
+  name: string;
+  country?: string | null;
+  vatId?: string | null;
+  iban?: string | null;
+  matchNames?: Array<string>;
+  notes?: string | null;
+  isArchived?: boolean;
+};
+export type SuppliersUpdateResponseData = SupplierDto;
+export type SuppliersUpdateResponse = import("../types").ApiEnvelope<SuppliersUpdateResponseData>;
+
+export type SuppliersPreviewTreatmentParams = {
+  id: number;
+};
+export type SuppliersPreviewTreatmentQuery = undefined;
+export type SuppliersPreviewTreatmentBody = {
+  validFrom: string;
+  vatTreatment: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0";
+  vatRate?: string | null;
+  note?: string | null;
+};
+export type SuppliersPreviewTreatmentResponseData = SupplierTreatmentPreviewDto;
+export type SuppliersPreviewTreatmentResponse = import("../types").ApiEnvelope<SuppliersPreviewTreatmentResponseData>;
+
+export type SuppliersApplyTreatmentParams = {
+  id: number;
+};
+export type SuppliersApplyTreatmentQuery = undefined;
+export type SuppliersApplyTreatmentBody = {
+  validFrom: string;
+  vatTreatment: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0";
+  vatRate?: string | null;
+  note?: string | null;
+  previewHash: string;
+};
+export type SuppliersApplyTreatmentResponseData = SupplierTreatmentApplyResultDto;
+export type SuppliersApplyTreatmentResponse = import("../types").ApiEnvelope<SuppliersApplyTreatmentResponseData>;
+
+export type SuppliersPreviewBackfillParams = {
+  id: number;
+};
+export type SuppliersPreviewBackfillQuery = undefined;
+export type SuppliersPreviewBackfillBody = undefined;
+export type SuppliersPreviewBackfillResponseData = SupplierTreatmentPreviewDto;
+export type SuppliersPreviewBackfillResponse = import("../types").ApiEnvelope<SuppliersPreviewBackfillResponseData>;
+
+export type SuppliersApplyBackfillParams = {
+  id: number;
+};
+export type SuppliersApplyBackfillQuery = undefined;
+export type SuppliersApplyBackfillBody = {
+  previewHash: string;
+};
+export type SuppliersApplyBackfillResponseData = SupplierTreatmentApplyResultDto;
+export type SuppliersApplyBackfillResponse = import("../types").ApiEnvelope<SuppliersApplyBackfillResponseData>;
+
+export type SuppliersAssignExpensesParams = {
+  id: number;
+};
+export type SuppliersAssignExpensesQuery = undefined;
+export type SuppliersAssignExpensesBody = {
+  expenseIds: Array<number>;
+};
+export type SuppliersAssignExpensesResponseData = SupplierAssignResultDto;
+export type SuppliersAssignExpensesResponse = import("../types").ApiEnvelope<SuppliersAssignExpensesResponseData>;
 
 export const apiRoutes_bookkeeping = {
   // Contract source: explicit
@@ -6055,6 +6160,175 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingIapPayoutsListBody;
       response: BookkeepingIapPayoutsListResponse;
       responseData: BookkeepingIapPayoutsListResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_list": {
+    method: "GET",
+    path: "/bookkeeping/suppliers",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Lieferanten mit Steuerprofil",
+      description: "Alle Lieferanten der Firma mit Land, USt-IdNr., Schreibweisen, heute geltender Behandlung, Verlauf (Gueltig-ab, ersetzte Eintraege), Hinweis je Sitz (nicht bestaetigt) und Belegzahlen (ohne Behandlung, aus dem Profil, am Beleg gesetzt).",
+    },
+    types: null as unknown as {
+      params: SuppliersListParams;
+      query: SuppliersListQuery;
+      body: SuppliersListBody;
+      response: SuppliersListResponse;
+      responseData: SuppliersListResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_create": {
+    method: "POST",
+    path: "/bookkeeping/suppliers",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Lieferant anlegen",
+      description: "Legt einen Lieferanten an (Name je Firma eindeutig, Rechtsformzusatz zaehlt nicht). Die Steuerbehandlung kommt danach ueber Vorschau und Eintrag mit Gueltig-ab.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersCreateParams;
+      query: SuppliersCreateQuery;
+      body: SuppliersCreateBody;
+      response: SuppliersCreateResponse;
+      responseData: SuppliersCreateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_untreated": {
+    method: "GET",
+    path: "/bookkeeping/suppliers/untreated",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Belege ohne Steuerbehandlung je Lieferant",
+      description: "Ausgaben ohne Behandlung, gruppiert je Lieferant (Anzahl, Summe, Zeitraum, Fremdwaehrung, vom Profil abgedeckt), dazu Vorschlaege fuer Belege ohne Lieferant mit Grund (IBAN, Name, Schreibweise, Gegenpartei) und Belegtexte ohne Treffer.",
+    },
+    types: null as unknown as {
+      params: SuppliersUntreatedParams;
+      query: SuppliersUntreatedQuery;
+      body: SuppliersUntreatedBody;
+      response: SuppliersUntreatedResponse;
+      responseData: SuppliersUntreatedResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_update": {
+    method: "PUT",
+    path: "/bookkeeping/suppliers/:id",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Lieferant aendern",
+      description: "Aendert Stammdaten und Schreibweisen. Die Steuerbehandlung aendert sich nur ueber den Eintrag mit Gueltig-ab.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersUpdateParams;
+      query: SuppliersUpdateQuery;
+      body: SuppliersUpdateBody;
+      response: SuppliersUpdateResponse;
+      responseData: SuppliersUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_preview_treatment": {
+    method: "POST",
+    path: "/bookkeeping/suppliers/:id/treatments/preview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Behandlung mit Gueltig-ab: Vorschau",
+      description: "Zeigt, was ein Eintrag ab validFrom bewirkt, ohne etwas zu schreiben: Belege des Lieferanten ohne eigene Behandlung (vorher/nachher), Konflikte, Steuerwirkung je Monat und UStVA-Kennzahl (46/47/66/67), gesperrte Perioden, Fremdwaehrung ohne Kursnachweis. previewHash beim Anwenden mitsenden.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersPreviewTreatmentParams;
+      query: SuppliersPreviewTreatmentQuery;
+      body: SuppliersPreviewTreatmentBody;
+      response: SuppliersPreviewTreatmentResponse;
+      responseData: SuppliersPreviewTreatmentResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_apply_treatment": {
+    method: "POST",
+    path: "/bookkeeping/suppliers/:id/treatments",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Behandlung mit Gueltig-ab eintragen und Belege anwenden",
+      description: "Traegt die Behandlung ab validFrom ein (gleicher Tag ersetzt den alten Eintrag) und wendet sie auf die Belege in offenen Perioden an, jeden unter Audit. Behandlung am Beleg gewinnt. Gesperrte Perioden kommen als correctionNeeded zurueck, unpassende Belege als conflicts. 409 bei veralteter Vorschau.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersApplyTreatmentParams;
+      query: SuppliersApplyTreatmentQuery;
+      body: SuppliersApplyTreatmentBody;
+      response: SuppliersApplyTreatmentResponse;
+      responseData: SuppliersApplyTreatmentResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_preview_backfill": {
+    method: "POST",
+    path: "/bookkeeping/suppliers/:id/backfill/preview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Altbelege nachziehen: Vorschau",
+      description: "Wendet das bestehende Profil probeweise auf Belege des Lieferanten ohne Behandlung an (und auf Profilbelege, die nicht mehr passen). Gleiche Vorschau wie beim Eintrag, ohne neuen Eintrag.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: SuppliersPreviewBackfillParams;
+      query: SuppliersPreviewBackfillQuery;
+      body: SuppliersPreviewBackfillBody;
+      response: SuppliersPreviewBackfillResponse;
+      responseData: SuppliersPreviewBackfillResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_apply_backfill": {
+    method: "POST",
+    path: "/bookkeeping/suppliers/:id/backfill",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Altbelege nachziehen",
+      description: "Wendet das Profil nach bestaetigter Vorschau auf die Belege an. Gesperrte Perioden bleiben unberuehrt (correctionNeeded), 409 bei veralteter Vorschau, Wiederholung ohne Wirkung.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersApplyBackfillParams;
+      query: SuppliersApplyBackfillQuery;
+      body: SuppliersApplyBackfillBody;
+      response: SuppliersApplyBackfillResponse;
+      responseData: SuppliersApplyBackfillResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_assign_expenses": {
+    method: "POST",
+    path: "/bookkeeping/suppliers/:id/assign",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Belege einem Lieferanten zuordnen",
+      description: "Ordnet bestehende Ausgaben dem Lieferanten zu (bestaetigter Vorschlag oder von Hand), mit Audit und Grund. Die Steuerbehandlung aendert sich dabei nicht; dafuer das Nachziehen.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: SuppliersAssignExpensesParams;
+      query: SuppliersAssignExpensesQuery;
+      body: SuppliersAssignExpensesBody;
+      response: SuppliersAssignExpensesResponse;
+      responseData: SuppliersAssignExpensesResponseData;
     },
   },
 } as const;

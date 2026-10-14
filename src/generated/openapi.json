@@ -20941,6 +20941,34 @@
                       }
                     ]
                   },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "REVERSE_CHARGE_13B",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "KLEINUNTERNEHMER_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "supplierId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "createAsAsset": {
                     "type": "boolean",
                     "default": false
@@ -21502,6 +21530,34 @@
                             "type": "number"
                           }
                         ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "REVERSE_CHARGE_13B",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "KLEINUNTERNEHMER_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "supplierId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
                       },
                       {
                         "type": "null"
@@ -22756,6 +22812,20 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "vatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "REVERSE_CHARGE_13B",
+                      "DE_STANDARD_19",
+                      "DE_REDUCED_7",
+                      "EXEMPT_4",
+                      "KLEINUNTERNEHMER_0"
+                    ]
+                  },
+                  "supplierId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -30419,6 +30489,34 @@
                     "anyOf": [
                       {
                         "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "REVERSE_CHARGE_13B",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "KLEINUNTERNEHMER_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "supplierId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
                       },
                       {
                         "type": "null"
@@ -42682,6 +42780,1008 @@
             }
           }
         ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers": {
+      "get": {
+        "operationId": "suppliers_list",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Lieferanten mit Steuerprofil",
+        "description": "Alle Lieferanten der Firma mit Land, USt-IdNr., Schreibweisen, heute geltender Behandlung, Verlauf (Gueltig-ab, ersetzte Eintraege), Hinweis je Sitz (nicht bestaetigt) und Belegzahlen (ohne Behandlung, aus dem Profil, am Beleg gesetzt).",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "post": {
+        "operationId": "suppliers_create",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Lieferant anlegen",
+        "description": "Legt einen Lieferanten an (Name je Firma eindeutig, Rechtsformzusatz zaehlt nicht). Die Steuerbehandlung kommt danach ueber Vorschau und Eintrag mit Gueltig-ab.",
+        "responses": {
+          "201": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "country": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 2
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "vatId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "iban": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 42
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "matchNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  },
+                  "notes": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "isArchived": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/untreated": {
+      "get": {
+        "operationId": "suppliers_untreated",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Belege ohne Steuerbehandlung je Lieferant",
+        "description": "Ausgaben ohne Behandlung, gruppiert je Lieferant (Anzahl, Summe, Zeitraum, Fremdwaehrung, vom Profil abgedeckt), dazu Vorschlaege fuer Belege ohne Lieferant mit Grund (IBAN, Name, Schreibweise, Gegenpartei) und Belegtexte ohne Treffer.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id": {
+      "put": {
+        "operationId": "suppliers_update",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Lieferant aendern",
+        "description": "Aendert Stammdaten und Schreibweisen. Die Steuerbehandlung aendert sich nur ueber den Eintrag mit Gueltig-ab.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "country": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 2
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "vatId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "iban": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 42
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "matchNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  },
+                  "notes": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "isArchived": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id/treatments/preview": {
+      "post": {
+        "operationId": "suppliers_preview_treatment",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Behandlung mit Gueltig-ab: Vorschau",
+        "description": "Zeigt, was ein Eintrag ab validFrom bewirkt, ohne etwas zu schreiben: Belege des Lieferanten ohne eigene Behandlung (vorher/nachher), Konflikte, Steuerwirkung je Monat und UStVA-Kennzahl (46/47/66/67), gesperrte Perioden, Fremdwaehrung ohne Kursnachweis. previewHash beim Anwenden mitsenden.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "validFrom": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "vatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "REVERSE_CHARGE_13B",
+                      "DE_STANDARD_19",
+                      "DE_REDUCED_7",
+                      "EXEMPT_4",
+                      "KLEINUNTERNEHMER_0"
+                    ]
+                  },
+                  "vatRate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d+(\\.\\d{1,4})?$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "note": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "validFrom",
+                  "vatTreatment"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id/treatments": {
+      "post": {
+        "operationId": "suppliers_apply_treatment",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Behandlung mit Gueltig-ab eintragen und Belege anwenden",
+        "description": "Traegt die Behandlung ab validFrom ein (gleicher Tag ersetzt den alten Eintrag) und wendet sie auf die Belege in offenen Perioden an, jeden unter Audit. Behandlung am Beleg gewinnt. Gesperrte Perioden kommen als correctionNeeded zurueck, unpassende Belege als conflicts. 409 bei veralteter Vorschau.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "validFrom": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "vatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "REVERSE_CHARGE_13B",
+                      "DE_STANDARD_19",
+                      "DE_REDUCED_7",
+                      "EXEMPT_4",
+                      "KLEINUNTERNEHMER_0"
+                    ]
+                  },
+                  "vatRate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d+(\\.\\d{1,4})?$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "note": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "previewHash": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "validFrom",
+                  "vatTreatment",
+                  "previewHash"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id/backfill/preview": {
+      "post": {
+        "operationId": "suppliers_preview_backfill",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Altbelege nachziehen: Vorschau",
+        "description": "Wendet das bestehende Profil probeweise auf Belege des Lieferanten ohne Behandlung an (und auf Profilbelege, die nicht mehr passen). Gleiche Vorschau wie beim Eintrag, ohne neuen Eintrag.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id/backfill": {
+      "post": {
+        "operationId": "suppliers_apply_backfill",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Altbelege nachziehen",
+        "description": "Wendet das Profil nach bestaetigter Vorschau auf die Belege an. Gesperrte Perioden bleiben unberuehrt (correctionNeeded), 409 bei veralteter Vorschau, Wiederholung ohne Wirkung.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "previewHash": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "previewHash"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/:id/assign": {
+      "post": {
+        "operationId": "suppliers_assign_expenses",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Belege einem Lieferanten zuordnen",
+        "description": "Ordnet bestehende Ausgaben dem Lieferanten zu (bestaetigter Vorschlag oder von Hand), mit Audit und Grund. Die Steuerbehandlung aendert sich dabei nicht; dafuer das Nachziehen.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expenseIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                },
+                "required": [
+                  "expenseIds"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "security": [
           {
             "frontendBearer": []
