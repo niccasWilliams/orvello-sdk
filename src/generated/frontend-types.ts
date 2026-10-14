@@ -62,8 +62,9 @@ export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capit
 export type PaymentAllocationKind = 'payment' | 'refund' | 'fee' | 'writeoff' | 'discount';
 export type IabStatus = 'active' | 'dissolved' | 'reversed' | 'warning';
 export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement';
-export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
+export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
 export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
+export type FeeTreatmentScope = 'provider' | 'account_fee';
 export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api';
 export type PaymentAccountBalanceType = 'bank_statement' | 'manual_count' | 'api_reported';
 export type TaxParamScope = 'global' | 'company';
@@ -2515,14 +2516,64 @@ export type PaymentProviderConnection = {
   lastError: string | null;
   connectedAt: Date | null;
   disconnectedAt: Date | null;
-  /** Fee VAT Treatment — determines how provider fees are taxed (per-connection, not global) */
+  /**
+   * Altbestand (TSK-000366 #735): Behandlung ohne Zeitraum. Seit TSK-000382 nicht mehr gelesen
+   * oder geschrieben; die Behandlung steht mit Gueltig-ab in payment_fee_treatment_periods,
+   * der Datenschritt fee-treatment-history hat diese Werte als ersten Eintrag uebernommen.
+   */
   feeVatTreatment: FeeVatTreatment;
-  /** Derived from treatment: 0 (EXEMPT), 0.19 (INCLUSIVE/RC), null (UNKNOWN) */
   feeVatRate: string | null;
   createdAt: Date;
   createdBy: number | null;
   updatedAt: Date | null;
   updatedBy: number | null;
+};
+
+export type PaymentFeeTreatmentPeriod = {
+  id: number;
+  managingCompanyId: number;
+  scope: FeeTreatmentScope;
+  scopeKey: string;
+  /** null nur bei scope account_fee: Firmenvorgabe fuer alle Konten ohne Anbieter. */
+  paymentAccountId: number | null;
+  /** Pflicht bei scope provider, leer bei account_fee. */
+  provider: PaymentProvider | null;
+  /** Erster Kalendertag (deutsche Zeit), ab dem die Behandlung gilt. */
+  validFrom: string;
+  feeVatTreatment: FeeVatTreatment;
+  /** Fester Satz; null = Regelsatz aus tax_parameters zum Datum der Gebuehr. */
+  feeVatRate: string | null;
+  /** Herkunft: user, legacy_put (alter PUT ohne Datum), migrated_connection (Datenschritt). */
+  origin: string;
+  note: string | null;
+  createdAt: Date;
+  createdBy: number | null;
+  supersededAt: Date | null;
+  supersededBy: number | null;
+  supersededByEntryId: number | null;
+};
+
+export type PaymentFeeTreatmentPeriodInsert = {
+  managingCompanyId: number;
+  scope: FeeTreatmentScope;
+  scopeKey: string;
+  /** null nur bei scope account_fee: Firmenvorgabe fuer alle Konten ohne Anbieter. */
+  paymentAccountId?: number | null;
+  /** Pflicht bei scope provider, leer bei account_fee. */
+  provider?: PaymentProvider | null;
+  /** Erster Kalendertag (deutsche Zeit), ab dem die Behandlung gilt. */
+  validFrom: string;
+  feeVatTreatment: FeeVatTreatment;
+  /** Fester Satz; null = Regelsatz aus tax_parameters zum Datum der Gebuehr. */
+  feeVatRate?: string | null;
+  /** Herkunft: user, legacy_put (alter PUT ohne Datum), migrated_connection (Datenschritt). */
+  origin: string;
+  note?: string | null;
+  createdAt?: Date;
+  createdBy?: number | null;
+  supersededAt?: Date | null;
+  supersededBy?: number | null;
+  supersededByEntryId?: number | null;
 };
 
 export type PaymentProviderConnectionInsert = {
@@ -2543,9 +2594,12 @@ export type PaymentProviderConnectionInsert = {
   lastError?: string | null;
   connectedAt?: Date | null;
   disconnectedAt?: Date | null;
-  /** Fee VAT Treatment — determines how provider fees are taxed (per-connection, not global) */
+  /**
+   * Altbestand (TSK-000366 #735): Behandlung ohne Zeitraum. Seit TSK-000382 nicht mehr gelesen
+   * oder geschrieben; die Behandlung steht mit Gueltig-ab in payment_fee_treatment_periods,
+   * der Datenschritt fee-treatment-history hat diese Werte als ersten Eintrag uebernommen.
+   */
   feeVatTreatment?: FeeVatTreatment;
-  /** Derived from treatment: 0 (EXEMPT), 0.19 (INCLUSIVE/RC), null (UNKNOWN) */
   feeVatRate?: string | null;
   createdAt?: Date;
   createdBy?: number | null;
@@ -5189,3 +5243,183 @@ export type WebhookPayload = | WebhookPayloadStripe
     | WebhookPayloadPayPal
     | WebhookPayloadPrintful
     | WebhookPayloadGeneric;
+
+
+
+// ============================================================================
+// GEBUEHRENBEHANDLUNG MIT GUELTIG-AB (TSK-000382)
+// ============================================================================
+// Quelle: src/routes/bookkeeping/payments/fee-treatments/fee-treatment.types.ts
+
+export type FeeTreatmentTargetDto = | { kind: "provider"; paymentAccountId: number; provider: PaymentProvider }
+  | { kind: "account_fee"; paymentAccountId: number | null };
+
+export type FeeTreatmentSourceDto = | { kind: "entry"; entryId: number; scopeKey: string; validFrom: string }
+  | { kind: "platform_default"; rule: string }
+  | { kind: "none" };
+
+export type FeeTreatmentEntryDto = {
+  id: number;
+  scopeKey: string;
+  validFrom: string;
+  /** Letzter Tag der Geltung (Tag vor dem naechsten Eintrag), null = bis auf Weiteres. */
+  validTo: string | null;
+  feeVatTreatment: FeeVatTreatment;
+  /** Fester Satz; null = Regelsatz zum Datum der Gebuehr. */
+  feeVatRate: string | null;
+  /** Wirksamer Satz am ersten Tag; null bei UNKNOWN. */
+  effectiveRateAtValidFrom: string | null;
+  origin: string;
+  note: string | null;
+  createdAt: string;
+  createdBy: number | null;
+  supersededAt: string | null;
+  supersededByEntryId: number | null;
+};
+
+export type FeeTreatmentCurrentDto = {
+  feeVatTreatment: FeeVatTreatment;
+  feeVatRate: string | null;
+  /** Wirksamer Satz heute; null bei UNKNOWN. */
+  effectiveRate: string | null;
+  source: FeeTreatmentSourceDto;
+};
+
+export type FeeTreatmentRowDto = {
+  target: FeeTreatmentTargetDto;
+  scopeKey: string;
+  current: FeeTreatmentCurrentDto;
+  /** Geltende Eintraege, aeltester zuerst. */
+  entries: FeeTreatmentEntryDto[];
+  /** Durch einen Eintrag mit demselben Tag ersetzte Eintraege (Nachweis). */
+  superseded: FeeTreatmentEntryDto[];
+  /** Gebuehren, die noch auf eine Behandlung warten (nur Anbieter-Bereiche). */
+  pendingFees: { count: number; earliestDate: string | null };
+};
+
+export type FeeTreatmentAccountDto = {
+  paymentAccountId: number;
+  name: string;
+  type: string;
+  isArchived: boolean;
+  /** Anbieter, dessen Gebuehren das Konto selbst traegt; null bei Bank und Kasse. */
+  ownProvider: PaymentProvider | null;
+  rows: FeeTreatmentRowDto[];
+};
+
+export type FeeTreatmentRecommendationDto = {
+  provider: PaymentProvider | null;
+  recommendedTreatment: FeeVatTreatment | null;
+  status: "unconfirmed" | "confirmed";
+  note: string;
+};
+
+export type FeeTreatmentOverviewDto = {
+  asOf: string;
+  currency: string;
+  /** USt-Regime der Firma heute. */
+  regimeToday: VatRegime | null;
+  recommendations: {
+    versionId: string;
+    /** Stand der Empfehlungen. */
+    validFrom: string;
+    sources: Array<{ norm: string; url: string; retrievedAt: string; covers: string }>;
+    openPoints: string[];
+    items: FeeTreatmentRecommendationDto[];
+  };
+  accountFeeDefault: { feeVatTreatment: FeeVatTreatment; feeVatRate: string; rule: string; basis: string };
+  /** Firmenvorgabe Kontogebuehren (Konten ohne Anbieter ohne eigenen Eintrag). */
+  companyAccountFee: FeeTreatmentRowDto;
+  accounts: FeeTreatmentAccountDto[];
+};
+
+export type FeeReceiptTaxFieldsDto = {
+  vatTreatment: VatTreatment | null;
+  netAmount: string;
+  taxAmount: string | null;
+  taxRate: string | null;
+  inputVatEligibility: InputVatEligibility | null;
+  inputVatAmount: string | null;
+};
+
+export type FeeReceiptChangeDto = {
+  expenseId: number;
+  /** transaction_fee: Gebuehr an einer Zahlung; fee_correction: Gebuehrenkorrektur; account_fee: erfasste Kontogebuehr. */
+  kind: "transaction_fee" | "fee_correction" | "account_fee";
+  paymentId: number | null;
+  paymentAccountId: number;
+  date: string;
+  month: string;
+  amount: string;
+  description: string;
+  confirmed: boolean;
+  /** In einer festgeschriebenen Periode: wird nicht umgebucht, sondern als Korrekturbedarf gemeldet. */
+  locked: boolean;
+  regime: VatRegime | null;
+  before: FeeReceiptTaxFieldsDto;
+  after: FeeReceiptTaxFieldsDto;
+};
+
+export type FeeVatFigureDeltaDto = { before: string; after: string; delta: string };
+
+export type FeeVatMonthEffectDto = {
+  month: string;
+  regime: VatRegime | "mixed" | null;
+  locked: boolean;
+  receipts: number;
+  /** § 13b: Bemessungsgrundlage (KZ 46) und Steuer (KZ 47), auch beim Kleinunternehmer. */
+  kz46: FeeVatFigureDeltaDto;
+  kz47: FeeVatFigureDeltaDto;
+  /** Vorsteuer nur bei Regelbesteuerung: KZ 66 (Rechnungen), KZ 67 (§ 13b). */
+  kz66: FeeVatFigureDeltaDto;
+  kz67: FeeVatFigureDeltaDto;
+  /** Wirkung auf die Zahllast: + mehr Steuer, - weniger. */
+  payableDelta: string;
+};
+
+export type FeeTreatmentChangeRequestDto = {
+  target: FeeTreatmentTargetDto;
+  validFrom: string;
+  feeVatTreatment: FeeVatTreatment;
+  feeVatRate?: string | null;
+  note?: string | null;
+};
+
+export type FeeTreatmentPreviewDto = {
+  target: FeeTreatmentTargetDto;
+  scopeKey: string;
+  currency: string;
+  planned: {
+    validFrom: string;
+    feeVatTreatment: FeeVatTreatment;
+    feeVatRate: string | null;
+    effectiveRateAtValidFrom: string | null;
+    /** Erster Tag, ab dem wieder ein spaeterer Eintrag gilt; null = bis auf Weiteres. */
+    until: string | null;
+  };
+  /** Behandlung, die bisher am validFrom galt. */
+  before: FeeTreatmentCurrentDto;
+  /** Aktiver Eintrag mit demselben Tag, den dieser ersetzt. */
+  replaces: FeeTreatmentEntryDto | null;
+  /** Schon genau so eingetragen und alle Belege passen: Anwenden aendert nichts. */
+  alreadyApplied: boolean;
+  receipts: { inRange: number; toCorrect: number; unchanged: number; locked: number };
+  changes: FeeReceiptChangeDto[];
+  vatEffect: FeeVatMonthEffectDto[];
+  pendingFees: { count: number; amount: string; locked: number };
+  lockedPeriod: { lockedUntil: string | null; receipts: number; months: string[] };
+  warnings: string[];
+  /** Beim Anwenden mitsenden: bestaetigt wird genau diese Vorschau. */
+  previewHash: string;
+};
+
+export type FeeTreatmentApplyResultDto = {
+  status: "applied" | "already_applied";
+  entry: FeeTreatmentEntryDto;
+  superseded: FeeTreatmentEntryDto | null;
+  corrected: Array<{ expenseId: number; month: string }>;
+  /** Belege in festgeschriebenen Perioden: nicht umgebucht, Korrektur ausserhalb noetig. */
+  correctionNeeded: Array<{ expenseId: number; date: string; month: string }>;
+  pendingFees: { booked: number; failed: number; awaitingConfiguration: PaymentProvider[]; missingProvider: number } | null;
+  previewHash: string;
+};

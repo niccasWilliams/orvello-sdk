@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -951,6 +951,19 @@ export type BookkeepingReportsVatStatusResponseData = {
   thresholds: {
   kleinunternehmerGraceAmount: number;
   kleinunternehmerMaxAmount: number;
+  kleinunternehmerRule: {
+  id: string;
+  validFrom: string;
+  validTo: string | null;
+  currentYearBasis: "actual" | "forecast";
+  sources: Array<{
+  norm: string;
+  url: string;
+  retrievedAt: string;
+  covers: string;
+}>;
+  openPoints: Array<string>;
+};
 };
   revenue: {
   currentYear: {
@@ -1679,8 +1692,53 @@ export type PaymentsUpdateFeeVatTreatmentBody = {
   feeVatRate?: string;
   provider?: "sumup" | "paypal" | "stripe" | "klarna";
 };
-export type PaymentsUpdateFeeVatTreatmentResponseData = PaymentProviderConnection;
+export type PaymentsUpdateFeeVatTreatmentResponseData = PaymentProviderConnection & { pendingFees: FeeTreatmentApplyResultDto['pendingFees']; treatmentEntry: FeeTreatmentEntryDto; corrected: FeeTreatmentApplyResultDto['corrected']; correctionNeeded: FeeTreatmentApplyResultDto['correctionNeeded'] };
 export type PaymentsUpdateFeeVatTreatmentResponse = import("../types").ApiEnvelope<PaymentsUpdateFeeVatTreatmentResponseData>;
+
+export type PaymentsListFeeTreatmentsParams = undefined;
+export type PaymentsListFeeTreatmentsQuery = undefined;
+export type PaymentsListFeeTreatmentsBody = undefined;
+export type PaymentsListFeeTreatmentsResponseData = FeeTreatmentOverviewDto;
+export type PaymentsListFeeTreatmentsResponse = import("../types").ApiEnvelope<PaymentsListFeeTreatmentsResponseData>;
+
+export type PaymentsPreviewFeeTreatmentParams = undefined;
+export type PaymentsPreviewFeeTreatmentQuery = undefined;
+export type PaymentsPreviewFeeTreatmentBody = {
+  target: {
+  kind: "provider";
+  paymentAccountId: number;
+  provider: "sumup" | "paypal" | "stripe" | "klarna";
+} | {
+  kind: "account_fee";
+  paymentAccountId: number | null;
+};
+  validFrom: string;
+  feeVatTreatment: "EXEMPT" | "INCLUSIVE_STANDARD" | "REVERSE_CHARGE_13B";
+  feeVatRate?: string | null;
+  note?: string | null;
+};
+export type PaymentsPreviewFeeTreatmentResponseData = FeeTreatmentPreviewDto;
+export type PaymentsPreviewFeeTreatmentResponse = import("../types").ApiEnvelope<PaymentsPreviewFeeTreatmentResponseData>;
+
+export type PaymentsApplyFeeTreatmentParams = undefined;
+export type PaymentsApplyFeeTreatmentQuery = undefined;
+export type PaymentsApplyFeeTreatmentBody = {
+  target: {
+  kind: "provider";
+  paymentAccountId: number;
+  provider: "sumup" | "paypal" | "stripe" | "klarna";
+} | {
+  kind: "account_fee";
+  paymentAccountId: number | null;
+};
+  validFrom: string;
+  feeVatTreatment: "EXEMPT" | "INCLUSIVE_STANDARD" | "REVERSE_CHARGE_13B";
+  feeVatRate?: string | null;
+  note?: string | null;
+  previewHash: string;
+};
+export type PaymentsApplyFeeTreatmentResponseData = FeeTreatmentApplyResultDto;
+export type PaymentsApplyFeeTreatmentResponse = import("../types").ApiEnvelope<PaymentsApplyFeeTreatmentResponseData>;
 
 export type PaymentsListFeeProposalsParams = undefined;
 export type PaymentsListFeeProposalsQuery = {
@@ -4698,7 +4756,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Gebuehren-Steuerbehandlung der Provider-Verbindung setzen",
-      description: "Legt fest wie Provider-Gebuehren steuerlich behandelt werden: EXEMPT (steuerfrei, §4 Nr. 8 UStG), INCLUSIVE_STANDARD (19% inklusive, deutsche Entity), REVERSE_CHARGE_13B (§13b, EU-Entity). Gilt pro Verbindung, nicht global.",
+      description: "Legt fest wie Provider-Gebuehren steuerlich behandelt werden: EXEMPT (steuerfrei, §4 Nr. 8 UStG), INCLUSIVE_STANDARD (19% inklusive, deutsche Entity), REVERSE_CHARGE_13B (§13b, EU-Entity). Gilt je Konto und Anbieter ab heute (Historie mit Gueltig-ab, TSK-000382); hat der Bereich noch keinen Eintrag, ab der aeltesten wartenden Gebuehr. Wartende Gebuehren werden gebucht. Fuer ein Datum in der Vergangenheit: POST /fee-treatments/preview und POST /fee-treatments.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -4707,6 +4765,62 @@ export const apiRoutes_bookkeeping = {
       body: PaymentsUpdateFeeVatTreatmentBody;
       response: PaymentsUpdateFeeVatTreatmentResponse;
       responseData: PaymentsUpdateFeeVatTreatmentResponseData;
+    },
+  },
+  // Contract source: explicit
+  "payments_list_fee_treatments": {
+    method: "GET",
+    path: "/bookkeeping/payments/fee-treatments",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","payments"],
+      summary: "Gebuehrenbehandlung je Konto und Anbieter: Historie, heute geltend, Empfehlungen",
+      description: "Je Zahlungskonto die Bereiche (eigener Anbieter; bei Bank/Kasse jeder Anbieter plus Kontogebuehren) mit geltenden und ersetzten Eintraegen, der heute geltenden Behandlung samt wirksamem Satz und Herkunft, wartenden Gebuehren. Dazu die Firmenvorgabe Kontogebuehren, die Plattformvorgabe, das Regime heute und die Anbieter-Empfehlungen mit Quelle und Stand.",
+    },
+    types: null as unknown as {
+      params: PaymentsListFeeTreatmentsParams;
+      query: PaymentsListFeeTreatmentsQuery;
+      body: PaymentsListFeeTreatmentsBody;
+      response: PaymentsListFeeTreatmentsResponse;
+      responseData: PaymentsListFeeTreatmentsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "payments_preview_fee_treatment": {
+    method: "POST",
+    path: "/bookkeeping/payments/fee-treatments/preview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","payments"],
+      summary: "Gebuehrenbehandlung mit Gueltig-ab: Vorschau",
+      description: "Zeigt, was ein Eintrag ab validFrom bewirkt, ohne etwas zu schreiben: betroffene Gebuehrenbelege (vorher/nachher), Steuerwirkung je Monat und UStVA-Kennzahl (46/47/66/67, Zahllast), Belege in festgeschriebenen Perioden (werden nicht umgebucht), wartende Gebuehren. previewHash beim Anwenden mitsenden.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: PaymentsPreviewFeeTreatmentParams;
+      query: PaymentsPreviewFeeTreatmentQuery;
+      body: PaymentsPreviewFeeTreatmentBody;
+      response: PaymentsPreviewFeeTreatmentResponse;
+      responseData: PaymentsPreviewFeeTreatmentResponseData;
+    },
+  },
+  // Contract source: explicit
+  "payments_apply_fee_treatment": {
+    method: "POST",
+    path: "/bookkeeping/payments/fee-treatments",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","payments"],
+      summary: "Gebuehrenbehandlung mit Gueltig-ab eintragen und Belege neu bewerten",
+      description: "Traegt die Behandlung ab validFrom ein (gleicher Tag ersetzt den alten Eintrag) und bewertet die betroffenen Belege in offenen Perioden neu, jeden unter Audit. Festgeschriebene Perioden bleiben unberuehrt und kommen als correctionNeeded zurueck. 409, wenn sich seit der Vorschau etwas geaendert hat. Wiederholung ist ohne Wirkung (status already_applied).",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: PaymentsApplyFeeTreatmentParams;
+      query: PaymentsApplyFeeTreatmentQuery;
+      body: PaymentsApplyFeeTreatmentBody;
+      response: PaymentsApplyFeeTreatmentResponse;
+      responseData: PaymentsApplyFeeTreatmentResponseData;
     },
   },
   // Contract source: explicit

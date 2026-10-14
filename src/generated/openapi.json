@@ -26647,11 +26647,82 @@
                                 },
                                 "kleinunternehmerMaxAmount": {
                                   "type": "number"
+                                },
+                                "kleinunternehmerRule": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "validFrom": {
+                                      "type": "string"
+                                    },
+                                    "validTo": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "currentYearBasis": {
+                                      "type": "string",
+                                      "enum": [
+                                        "actual",
+                                        "forecast"
+                                      ]
+                                    },
+                                    "sources": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "norm": {
+                                            "type": "string"
+                                          },
+                                          "url": {
+                                            "type": "string"
+                                          },
+                                          "retrievedAt": {
+                                            "type": "string"
+                                          },
+                                          "covers": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "norm",
+                                          "url",
+                                          "retrievedAt",
+                                          "covers"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "openPoints": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "validFrom",
+                                    "validTo",
+                                    "currentYearBasis",
+                                    "sources",
+                                    "openPoints"
+                                  ],
+                                  "additionalProperties": false
                                 }
                               },
                               "required": [
                                 "kleinunternehmerGraceAmount",
-                                "kleinunternehmerMaxAmount"
+                                "kleinunternehmerMaxAmount",
+                                "kleinunternehmerRule"
                               ],
                               "additionalProperties": false
                             },
@@ -32590,7 +32661,7 @@
           "payments"
         ],
         "summary": "Gebuehren-Steuerbehandlung der Provider-Verbindung setzen",
-        "description": "Legt fest wie Provider-Gebuehren steuerlich behandelt werden: EXEMPT (steuerfrei, §4 Nr. 8 UStG), INCLUSIVE_STANDARD (19% inklusive, deutsche Entity), REVERSE_CHARGE_13B (§13b, EU-Entity). Gilt pro Verbindung, nicht global.",
+        "description": "Legt fest wie Provider-Gebuehren steuerlich behandelt werden: EXEMPT (steuerfrei, §4 Nr. 8 UStG), INCLUSIVE_STANDARD (19% inklusive, deutsche Entity), REVERSE_CHARGE_13B (§13b, EU-Entity). Gilt je Konto und Anbieter ab heute (Historie mit Gueltig-ab, TSK-000382); hat der Bereich noch keinen Eintrag, ab der aeltesten wartenden Gebuehr. Wartende Gebuehren werden gebucht. Fuer ein Datum in der Vergangenheit: POST /fee-treatments/preview und POST /fee-treatments.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -32683,6 +32754,434 @@
                   }
                 },
                 "required": [
+                  "feeVatTreatment"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/payments/fee-treatments": {
+      "get": {
+        "operationId": "payments_list_fee_treatments",
+        "tags": [
+          "bookkeeping",
+          "payments"
+        ],
+        "summary": "Gebuehrenbehandlung je Konto und Anbieter: Historie, heute geltend, Empfehlungen",
+        "description": "Je Zahlungskonto die Bereiche (eigener Anbieter; bei Bank/Kasse jeder Anbieter plus Kontogebuehren) mit geltenden und ersetzten Eintraegen, der heute geltenden Behandlung samt wirksamem Satz und Herkunft, wartenden Gebuehren. Dazu die Firmenvorgabe Kontogebuehren, die Plattformvorgabe, das Regime heute und die Anbieter-Empfehlungen mit Quelle und Stand.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "post": {
+        "operationId": "payments_apply_fee_treatment",
+        "tags": [
+          "bookkeeping",
+          "payments"
+        ],
+        "summary": "Gebuehrenbehandlung mit Gueltig-ab eintragen und Belege neu bewerten",
+        "description": "Traegt die Behandlung ab validFrom ein (gleicher Tag ersetzt den alten Eintrag) und bewertet die betroffenen Belege in offenen Perioden neu, jeden unter Audit. Festgeschriebene Perioden bleiben unberuehrt und kommen als correctionNeeded zurueck. 409, wenn sich seit der Vorschau etwas geaendert hat. Wiederholung ist ohne Wirkung (status already_applied).",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "const": "provider"
+                          },
+                          "paymentAccountId": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0
+                          },
+                          "provider": {
+                            "type": "string",
+                            "enum": [
+                              "sumup",
+                              "paypal",
+                              "stripe",
+                              "klarna"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "paymentAccountId",
+                          "provider"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "const": "account_fee"
+                          },
+                          "paymentAccountId": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "paymentAccountId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "validFrom": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "feeVatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "EXEMPT",
+                      "INCLUSIVE_STANDARD",
+                      "REVERSE_CHARGE_13B"
+                    ]
+                  },
+                  "feeVatRate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d+(\\.\\d{1,4})?$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "note": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "previewHash": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "target",
+                  "validFrom",
+                  "feeVatTreatment",
+                  "previewHash"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/payments/fee-treatments/preview": {
+      "post": {
+        "operationId": "payments_preview_fee_treatment",
+        "tags": [
+          "bookkeeping",
+          "payments"
+        ],
+        "summary": "Gebuehrenbehandlung mit Gueltig-ab: Vorschau",
+        "description": "Zeigt, was ein Eintrag ab validFrom bewirkt, ohne etwas zu schreiben: betroffene Gebuehrenbelege (vorher/nachher), Steuerwirkung je Monat und UStVA-Kennzahl (46/47/66/67, Zahllast), Belege in festgeschriebenen Perioden (werden nicht umgebucht), wartende Gebuehren. previewHash beim Anwenden mitsenden.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "const": "provider"
+                          },
+                          "paymentAccountId": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0
+                          },
+                          "provider": {
+                            "type": "string",
+                            "enum": [
+                              "sumup",
+                              "paypal",
+                              "stripe",
+                              "klarna"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "paymentAccountId",
+                          "provider"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "const": "account_fee"
+                          },
+                          "paymentAccountId": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "paymentAccountId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "validFrom": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "feeVatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "EXEMPT",
+                      "INCLUSIVE_STANDARD",
+                      "REVERSE_CHARGE_13B"
+                    ]
+                  },
+                  "feeVatRate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d+(\\.\\d{1,4})?$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "note": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "target",
+                  "validFrom",
                   "feeVatTreatment"
                 ],
                 "additionalProperties": false
