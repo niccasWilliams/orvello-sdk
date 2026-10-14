@@ -547,7 +547,7 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
     expect(lastRequest?.url).toContain("/invoices/external/dunning/55/preview");
     expect(lastRequest?.method).toBe("POST");
 
-    await client.dunning.issue(55, {});
+    await client.dunning.issue(55, { level: "level1" });
     expect(lastRequest?.url).toContain("/invoices/external/dunning/55/issue");
     expect(lastRequest?.method).toBe("POST");
 
@@ -562,36 +562,34 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
   it("bookkeeping: revenues, expenses with base64 receipt, and settleInvoice", async () => {
     const client = createMockedClient({ created: true });
 
-    // Revenue with externalRef as Idempotency-Key
-    await client.bookkeeping.revenues.create({
-      managingCompanyId: 1,
-      paymentAccountId: 2,
+    // Revenue with externalRef as Idempotency-Key. externalRef is not part of the contract body;
+    // the client still reads it as a fallback key, so it is passed through a non-literal object.
+    const revenue = {
       revenueDate: "2026-09-05",
       taxRate: "19.00",
-      grossAmount: "119.00",
+      amount: "119.00",
       netAmount: "100.00",
       taxAmount: "19.00",
       description: "Service Fee",
       externalRef: "rev-ext-999",
-    });
+    };
+    await client.bookkeeping.revenues.create(revenue);
     expect(lastRequest?.url).toContain("/bookkeeping/revenues/external");
     expect(lastRequest?.headers.get("Idempotency-Key")).toBe("rev-ext-999");
 
     // Expense with receipt payload
     const receipt = buildBase64Receipt(new Uint8Array([1, 2, 3]), "beleg.pdf", "application/pdf");
-    await client.bookkeeping.expenses.create(
-      {
-        managingCompanyId: 1,
-        expenseDate: "2026-09-05",
-        grossAmount: "50.00",
-        netAmount: "50.00",
-        taxAmount: "0.00",
-        taxRate: "0.00",
-        paymentMethod: "bank",
-        externalRef: "exp-ref-111",
-      },
-      { receipt }
-    );
+    const expense = {
+      expenseDate: "2026-09-05",
+      amount: "50.00",
+      netAmount: "50.00",
+      taxAmount: "0.00",
+      taxRate: "0.00",
+      description: "Hosting",
+      category: "infrastructure" as const,
+      externalRef: "exp-ref-111",
+    };
+    await client.bookkeeping.expenses.create(expense, { receipt });
     expect(lastRequest?.url).toContain("/bookkeeping/expenses/external");
     expect(lastRequest?.headers.get("Idempotency-Key")).toBe("exp-ref-111");
     const sentExpenseBody = JSON.parse(lastRequest?.body || "{}");
@@ -603,7 +601,7 @@ describe("OrvelloClient - Domain Modules & Endpoints", () => {
       invoiceId: 77,
       paymentAccountId: 3,
       payoutAmount: "97.50",
-      paymentDate: "2026-09-05",
+      paidAt: "2026-09-05",
       externalRef: "payout-tx-888",
     });
     expect(lastRequest?.url).toContain("/bookkeeping/payments/external/settle-invoice");
