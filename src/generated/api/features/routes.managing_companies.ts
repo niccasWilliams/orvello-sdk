@@ -835,7 +835,12 @@ export type ManagingCompaniesInvoiceTransparencyContextResponseData = {
   params?: Record<string, string | number | boolean | null>;
 };
   defaultProductType: "standard" | "reduced" | "custom";
+  defaultSupplyType: "goods" | "service" | "electronic_service" | "event_admission" | null;
   isSystem: boolean;
+}>;
+  availableSupplyTypes: Array<{
+  value: "goods" | "service" | "electronic_service" | "event_admission";
+  label: string;
 }>;
   quotePolicy: {
   requiredOnManualCreate: boolean;
@@ -877,6 +882,7 @@ export type ManagingCompaniesInvoiceTransparencyQuoteBody = {
   customVatRate?: number;
   vatOverrideReason?: string;
   acknowledgeSection14cLiability?: boolean;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -885,6 +891,8 @@ export type ManagingCompaniesInvoiceTransparencyQuoteBody = {
   itemType?: string | null;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource?: "input" | "product_default" | "template";
 }>;
   language?: string;
   issueImmediately?: boolean;
@@ -927,6 +935,8 @@ export type ManagingCompaniesInvoiceTransparencyQuoteResponseData = {
   params?: Record<string, string | number | boolean | null>;
 };
 };
+  supplyType: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource: "input" | "product_default" | "template" | "item_type_default" | "invoice_default" | "original_invoice" | "legacy_default";
 }>;
   paymentResolution: {
   paymentAccountId: number | null;
@@ -967,6 +977,7 @@ export type ManagingCompaniesItemTypeConfigsCreateBody = {
   value: string;
   label: string;
   defaultProductType?: "standard" | "reduced" | "custom";
+  defaultSupplyType?: "goods" | "service" | "electronic_service" | "event_admission" | null;
   sortOrder?: number;
 };
 export type ManagingCompaniesItemTypeConfigsCreateResponseData = {
@@ -975,6 +986,7 @@ export type ManagingCompaniesItemTypeConfigsCreateResponseData = {
   value: string;
   label: string;
   defaultProductType: string;
+  defaultSupplyType: "goods" | "service" | "electronic_service" | "event_admission" | null;
   sortOrder: number;
   isArchived: boolean;
   createdAt: string;
@@ -990,6 +1002,7 @@ export type ManagingCompaniesItemTypeConfigsUpdateQuery = undefined;
 export type ManagingCompaniesItemTypeConfigsUpdateBody = {
   label?: string;
   defaultProductType?: "standard" | "reduced" | "custom";
+  defaultSupplyType?: "goods" | "service" | "electronic_service" | "event_admission" | null;
   sortOrder?: number;
 };
 export type ManagingCompaniesItemTypeConfigsUpdateResponseData = {
@@ -998,6 +1011,7 @@ export type ManagingCompaniesItemTypeConfigsUpdateResponseData = {
   value: string;
   label: string;
   defaultProductType: string;
+  defaultSupplyType: "goods" | "service" | "electronic_service" | "event_admission" | null;
   sortOrder: number;
   isArchived: boolean;
   createdAt: string;
@@ -1017,6 +1031,7 @@ export type ManagingCompaniesItemTypeConfigsArchiveResponseData = {
   value: string;
   label: string;
   defaultProductType: string;
+  defaultSupplyType: "goods" | "service" | "electronic_service" | "event_admission" | null;
   sortOrder: number;
   isArchived: boolean;
   createdAt: string;
@@ -1061,6 +1076,7 @@ export type ManagingCompaniesInvoiceTemplatesListResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1112,6 +1128,7 @@ export type ManagingCompaniesInvoiceTemplatesGetResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1152,6 +1169,7 @@ export type ManagingCompaniesInvoiceTemplatesCreateBody = {
   itemType?: string;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder?: number;
 }>;
   sortOrder?: number;
@@ -1181,6 +1199,7 @@ export type ManagingCompaniesInvoiceTemplatesCreateResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1228,6 +1247,7 @@ export type ManagingCompaniesInvoiceTemplatesFromInvoiceResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1269,6 +1289,7 @@ export type ManagingCompaniesInvoiceTemplatesUpdateBody = {
   itemType?: string;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder?: number;
 }>;
   sortOrder?: number;
@@ -1299,6 +1320,7 @@ export type ManagingCompaniesInvoiceTemplatesUpdateResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1343,6 +1365,7 @@ export type ManagingCompaniesInvoiceTemplatesArchiveResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;
@@ -1389,6 +1412,7 @@ export type ManagingCompaniesInvoiceTemplatesDuplicateResponseData = {
   itemType: string;
   productType: string;
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   sortOrder: number;
 }>;
   isArchived: boolean;

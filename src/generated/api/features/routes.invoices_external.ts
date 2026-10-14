@@ -37,6 +37,7 @@ export type InvoicesPreviewExternalBody = {
   customVatRate?: number;
   vatOverrideReason?: string;
   acknowledgeSection14cLiability?: boolean;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -47,6 +48,8 @@ export type InvoicesPreviewExternalBody = {
   sortOrder?: number;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource?: "input" | "product_default" | "template";
 }>;
   language?: string;
   issueImmediately?: boolean;
@@ -327,6 +330,7 @@ export type InvoicesCreateExternalBody = {
   customVatRate?: number;
   vatOverrideReason?: string;
   acknowledgeSection14cLiability?: boolean;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -337,6 +341,8 @@ export type InvoicesCreateExternalBody = {
   sortOrder?: number;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource?: "input" | "product_default" | "template";
 }>;
   language?: string;
   issueImmediately?: boolean;
@@ -380,6 +386,7 @@ export type InvoicesDryRunExternalBody = {
   customVatRate?: number;
   vatOverrideReason?: string;
   acknowledgeSection14cLiability?: boolean;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -390,6 +397,8 @@ export type InvoicesDryRunExternalBody = {
   sortOrder?: number;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource?: "input" | "product_default" | "template";
 }>;
   language?: string;
   issueImmediately?: boolean;

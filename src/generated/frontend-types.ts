@@ -38,7 +38,9 @@ export type BuildingType = 'wohngebaeude_post2022' | 'wohngebaeude_1925_2022' | 
 export type AssetDisposalType = 'sale' | 'scrapping' | 'theft' | 'private_withdrawal' | 'insurance_claim' | 'donation' | 'destruction';
 export type VatRegime = 'kleinunternehmer' | 'regelbesteuert';
 export type VatAccountingMethod = 'SOLL' | 'IST';
-export type VatTreatment = 'KLEINUNTERNEHMER_0' | 'DE_STANDARD_19' | 'DE_REDUCED_7' | 'REVERSE_CHARGE_13B' | 'EU_B2B_0' | 'EXPORT_0' | 'EXEMPT_4' | 'CUSTOM';
+export type VatTreatment = 'KLEINUNTERNEHMER_0' | 'DE_STANDARD_19' | 'DE_REDUCED_7' | 'REVERSE_CHARGE_13B' | 'EU_B2B_0' | 'EXPORT_0' | 'EXEMPT_4' | 'CUSTOM' | 'EU_B2B_SERVICE_0' | 'NOT_TAXABLE_ABROAD_0';
+export type SupplyType = 'goods' | 'service' | 'electronic_service' | 'event_admission';
+export type SupplyTypeSource = 'input' | 'product_default' | 'template' | 'item_type_default' | 'invoice_default' | 'original_invoice' | 'legacy_default';
 export type ExpenseVatTreatmentSource = 'receipt' | 'supplier_profile';
 export type InputVatEligibility = 'NONE' | 'FULL' | 'PARTIAL';
 export type FeeVatTreatment = 'UNKNOWN' | 'EXEMPT' | 'INCLUSIVE_STANDARD' | 'REVERSE_CHARGE_13B';
@@ -1413,6 +1415,9 @@ export type InvoiceLineItem = {
   taxRate: string;
   /** lineNetAmount * taxRate */
   lineTaxAmount: string;
+  /** Leistungsart mit Herkunft (TSK-000382 #791). Altpositionen: goods/legacy_default, die bisherige Annahme. */
+  supplyType: SupplyType;
+  supplyTypeSource: SupplyTypeSource;
   /** Sort order */
   sortOrder: number;
   createdAt: Date;
@@ -1441,6 +1446,9 @@ export type InvoiceLineItemInsert = {
   taxRate: string;
   /** lineNetAmount * taxRate */
   lineTaxAmount: string;
+  /** Leistungsart mit Herkunft (TSK-000382 #791). Altpositionen: goods/legacy_default, die bisherige Annahme. */
+  supplyType?: SupplyType;
+  supplyTypeSource?: SupplyTypeSource;
   /** Sort order */
   sortOrder?: number;
   createdAt?: Date;
@@ -1456,6 +1464,8 @@ export type InvoiceItemTypeConfig = {
   /** display name, e.g. "Montage / Einbau" */
   label: string;
   defaultProductType: string;
+  /** Leistungsart, die Positionen dieser Art ohne eigene Angabe bekommen (TSK-000382 #791); null = keine Vorgabe. */
+  defaultSupplyType: SupplyType | null;
   sortOrder: number;
   isArchived: boolean;
   createdAt: Date;
@@ -1469,6 +1479,8 @@ export type InvoiceItemTypeConfigInsert = {
   /** display name, e.g. "Montage / Einbau" */
   label: string;
   defaultProductType?: string;
+  /** Leistungsart, die Positionen dieser Art ohne eigene Angabe bekommen (TSK-000382 #791); null = keine Vorgabe. */
+  defaultSupplyType?: SupplyType | null;
   sortOrder?: number;
   isArchived?: boolean;
   createdAt?: Date;
@@ -1501,7 +1513,7 @@ export type InvoiceTemplate = {
   notes: string | null;
   lineItems: any;
   /**
-   * JSONB Array: [{ title, description, unitPriceNet, defaultQuantity, itemType, productType, taxRate?, sortOrder }]
+   * JSONB Array: [{ title, description, unitPriceNet, defaultQuantity, itemType, productType, taxRate?, supplyType?, sortOrder }]
    * Lifecycle
    */
   isArchived: boolean;
@@ -1540,7 +1552,7 @@ export type InvoiceTemplateInsert = {
   notes?: string | null;
   lineItems?: any;
   /**
-   * JSONB Array: [{ title, description, unitPriceNet, defaultQuantity, itemType, productType, taxRate?, sortOrder }]
+   * JSONB Array: [{ title, description, unitPriceNet, defaultQuantity, itemType, productType, taxRate?, supplyType?, sortOrder }]
    * Lifecycle
    */
   isArchived?: boolean;

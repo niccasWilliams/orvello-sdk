@@ -12714,6 +12714,15 @@
                   "acknowledgeSection14cLiability": {
                     "type": "boolean"
                   },
+                  "supplyType": {
+                    "type": "string",
+                    "enum": [
+                      "goods",
+                      "service",
+                      "electronic_service",
+                      "event_admission"
+                    ]
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -12770,6 +12779,23 @@
                           "type": "number",
                           "minimum": 0,
                           "maximum": 1
+                        },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
+                        "supplyTypeSource": {
+                          "type": "string",
+                          "enum": [
+                            "input",
+                            "product_default",
+                            "template"
+                          ]
                         }
                       },
                       "required": [
@@ -14073,6 +14099,15 @@
                   "acknowledgeSection14cLiability": {
                     "type": "boolean"
                   },
+                  "supplyType": {
+                    "type": "string",
+                    "enum": [
+                      "goods",
+                      "service",
+                      "electronic_service",
+                      "event_admission"
+                    ]
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -14129,6 +14164,23 @@
                           "type": "number",
                           "minimum": 0,
                           "maximum": 1
+                        },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
+                        "supplyTypeSource": {
+                          "type": "string",
+                          "enum": [
+                            "input",
+                            "product_default",
+                            "template"
+                          ]
                         }
                       },
                       "required": [
@@ -15219,6 +15271,15 @@
                   "acknowledgeSection14cLiability": {
                     "type": "boolean"
                   },
+                  "supplyType": {
+                    "type": "string",
+                    "enum": [
+                      "goods",
+                      "service",
+                      "electronic_service",
+                      "event_admission"
+                    ]
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -15275,6 +15336,23 @@
                           "type": "number",
                           "minimum": 0,
                           "maximum": 1
+                        },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
+                        "supplyTypeSource": {
+                          "type": "string",
+                          "enum": [
+                            "input",
+                            "product_default",
+                            "template"
+                          ]
                         }
                       },
                       "required": [
@@ -16567,6 +16645,15 @@
                   "acknowledgeSection14cLiability": {
                     "type": "boolean"
                   },
+                  "supplyType": {
+                    "type": "string",
+                    "enum": [
+                      "goods",
+                      "service",
+                      "electronic_service",
+                      "event_admission"
+                    ]
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -16616,6 +16703,23 @@
                           "type": "number",
                           "minimum": 0,
                           "maximum": 1
+                        },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
+                        "supplyTypeSource": {
+                          "type": "string",
+                          "enum": [
+                            "input",
+                            "product_default",
+                            "template"
+                          ]
                         }
                       },
                       "required": [
@@ -27229,7 +27333,9 @@
                                 "section13bReceived": {},
                                 "section13bTax": {},
                                 "euB2b": {},
+                                "euB2bServices": {},
                                 "export": {},
+                                "notTaxable": {},
                                 "exempt": {},
                                 "total": {
                                   "type": "number"
@@ -27242,7 +27348,9 @@
                                 "section13bReceived",
                                 "section13bTax",
                                 "euB2b",
+                                "euB2bServices",
                                 "export",
+                                "notTaxable",
                                 "exempt",
                                 "total"
                               ],
@@ -57732,6 +57840,22 @@
                                           "custom"
                                         ]
                                       },
+                                      "defaultSupplyType": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "goods",
+                                              "service",
+                                              "electronic_service",
+                                              "event_admission"
+                                            ]
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
                                       "isSystem": {
                                         "type": "boolean"
                                       }
@@ -57740,7 +57864,33 @@
                                       "value",
                                       "label",
                                       "defaultProductType",
+                                      "defaultSupplyType",
                                       "isSystem"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "availableSupplyTypes": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string",
+                                        "enum": [
+                                          "goods",
+                                          "service",
+                                          "electronic_service",
+                                          "event_admission"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
                                     ],
                                     "additionalProperties": false
                                   }
@@ -57777,6 +57927,7 @@
                                 "defaultEarlyPaymentDiscountDays",
                                 "availableProductTypes",
                                 "availableItemTypes",
+                                "availableSupplyTypes",
                                 "quotePolicy"
                               ],
                               "additionalProperties": false
@@ -58038,6 +58189,27 @@
                                       "reason"
                                     ],
                                     "additionalProperties": false
+                                  },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
+                                  },
+                                  "supplyTypeSource": {
+                                    "type": "string",
+                                    "enum": [
+                                      "input",
+                                      "product_default",
+                                      "template",
+                                      "item_type_default",
+                                      "invoice_default",
+                                      "original_invoice",
+                                      "legacy_default"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -58049,7 +58221,9 @@
                                   "effectiveTaxRate",
                                   "taxAmount",
                                   "grossAmount",
-                                  "taxSource"
+                                  "taxSource",
+                                  "supplyType",
+                                  "supplyTypeSource"
                                 ],
                                 "additionalProperties": false
                               }
@@ -58553,6 +58727,15 @@
                   "acknowledgeSection14cLiability": {
                     "type": "boolean"
                   },
+                  "supplyType": {
+                    "type": "string",
+                    "enum": [
+                      "goods",
+                      "service",
+                      "electronic_service",
+                      "event_admission"
+                    ]
+                  },
                   "lineItems": {
                     "type": "array",
                     "items": {
@@ -58602,6 +58785,23 @@
                           "type": "number",
                           "minimum": 0,
                           "maximum": 1
+                        },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
+                        "supplyTypeSource": {
+                          "type": "string",
+                          "enum": [
+                            "input",
+                            "product_default",
+                            "template"
+                          ]
                         }
                       },
                       "required": [
@@ -58709,6 +58909,22 @@
                             "defaultProductType": {
                               "type": "string"
                             },
+                            "defaultSupplyType": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "goods",
+                                    "service",
+                                    "electronic_service",
+                                    "event_admission"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
                             "sortOrder": {
                               "type": "integer"
                             },
@@ -58735,6 +58951,7 @@
                             "value",
                             "label",
                             "defaultProductType",
+                            "defaultSupplyType",
                             "sortOrder",
                             "isArchived",
                             "createdAt",
@@ -58855,6 +59072,22 @@
                     ],
                     "default": "standard"
                   },
+                  "defaultSupplyType": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "goods",
+                          "service",
+                          "electronic_service",
+                          "event_admission"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "sortOrder": {
                     "type": "integer",
                     "minimum": 0
@@ -58937,6 +59170,22 @@
                             "defaultProductType": {
                               "type": "string"
                             },
+                            "defaultSupplyType": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "goods",
+                                    "service",
+                                    "electronic_service",
+                                    "event_admission"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
                             "sortOrder": {
                               "type": "integer"
                             },
@@ -58963,6 +59212,7 @@
                             "value",
                             "label",
                             "defaultProductType",
+                            "defaultSupplyType",
                             "sortOrder",
                             "isArchived",
                             "createdAt",
@@ -59025,6 +59275,22 @@
                       "standard",
                       "reduced",
                       "custom"
+                    ]
+                  },
+                  "defaultSupplyType": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "goods",
+                          "service",
+                          "electronic_service",
+                          "event_admission"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "sortOrder": {
@@ -59105,6 +59371,22 @@
                             "defaultProductType": {
                               "type": "string"
                             },
+                            "defaultSupplyType": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "goods",
+                                    "service",
+                                    "electronic_service",
+                                    "event_admission"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
                             "sortOrder": {
                               "type": "integer"
                             },
@@ -59131,6 +59413,7 @@
                             "value",
                             "label",
                             "defaultProductType",
+                            "defaultSupplyType",
                             "sortOrder",
                             "isArchived",
                             "createdAt",
@@ -59383,6 +59666,15 @@
                                         },
                                         "taxRate": {
                                           "type": "number"
+                                        },
+                                        "supplyType": {
+                                          "type": "string",
+                                          "enum": [
+                                            "goods",
+                                            "service",
+                                            "electronic_service",
+                                            "event_admission"
+                                          ]
                                         },
                                         "sortOrder": {
                                           "type": "integer"
@@ -59787,6 +60079,15 @@
                                   "taxRate": {
                                     "type": "number"
                                   },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
+                                  },
                                   "sortOrder": {
                                     "type": "integer"
                                   }
@@ -60122,6 +60423,15 @@
                                   "taxRate": {
                                     "type": "number"
                                   },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
+                                  },
                                   "sortOrder": {
                                     "type": "integer"
                                   }
@@ -60449,6 +60759,15 @@
                           "minimum": 0,
                           "maximum": 1
                         },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
                         "sortOrder": {
                           "type": "integer",
                           "minimum": 0,
@@ -60678,6 +60997,15 @@
                                   },
                                   "taxRate": {
                                     "type": "number"
+                                  },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
                                   },
                                   "sortOrder": {
                                     "type": "integer"
@@ -60997,6 +61325,15 @@
                           "minimum": 0,
                           "maximum": 1
                         },
+                        "supplyType": {
+                          "type": "string",
+                          "enum": [
+                            "goods",
+                            "service",
+                            "electronic_service",
+                            "event_admission"
+                          ]
+                        },
                         "sortOrder": {
                           "type": "integer",
                           "minimum": 0,
@@ -61227,6 +61564,15 @@
                                   },
                                   "taxRate": {
                                     "type": "number"
+                                  },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
                                   },
                                   "sortOrder": {
                                     "type": "integer"
@@ -61593,6 +61939,15 @@
                                   "taxRate": {
                                     "type": "number"
                                   },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
+                                  },
                                   "sortOrder": {
                                     "type": "integer"
                                   }
@@ -61929,6 +62284,15 @@
                                   },
                                   "taxRate": {
                                     "type": "number"
+                                  },
+                                  "supplyType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "goods",
+                                      "service",
+                                      "electronic_service",
+                                      "event_admission"
+                                    ]
                                   },
                                   "sortOrder": {
                                     "type": "integer"

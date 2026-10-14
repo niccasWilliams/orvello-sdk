@@ -335,6 +335,7 @@ export type InvoicesCreateManualBody = {
   customVatRate?: number;
   vatOverrideReason?: string;
   acknowledgeSection14cLiability?: boolean;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
   lineItems: Array<{
   title: string;
   description?: string | null;
@@ -343,6 +344,8 @@ export type InvoicesCreateManualBody = {
   itemType?: string | null;
   productType?: "standard" | "reduced" | "custom";
   taxRate?: number;
+  supplyType?: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource?: "input" | "product_default" | "template";
 }>;
   language?: string;
   issueImmediately?: boolean;

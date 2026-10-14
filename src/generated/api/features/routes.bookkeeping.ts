@@ -1050,7 +1050,9 @@ export type BookkeepingReportsVatUstvaResponseData = {
   section13bReceived: any;
   section13bTax: any;
   euB2b: any;
+  euB2bServices: any;
   export: any;
+  notTaxable: any;
   exempt: any;
   total: number;
 };
