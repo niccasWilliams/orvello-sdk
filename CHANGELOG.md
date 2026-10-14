@@ -2,6 +2,12 @@
 
 - Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
 
+## 0.7.12 - 2026-10-14
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- Vertragsinhalt geaendert, Oberflaeche gleich geblieben
+
 ## 0.7.11 - 2026-10-14
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

@@ -85,8 +85,6 @@ export type NodeBillUser = {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
-  /** direct-auth fields (null bei identityProvider "frontend") */
-  passwordHash: string | null;
   name: string | null;
   emailVerifiedAt: Date | null;
   /**
@@ -99,11 +97,6 @@ export type NodeBillUser = {
    * Wiederherstellen und endgueltiges Loeschen gehoeren der App (in node-qr 30 Tage).
    */
   deletionRequestedAt: Date | null;
-  /**
-   * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
-   * NodeBillUser?"). Nicht öffentlich, nicht in Audit-Exports.
-   */
-  deletionReason: string | null;
   /**
    * Systemkonten stehen fuer Dienste, die ohne menschliche Anmeldung handeln (gebunden ueber
    * oauth2_clients.systemUserId). Sie erscheinen wie normale Nutzer (Zustaendige, Autor),
@@ -135,8 +128,6 @@ export type UserInsert = {
   email?: string | null;
   firstName?: string | null;
   lastName?: string | null;
-  /** direct-auth fields (null bei identityProvider "frontend") */
-  passwordHash?: string | null;
   name?: string | null;
   emailVerifiedAt?: Date | null;
   /**
@@ -149,11 +140,6 @@ export type UserInsert = {
    * Wiederherstellen und endgueltiges Loeschen gehoeren der App (in node-qr 30 Tage).
    */
   deletionRequestedAt?: Date | null;
-  /**
-   * Optionaler Freitext-Grund — rein für interne Analytics ("warum kündigen
-   * NodeBillUser?"). Nicht öffentlich, nicht in Audit-Exports.
-   */
-  deletionReason?: string | null;
   /**
    * Systemkonten stehen fuer Dienste, die ohne menschliche Anmeldung handeln (gebunden ueber
    * oauth2_clients.systemUserId). Sie erscheinen wie normale Nutzer (Zustaendige, Autor),
