@@ -867,7 +867,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Rechnungs-Analyse abrufen",
-      description: "Liefert Analyse-Informationen zur Rechnung (z.B. Company-Bezug; marginAnalysis aktuell null/placeholder). Für Buchhaltung/Backoffice.",
+      description: "Liefert die Rechnung mit ihrer Kundenfirma. marginAnalysis ist nicht verfuegbar und immer null: node-bill fuehrt keine Einkaufs- oder Kostenzuordnung je Position. Für Buchhaltung/Backoffice.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
