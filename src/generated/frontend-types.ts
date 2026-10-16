@@ -68,10 +68,34 @@ export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment
 export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
 export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
 export type FeeTreatmentScope = 'provider' | 'account_fee';
-export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api';
+export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api' | 'fints';
 export type PaymentAccountBalanceType = 'bank_statement' | 'manual_count' | 'api_reported';
 export type TaxParamScope = 'global' | 'company';
 export type TaxParamCategory = 'afa' | 'vat' | 'threshold' | 'building' | 'est' | 'soli' | 'gewst' | 'wk' | 'vorsorge' | 'fees';
+export type PfAccountKind = 'checking' | 'savings' | 'tax_reserve' | 'credit_card' | 'debit_card' | 'cash' | 'brokerage' | 'other';
+export type PfFlowDirection = 'out' | 'in';
+export type PfCategoryKind = 'expense' | 'income' | 'transfer';
+export type PfEarmarkKind = 'tax_reserve' | 'savings_goal' | 'buffer' | 'planned_expense' | 'other';
+export type PfDebtKind = 'annuity_loan' | 'installment_loan' | 'credit_card_debt' | 'private_loan' | 'leasing' | 'bnpl' | 'other';
+export type PfDebtStatus = 'active' | 'paid_off' | 'deferred' | 'written_off';
+export type PfDebtBalanceSource = 'manual' | 'statement' | 'fints' | 'contract';
+export type PfDebtStrategy = 'avalanche' | 'snowball' | 'custom';
+export type PfDebtPlanStatus = 'draft' | 'active' | 'archived';
+export type PfRecurringOrigin = 'manual' | 'detected';
+export type PfRecurringKind = 'subscription' | 'rent' | 'insurance' | 'loan_payment' | 'utility' | 'membership' | 'tax' | 'savings_plan' | 'internal_transfer' | 'salary' | 'other_income' | 'other';
+export type PfInterval = 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'semiannual' | 'yearly' | 'custom_days';
+export type PfRecurringStatus = 'active' | 'paused' | 'cancelled' | 'ended';
+export type PfDueRule = 'day_of_month' | 'last_business_day' | 'first_business_day';
+export type PfBusinessDayAdjust = 'none' | 'preceding' | 'following';
+export type PfNoticeUnit = 'days' | 'weeks' | 'months';
+export type PfNoticeAnchor = 'any_time' | 'end_of_month' | 'end_of_quarter' | 'end_of_billing_period' | 'end_of_term' | 'end_of_contract_year';
+export type PfAmountMode = 'single_signed' | 'debit_credit_columns' | 'amount_plus_sign';
+export type PfImportStatus = 'preview' | 'imported' | 'failed' | 'discarded';
+export type PfExpectationStatus = 'pending' | 'confirmed' | 'amount_changed' | 'late' | 'missed' | 'superseded';
+export type PfInsightKind = 'amount_changed' | 'recurring_gone' | 'charge_overdue' | 'recurring_undeclared' | 'schedule_corrected' | 'recurring_detected' | 'allocation_unexecuted' | 'deadline_soon' | 'deadline_missed' | 'cash_short' | 'balance_stale' | 'debt_balance_due' | 'debt_rate_derived' | 'debt_pace_changed' | 'debt_balance_grew' | 'debt_extra_payment' | 'debt_paid_off' | 'debt_plan_drift';
+export type PfInsightStatus = 'open' | 'accepted' | 'dismissed' | 'resolved';
+export type PfInsightSeverity = 'info' | 'warn' | 'critical';
+export type PfAllocationKind = 'percent' | 'fixed' | 'remainder';
 
 // ============================================================================
 // BASE APP TYPES (schema.ts)
@@ -2106,6 +2130,14 @@ export type BookkeepingRevenue = {
   /** Date the cash payment was confirmed by the user (only set for cash_confirmed) */
   cashConfirmedAt: Date | null;
   cashConfirmedBy: number | null;
+  /**
+   * Authoritative EÜR date (Zufluss-Datum).
+   * - cash_confirmed:  = cashConfirmedAt
+   * - fully_matched:   = payment.bookedAt of the completing allocation
+   * - Migration:       = revenueDate of the original record
+   * The EÜR report filters by this field, NOT by revenueDate.
+   */
+  eurEffectiveDate: Date | null;
 };
 
 export type BookkeepingRevenueInsert = {
@@ -2202,6 +2234,14 @@ export type BookkeepingRevenueInsert = {
   /** Date the cash payment was confirmed by the user (only set for cash_confirmed) */
   cashConfirmedAt?: Date | null;
   cashConfirmedBy?: number | null;
+  /**
+   * Authoritative EÜR date (Zufluss-Datum).
+   * - cash_confirmed:  = cashConfirmedAt
+   * - fully_matched:   = payment.bookedAt of the completing allocation
+   * - Migration:       = revenueDate of the original record
+   * The EÜR report filters by this field, NOT by revenueDate.
+   */
+  eurEffectiveDate?: Date | null;
 };
 
 export type BookkeepingRevenueId = number;
@@ -2305,6 +2345,11 @@ export type BookkeepingExpense = {
   paymentStatus: BookkeepingPaymentStatus;
   cashConfirmedAt: Date | null;
   cashConfirmedBy: number | null;
+  /**
+   * Authoritative EÜR date (Abfluss-Datum).
+   * See bookkeepingRevenues.eurEffectiveDate for semantics.
+   */
+  eurEffectiveDate: Date | null;
   /** GoBD Storno (reversal) fields — expenses are NEVER deleted, only reversed */
   reversalOfId: number | null;
   isReversed: boolean;
@@ -2410,6 +2455,11 @@ export type BookkeepingExpenseInsert = {
   paymentStatus?: BookkeepingPaymentStatus;
   cashConfirmedAt?: Date | null;
   cashConfirmedBy?: number | null;
+  /**
+   * Authoritative EÜR date (Abfluss-Datum).
+   * See bookkeepingRevenues.eurEffectiveDate for semantics.
+   */
+  eurEffectiveDate?: Date | null;
   /** GoBD Storno (reversal) fields — expenses are NEVER deleted, only reversed */
   reversalOfId?: number | null;
   isReversed?: boolean;
@@ -2980,6 +3030,22 @@ export type PaymentAllocation = {
   targetType: PaymentAllocationTarget;
   targetId: number;
   kind: PaymentAllocationKind;
+  /**
+   * Allocation amount in PAYMENT currency (always the currency of the payment).
+   * This is the amount that reduces the payment's remaining balance.
+   */
+  allocatedAmount: string;
+  /**
+   * Currency of the payment at the time of allocation (e.g. "EUR", "USD").
+   * Stored redundantly for auditability.
+   */
+  paymentCurrency: string | null;
+  /**
+   * Allocation amount in TARGET currency:
+   * - invoice -> invoice.currency
+   * - expense/revenue -> managingCompany base currency (since those are stored in base currency)
+   */
+  targetAmount: string | null;
   targetCurrency: string | null;
   /** FX snapshot (only set when paymentCurrency != targetCurrency) */
   fxRate: string | null;
@@ -2999,6 +3065,22 @@ export type PaymentAllocationInsert = {
   targetType: PaymentAllocationTarget;
   targetId: number;
   kind?: PaymentAllocationKind;
+  /**
+   * Allocation amount in PAYMENT currency (always the currency of the payment).
+   * This is the amount that reduces the payment's remaining balance.
+   */
+  allocatedAmount: string;
+  /**
+   * Currency of the payment at the time of allocation (e.g. "EUR", "USD").
+   * Stored redundantly for auditability.
+   */
+  paymentCurrency?: string | null;
+  /**
+   * Allocation amount in TARGET currency:
+   * - invoice -> invoice.currency
+   * - expense/revenue -> managingCompany base currency (since those are stored in base currency)
+   */
+  targetAmount?: string | null;
   targetCurrency?: string | null;
   /** FX snapshot (only set when paymentCurrency != targetCurrency) */
   fxRate?: string | null;
@@ -4546,6 +4628,1520 @@ export type CapitalMovementInsert = {
   reversedBy?: number | null;
 };
 
+export type PfAccount = {
+  id: number;
+  ownerUserId: number;
+  name: string;
+  kind: PfAccountKind;
+  /** "wofür ist dieses Konto da" */
+  purpose: string | null;
+  /** "Sparkasse Offenbach" */
+  institutionName: string | null;
+  /**
+   * Vollständige IBAN. Wird gebraucht, um beim CSV-Import die Datei dem
+   * richtigen Konto zuzuordnen. Die API gibt sie NIE vollständig aus —
+   * Responses liefern nur die maskierte Form (siehe maskIban im Service).
+   */
+  iban: string | null;
+  bic: string | null;
+  /** letzte Stellen einer Kartennummer */
+  accountNumberHint: string | null;
+  /**
+   * Explizite Verbindung zum lokalen FinTS-Tresor in node-boss.
+   * Keine FK: die Zielzeile lebt in einer anderen Datenbank. Die ID ist
+   * trotzdem die einzige belastbare Aussage "dieser Zugang gehoert zu
+   * diesem Konto". Eine IBAN allein bedeutet ausdruecklich NICHT FinTS
+   * (z.B. Revolut oder ein manuell gepflegtes Tagesgeldkonto).
+   */
+  fintsConnectionId: number | null;
+  currency: string;
+  /**
+   * Aktueller Stand in Cent. Bei Kreditkarten/Krediten NEGATIV, wenn Schulden
+   * bestehen — so ist die Summe über alle Konten immer das echte Vermögen.
+   */
+  currentBalanceCents: number;
+  /** Wann dieser Stand zuletzt stimmte (Handeingabe oder letzter Import). */
+  balanceAsOf: string | null;
+  /** Woher der Stand kommt — Handeingabe oder aus einem Auszug gerechnet. */
+  balanceSource: string;
+  /** Verfügungsrahmen einer Kreditkarte / Dispo, in Cent (positiv). */
+  creditLimitCents: number | null;
+  /** Zählt dieses Konto zum Vermögen? (z.B. fremdverwaltetes Konto: nein) */
+  includeInNetWorth: boolean;
+  /**
+   * Planungskonto: dieses Konto gibt es noch NICHT.
+   * Es hat keine IBAN, keinen Bankzugang und keine Buchungen — es steht nur
+   * im Plan ("später ein eigenes Steuerkonto"). Damit lässt sich ein
+   * Kontensystem entwerfen, bevor es eröffnet ist: Verteilungsregeln und
+   * geplante Daueraufträge dürfen darauf zeigen.
+   * Es ist bewusst KEINE eigene Tabelle. Wird das Konto real, trägt man die
+   * IBAN nach (promote) und alles, was daran hängt — Regeln, geplante
+   * Daueraufträge, der Verlauf der Planung — bleibt dran. Eine zweite
+   * Tabelle hätte an dem Tag eine Datenwanderung bedeutet, und genau an dem
+   * Tag hat niemand Lust darauf.
+   * Zwei Dinge sind load-bearing und werden im Service erzwungen:
+   * ein Planungskonto hat nie eine IBAN (sonst zieht der Import Buchungen
+   * darauf), und sein Saldo zählt nie zum Vermögen (sonst behauptet die
+   * Übersicht Geld, das es nicht gibt).
+   */
+  isPlanned: boolean;
+  /** Ab wann es das Konto geben soll — die Zeitachse der Planung. */
+  plannedFromDate: string | null;
+  /** Wann aus dem Plan Wirklichkeit wurde. Bleibt danach stehen. */
+  activatedAt: Date | null;
+  color: string;
+  icon: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  notes: string | null;
+  closedAt: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfAccountInsert = {
+  ownerUserId: number;
+  name: string;
+  kind: PfAccountKind;
+  /** "wofür ist dieses Konto da" */
+  purpose?: string | null;
+  /** "Sparkasse Offenbach" */
+  institutionName?: string | null;
+  /**
+   * Vollständige IBAN. Wird gebraucht, um beim CSV-Import die Datei dem
+   * richtigen Konto zuzuordnen. Die API gibt sie NIE vollständig aus —
+   * Responses liefern nur die maskierte Form (siehe maskIban im Service).
+   */
+  iban?: string | null;
+  bic?: string | null;
+  /** letzte Stellen einer Kartennummer */
+  accountNumberHint?: string | null;
+  /**
+   * Explizite Verbindung zum lokalen FinTS-Tresor in node-boss.
+   * Keine FK: die Zielzeile lebt in einer anderen Datenbank. Die ID ist
+   * trotzdem die einzige belastbare Aussage "dieser Zugang gehoert zu
+   * diesem Konto". Eine IBAN allein bedeutet ausdruecklich NICHT FinTS
+   * (z.B. Revolut oder ein manuell gepflegtes Tagesgeldkonto).
+   */
+  fintsConnectionId?: number | null;
+  currency?: string;
+  /**
+   * Aktueller Stand in Cent. Bei Kreditkarten/Krediten NEGATIV, wenn Schulden
+   * bestehen — so ist die Summe über alle Konten immer das echte Vermögen.
+   */
+  currentBalanceCents?: number;
+  /** Wann dieser Stand zuletzt stimmte (Handeingabe oder letzter Import). */
+  balanceAsOf?: string | null;
+  /** Woher der Stand kommt — Handeingabe oder aus einem Auszug gerechnet. */
+  balanceSource?: string;
+  /** Verfügungsrahmen einer Kreditkarte / Dispo, in Cent (positiv). */
+  creditLimitCents?: number | null;
+  /** Zählt dieses Konto zum Vermögen? (z.B. fremdverwaltetes Konto: nein) */
+  includeInNetWorth?: boolean;
+  /**
+   * Planungskonto: dieses Konto gibt es noch NICHT.
+   * Es hat keine IBAN, keinen Bankzugang und keine Buchungen — es steht nur
+   * im Plan ("später ein eigenes Steuerkonto"). Damit lässt sich ein
+   * Kontensystem entwerfen, bevor es eröffnet ist: Verteilungsregeln und
+   * geplante Daueraufträge dürfen darauf zeigen.
+   * Es ist bewusst KEINE eigene Tabelle. Wird das Konto real, trägt man die
+   * IBAN nach (promote) und alles, was daran hängt — Regeln, geplante
+   * Daueraufträge, der Verlauf der Planung — bleibt dran. Eine zweite
+   * Tabelle hätte an dem Tag eine Datenwanderung bedeutet, und genau an dem
+   * Tag hat niemand Lust darauf.
+   * Zwei Dinge sind load-bearing und werden im Service erzwungen:
+   * ein Planungskonto hat nie eine IBAN (sonst zieht der Import Buchungen
+   * darauf), und sein Saldo zählt nie zum Vermögen (sonst behauptet die
+   * Übersicht Geld, das es nicht gibt).
+   */
+  isPlanned?: boolean;
+  /** Ab wann es das Konto geben soll — die Zeitachse der Planung. */
+  plannedFromDate?: string | null;
+  /** Wann aus dem Plan Wirklichkeit wurde. Bleibt danach stehen. */
+  activatedAt?: Date | null;
+  color?: string;
+  icon?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  notes?: string | null;
+  closedAt?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfCategory = {
+  id: number;
+  ownerUserId: number;
+  parentId: number | null;
+  name: string;
+  slug: string;
+  kind: PfCategoryKind;
+  color: string;
+  icon: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: Date;
+};
+
+export type PfCategoryInsert = {
+  ownerUserId: number;
+  parentId?: number | null;
+  name: string;
+  slug: string;
+  kind?: PfCategoryKind;
+  color?: string;
+  icon?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  createdAt?: Date;
+};
+
+export type PfEarmark = {
+  id: number;
+  ownerUserId: number;
+  accountId: number;
+  name: string;
+  kind: PfEarmarkKind;
+  /** Was aktuell wirklich gebunden ist. Das ist die Zahl, die vom Saldo abgeht. */
+  reservedCents: number;
+  /** Optionales Ziel (Sparziel: "10.000 € bis 12/2027"). Bindet nichts. */
+  targetCents: number | null;
+  targetDate: string | null;
+  notes: string | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfEarmarkInsert = {
+  ownerUserId: number;
+  accountId: number;
+  name: string;
+  kind?: PfEarmarkKind;
+  /** Was aktuell wirklich gebunden ist. Das ist die Zahl, die vom Saldo abgeht. */
+  reservedCents?: number;
+  /** Optionales Ziel (Sparziel: "10.000 € bis 12/2027"). Bindet nichts. */
+  targetCents?: number | null;
+  targetDate?: string | null;
+  notes?: string | null;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfDebt = {
+  id: number;
+  ownerUserId: number;
+  name: string;
+  creditorName: string | null;
+  kind: PfDebtKind;
+  contractNumber: string | null;
+  /** Ursprungsbetrag und was davon heute noch offen ist — beide positiv. */
+  originalAmountCents: number | null;
+  outstandingCents: number;
+  balanceAsOf: string | null;
+  /** Sollzins p.a. */
+  interestRatePercent: string | null;
+  /** effektiver Jahreszins */
+  effectiveRatePercent: string | null;
+  /** Von welchem Konto die Rate abgeht. */
+  accountId: number | null;
+  /**
+   * Wenn die Schuld SELBST ein Konto ist (Kreditkartensaldo): Verweis darauf.
+   * Verhindert, dass der negative Kontosaldo und die Schuld doppelt zählen.
+   */
+  mirroredAccountId: number | null;
+  startDate: string | null;
+  expectedPayoffDate: string | null;
+  remainingPayments: number | null;
+  /**
+   * ── Revolvierende Schulden (Kreditkarte) ───────────────────────────────
+   * Eine Kreditkarte ist keine Schuld mit fester Rate. Sie zahlt einen
+   * PROZENTSATZ des jeweiligen Saldos zurueck, und derselbe Saldo waechst
+   * weiter, solange die Karte benutzt wird. Beides muss im Modell stehen,
+   * sonst rechnet die Prognose eine Tilgung aus, die es nicht gibt.
+   * Rueckzahlungsquote je Monat in Prozent des Saldos (easybank: 3 oder 5).
+   */
+  minPaymentPercent: string | null;
+  /** Untergrenze der Quote in Cent — viele Karten haben einen Mindestbetrag. */
+  minPaymentFloorCents: number | null;
+  /**
+   * Der Saldo kann durch neue Ausgaben wachsen.
+   * Steht das hier, hoert eine steigende Restschuld auf, ein Fehler zu sein,
+   * und wird zu einer Beobachtung ("diesen Monat 240 EUR neu ausgegeben").
+   * Bei einem Ratenkredit waere derselbe Anstieg dagegen ein Datenfehler.
+   */
+  isRevolving: boolean;
+  /**
+   * ── Was der Vertrag sagt vs. was das Konto zeigt ───────────────────────
+   * Der eingetragene Zinssatz ist eine BEHAUPTUNG aus dem Vertrag. Was
+   * wirklich abgeht, steht im Kontoauszug. Beide getrennt zu halten ist der
+   * ganze Punkt: nur so kann auffallen, dass sie auseinanderlaufen.
+   * Aus echten Saldo-Punkten zurueckgerechneter Sollzins p.a.
+   */
+  derivedRatePercent: string | null;
+  /**
+   * Wie sicher diese Rueckrechnung ist.
+   * "low" nach zwei Perioden, "medium" nach drei, "high" ab vier — und
+   * IMMER nur "low", solange bei einer revolvierenden Schuld die neuen
+   * Ausgaben unbekannt sind: dann steckt in der Differenz Zins UND Einkauf,
+   * und man kann die beiden nicht trennen. Eine Zahl ohne diese Angabe
+   * waere schlimmer als keine Zahl, weil sie geglaubt wuerde.
+   */
+  derivedRateConfidence: string | null;
+  /** Wann zuletzt zurueckgerechnet — sonst weiss niemand, wie alt die Zahl ist. */
+  derivedRateAsOf: string | null;
+  /**
+   * ── Vertragsdaten, die die Prognose ehrlich machen ─────────────────────
+   * Nennbetrag vs. Auszahlung (12.850 vereinbart, 12.708,65 geflossen).
+   */
+  payoutCents: number | null;
+  /** Vereinbarte Laufzeit in Monaten. */
+  termMonths: number | null;
+  /**
+   * ── Tilgungsplan ───────────────────────────────────────────────────────
+   * Rang in der Tilgungsreihenfolge (1 = zuerst). Nur bei Strategie
+   * "custom" massgeblich; bei Lawine/Schneeball rechnet der Plan ihn selbst
+   * und schreibt ihn hier zurueck, damit die Oberflaeche nicht rechnen muss.
+   */
+  payoffPriority: number | null;
+  /** Darf diese Schuld Sondertilgung bekommen? (manche Vertraege verbieten sie) */
+  allowsExtraPayment: boolean;
+  /** Obergrenze der Sondertilgung je Jahr, wenn der Vertrag eine nennt. */
+  extraPaymentCapCentsPerYear: number | null;
+  /**
+   * Wie oft ein echter Saldo nachgetragen werden soll, in Tagen.
+   * Bei einer Kreditkarte ist das der einzige Weg, die Wahrheit zu erfahren:
+   * das verbundene Girokonto zeigt nur, WAS gezahlt wurde, nie, was noch
+   * offen ist. 0 = nie erinnern.
+   */
+  balanceCheckEveryDays: number;
+  status: PfDebtStatus;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfDebtInsert = {
+  ownerUserId: number;
+  name: string;
+  creditorName?: string | null;
+  kind?: PfDebtKind;
+  contractNumber?: string | null;
+  /** Ursprungsbetrag und was davon heute noch offen ist — beide positiv. */
+  originalAmountCents?: number | null;
+  outstandingCents?: number;
+  balanceAsOf?: string | null;
+  /** Sollzins p.a. */
+  interestRatePercent?: string | null;
+  /** effektiver Jahreszins */
+  effectiveRatePercent?: string | null;
+  /** Von welchem Konto die Rate abgeht. */
+  accountId?: number | null;
+  /**
+   * Wenn die Schuld SELBST ein Konto ist (Kreditkartensaldo): Verweis darauf.
+   * Verhindert, dass der negative Kontosaldo und die Schuld doppelt zählen.
+   */
+  mirroredAccountId?: number | null;
+  startDate?: string | null;
+  expectedPayoffDate?: string | null;
+  remainingPayments?: number | null;
+  /**
+   * ── Revolvierende Schulden (Kreditkarte) ───────────────────────────────
+   * Eine Kreditkarte ist keine Schuld mit fester Rate. Sie zahlt einen
+   * PROZENTSATZ des jeweiligen Saldos zurueck, und derselbe Saldo waechst
+   * weiter, solange die Karte benutzt wird. Beides muss im Modell stehen,
+   * sonst rechnet die Prognose eine Tilgung aus, die es nicht gibt.
+   * Rueckzahlungsquote je Monat in Prozent des Saldos (easybank: 3 oder 5).
+   */
+  minPaymentPercent?: string | null;
+  /** Untergrenze der Quote in Cent — viele Karten haben einen Mindestbetrag. */
+  minPaymentFloorCents?: number | null;
+  /**
+   * Der Saldo kann durch neue Ausgaben wachsen.
+   * Steht das hier, hoert eine steigende Restschuld auf, ein Fehler zu sein,
+   * und wird zu einer Beobachtung ("diesen Monat 240 EUR neu ausgegeben").
+   * Bei einem Ratenkredit waere derselbe Anstieg dagegen ein Datenfehler.
+   */
+  isRevolving?: boolean;
+  /**
+   * ── Was der Vertrag sagt vs. was das Konto zeigt ───────────────────────
+   * Der eingetragene Zinssatz ist eine BEHAUPTUNG aus dem Vertrag. Was
+   * wirklich abgeht, steht im Kontoauszug. Beide getrennt zu halten ist der
+   * ganze Punkt: nur so kann auffallen, dass sie auseinanderlaufen.
+   * Aus echten Saldo-Punkten zurueckgerechneter Sollzins p.a.
+   */
+  derivedRatePercent?: string | null;
+  /**
+   * Wie sicher diese Rueckrechnung ist.
+   * "low" nach zwei Perioden, "medium" nach drei, "high" ab vier — und
+   * IMMER nur "low", solange bei einer revolvierenden Schuld die neuen
+   * Ausgaben unbekannt sind: dann steckt in der Differenz Zins UND Einkauf,
+   * und man kann die beiden nicht trennen. Eine Zahl ohne diese Angabe
+   * waere schlimmer als keine Zahl, weil sie geglaubt wuerde.
+   */
+  derivedRateConfidence?: string | null;
+  /** Wann zuletzt zurueckgerechnet — sonst weiss niemand, wie alt die Zahl ist. */
+  derivedRateAsOf?: string | null;
+  /**
+   * ── Vertragsdaten, die die Prognose ehrlich machen ─────────────────────
+   * Nennbetrag vs. Auszahlung (12.850 vereinbart, 12.708,65 geflossen).
+   */
+  payoutCents?: number | null;
+  /** Vereinbarte Laufzeit in Monaten. */
+  termMonths?: number | null;
+  /**
+   * ── Tilgungsplan ───────────────────────────────────────────────────────
+   * Rang in der Tilgungsreihenfolge (1 = zuerst). Nur bei Strategie
+   * "custom" massgeblich; bei Lawine/Schneeball rechnet der Plan ihn selbst
+   * und schreibt ihn hier zurueck, damit die Oberflaeche nicht rechnen muss.
+   */
+  payoffPriority?: number | null;
+  /** Darf diese Schuld Sondertilgung bekommen? (manche Vertraege verbieten sie) */
+  allowsExtraPayment?: boolean;
+  /** Obergrenze der Sondertilgung je Jahr, wenn der Vertrag eine nennt. */
+  extraPaymentCapCentsPerYear?: number | null;
+  /**
+   * Wie oft ein echter Saldo nachgetragen werden soll, in Tagen.
+   * Bei einer Kreditkarte ist das der einzige Weg, die Wahrheit zu erfahren:
+   * das verbundene Girokonto zeigt nur, WAS gezahlt wurde, nie, was noch
+   * offen ist. 0 = nie erinnern.
+   */
+  balanceCheckEveryDays?: number;
+  status?: PfDebtStatus;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfDebtBalance = {
+  id: number;
+  ownerUserId: number;
+  debtId: number;
+  /** Stichtag des Standes. Nicht der Tag der Eingabe — der steht in createdAt. */
+  asOf: string;
+  /** Offener Betrag an diesem Tag, POSITIV. */
+  balanceCents: number;
+  /**
+   * Was in der Periode NEU dazugekommen ist (Kartenumsätze).
+   * Null heißt ausdrücklich "unbekannt", nicht "null Euro". Der Unterschied
+   * entscheidet, ob der zurückgerechnete Zinssatz etwas wert ist: ohne diese
+   * Zahl steckt in der Differenz auch jeder Einkauf.
+   */
+  newSpendCents: number | null;
+  /** Zinsen, wenn die Abrechnung sie ausweist — dann muss nichts geschätzt werden. */
+  statedInterestCents: number | null;
+  /** Gebühren, wenn ausgewiesen (Jahresgebühr, Mahnkosten). */
+  statedFeesCents: number | null;
+  source: PfDebtBalanceSource;
+  /** Woher der Beleg stammt (Dateiname, Abrechnungsnummer) — für Nachvollziehbarkeit. */
+  documentRef: string | null;
+  note: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfDebtBalanceInsert = {
+  ownerUserId: number;
+  debtId: number;
+  /** Stichtag des Standes. Nicht der Tag der Eingabe — der steht in createdAt. */
+  asOf: string;
+  /** Offener Betrag an diesem Tag, POSITIV. */
+  balanceCents: number;
+  /**
+   * Was in der Periode NEU dazugekommen ist (Kartenumsätze).
+   * Null heißt ausdrücklich "unbekannt", nicht "null Euro". Der Unterschied
+   * entscheidet, ob der zurückgerechnete Zinssatz etwas wert ist: ohne diese
+   * Zahl steckt in der Differenz auch jeder Einkauf.
+   */
+  newSpendCents?: number | null;
+  /** Zinsen, wenn die Abrechnung sie ausweist — dann muss nichts geschätzt werden. */
+  statedInterestCents?: number | null;
+  /** Gebühren, wenn ausgewiesen (Jahresgebühr, Mahnkosten). */
+  statedFeesCents?: number | null;
+  source?: PfDebtBalanceSource;
+  /** Woher der Beleg stammt (Dateiname, Abrechnungsnummer) — für Nachvollziehbarkeit. */
+  documentRef?: string | null;
+  note?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfDebtPlan = {
+  id: number;
+  ownerUserId: number;
+  name: string;
+  strategy: PfDebtStrategy;
+  /** Was zusätzlich zu den Pflichtraten monatlich in die Tilgung geht. */
+  extraBudgetCents: number;
+  /**
+   * Deckel über ALLES, was in Schulden fließt (Raten + Extra).
+   * Steht er, gewinnt er gegen extraBudgetCents. Grund: die Pflichtraten
+   * ändern sich von selbst — eine Kartenrate sinkt mit dem Saldo, eine
+   * abbezahlte Schuld fällt ganz weg. Ohne Deckel würde das Extra-Budget
+   * dann still mitwachsen und der Monat wäre knapper als geplant.
+   */
+  totalBudgetCapCents: number | null;
+  /**
+   * Schneeball-Effekt: die Rate einer getilgten Schuld fließt in die nächste
+   * weiter, statt im Alltag zu versickern. Das ist der Unterschied zwischen
+   * "in 7 Jahren schuldenfrei" und "in 4".
+   */
+  rollFreedPayments: boolean;
+  /** Ab welchem Monat der Plan gilt (Monatserster). */
+  startMonth: string;
+  status: PfDebtPlanStatus;
+  /** Wann der Soll-Verlauf eingefroren wurde — die Messlatte hat ein Datum. */
+  baselineAt: Date | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfDebtPlanInsert = {
+  ownerUserId: number;
+  name: string;
+  strategy?: PfDebtStrategy;
+  /** Was zusätzlich zu den Pflichtraten monatlich in die Tilgung geht. */
+  extraBudgetCents?: number;
+  /**
+   * Deckel über ALLES, was in Schulden fließt (Raten + Extra).
+   * Steht er, gewinnt er gegen extraBudgetCents. Grund: die Pflichtraten
+   * ändern sich von selbst — eine Kartenrate sinkt mit dem Saldo, eine
+   * abbezahlte Schuld fällt ganz weg. Ohne Deckel würde das Extra-Budget
+   * dann still mitwachsen und der Monat wäre knapper als geplant.
+   */
+  totalBudgetCapCents?: number | null;
+  /**
+   * Schneeball-Effekt: die Rate einer getilgten Schuld fließt in die nächste
+   * weiter, statt im Alltag zu versickern. Das ist der Unterschied zwischen
+   * "in 7 Jahren schuldenfrei" und "in 4".
+   */
+  rollFreedPayments?: boolean;
+  /** Ab welchem Monat der Plan gilt (Monatserster). */
+  startMonth: string;
+  status?: PfDebtPlanStatus;
+  /** Wann der Soll-Verlauf eingefroren wurde — die Messlatte hat ein Datum. */
+  baselineAt?: Date | null;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfDebtPlanMilestone = {
+  id: number;
+  planId: number;
+  debtId: number;
+  /** Monatserster. */
+  month: string;
+  /** Wie viele Monate nach Planbeginn — spart Datumsrechnerei in Abfragen. */
+  monthIndex: number;
+  /** Erwarteter Stand am Monatsende. */
+  expectedBalanceCents: number;
+  expectedPaymentCents: number;
+  expectedInterestCents: number;
+  expectedPrincipalCents: number;
+  /** Davon Sondertilgung — zeigt, wo der Fokus in diesem Monat lag. */
+  expectedExtraCents: number;
+  /** In diesem Monat ist diese Schuld getilgt. */
+  isPayoffMonth: boolean;
+  createdAt: Date;
+};
+
+export type PfRecurringItem = {
+  id: number;
+  ownerUserId: number;
+  name: string;
+  kind: PfRecurringKind;
+  direction: PfFlowDirection;
+  /** "Netflix", "Vermieter Müller" */
+  counterpartyName: string | null;
+  description: string | null;
+  /** Von/auf welches Konto. Nullable, solange noch nicht zugeordnet. */
+  accountId: number | null;
+  /**
+   * Das andere EIGENE Konto — nur bei kind='internal_transfer'.
+   * Ein Dauerauftrag Giro → Spar ist auf dem Auszug zwei Buchungen, aber im
+   * Leben eine Anweisung. Ohne dieses Feld müsste er als zwei Posten geführt
+   * werden, und jede Monatsrechnung würde ihn doppelt zählen: einmal als
+   * Ausgabe, einmal als Einnahme. `accountId` ist das Quellkonto (Geld geht
+   * ab), `counterAccountId` das Zielkonto.
+   */
+  counterAccountId: number | null;
+  categoryId: number | null;
+  /**
+   * Gehört diese Zahlung zu einer Schuld? Dann ist sie die Rate.
+   * Die Vorschau zählt sie EINMAL — hier, nicht zusätzlich über pfDebts.
+   */
+  debtId: number | null;
+  /** ── Betrag ── */
+  amountCents: number;
+  currency: string;
+  /** Strom/Gas schwanken. Dann ist amountCents der Schätz-/Abschlagswert. */
+  amountVaries: boolean;
+  /** ── Takt & Fälligkeit ── */
+  interval: PfInterval;
+  /** Nur bei custom_days: alle N Tage. */
+  intervalDays: number | null;
+  /** Tag im Monat (1–31). 31 wird auf den letzten Monatstag geklemmt. */
+  dueDayOfMonth: number | null;
+  /**
+   * Woran der Termin haengt. Bei "last_business_day"/"first_business_day"
+   * wird dueDayOfMonth ignoriert — die Regel ersetzt den Kalendertag.
+   */
+  dueRule: PfDueRule;
+  /** Ausweichrichtung, wenn der Termin auf einen bankfreien Tag faellt. */
+  businessDayAdjust: PfBusinessDayAdjust;
+  /** Nur bei yearly/semiannual/quarterly: in welchem Monat (1–12) es zuerst fällig ist. */
+  dueMonth: number | null;
+  /** Nächste Fälligkeit — die eine Zahl, auf der Vorschau und Kalender stehen. */
+  nextDueDate: string | null;
+  lastChargedDate: string | null;
+  startDate: string | null;
+  /** Ab hier fließt nichts mehr (Vertragsende, Ratenende). */
+  endDate: string | null;
+  status: PfRecurringStatus;
+  /**
+   * Geplant statt echt: dieser Posten fliesst noch nicht, er ist Vorsatz
+   * ("ab Januar 400 € aufs Sparkonto"). Er zählt in der Zukunftsrechnung
+   * und in KEINER Auswertung der Gegenwart — es entsteht keine Erwartung,
+   * also kann er auch nicht als "ausgeblieben" gemeldet werden.
+   */
+  isPlanned: boolean;
+  /** Von Hand angelegt oder aus den Buchungen erkannt. */
+  origin: PfRecurringOrigin;
+  detectedAt: Date | null;
+  /** ── Vertragsblock (optional; leer bei einem jederzeit kündbaren Abo) ───── */
+  contractStartDate: string | null;
+  /** Mindestlaufzeit in Monaten (24 beim Handyvertrag). */
+  minimumTermMonths: number | null;
+  /** Verlängert sich automatisch um so viele Monate, wenn nicht gekündigt. */
+  autoRenewMonths: number | null;
+  /** Fester Endtermin statt Verlängerung. */
+  fixedEndDate: string | null;
+  noticePeriodValue: number | null;
+  noticePeriodUnit: PfNoticeUnit | null;
+  noticeAnchor: PfNoticeAnchor | null;
+  /**
+   * Errechneter letzter Tag, an dem eine Kündigung noch rechtzeitig ist.
+   * Wird beim Speichern aus dem Vertragsblock berechnet (cancellation.ts) und
+   * hier abgelegt, damit "was läuft mir davon" eine einfache Query ist statt
+   * einer Rechnung über alle Zeilen.
+   */
+  cancellationDeadline: string | null;
+  /** Gekündigt am — gesetzt, sobald status auf cancelled geht. */
+  cancelledAt: string | null;
+  /** Zu welchem Datum die Kündigung wirkt (läuft bis dahin weiter). */
+  cancellationEffectiveDate: string | null;
+  cancellationUrl: string | null;
+  contractNumber: string | null;
+  customerNumber: string | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfRecurringItemInsert = {
+  ownerUserId: number;
+  name: string;
+  kind?: PfRecurringKind;
+  direction?: PfFlowDirection;
+  /** "Netflix", "Vermieter Müller" */
+  counterpartyName?: string | null;
+  description?: string | null;
+  /** Von/auf welches Konto. Nullable, solange noch nicht zugeordnet. */
+  accountId?: number | null;
+  /**
+   * Das andere EIGENE Konto — nur bei kind='internal_transfer'.
+   * Ein Dauerauftrag Giro → Spar ist auf dem Auszug zwei Buchungen, aber im
+   * Leben eine Anweisung. Ohne dieses Feld müsste er als zwei Posten geführt
+   * werden, und jede Monatsrechnung würde ihn doppelt zählen: einmal als
+   * Ausgabe, einmal als Einnahme. `accountId` ist das Quellkonto (Geld geht
+   * ab), `counterAccountId` das Zielkonto.
+   */
+  counterAccountId?: number | null;
+  categoryId?: number | null;
+  /**
+   * Gehört diese Zahlung zu einer Schuld? Dann ist sie die Rate.
+   * Die Vorschau zählt sie EINMAL — hier, nicht zusätzlich über pfDebts.
+   */
+  debtId?: number | null;
+  /** ── Betrag ── */
+  amountCents: number;
+  currency?: string;
+  /** Strom/Gas schwanken. Dann ist amountCents der Schätz-/Abschlagswert. */
+  amountVaries?: boolean;
+  /** ── Takt & Fälligkeit ── */
+  interval?: PfInterval;
+  /** Nur bei custom_days: alle N Tage. */
+  intervalDays?: number | null;
+  /** Tag im Monat (1–31). 31 wird auf den letzten Monatstag geklemmt. */
+  dueDayOfMonth?: number | null;
+  /**
+   * Woran der Termin haengt. Bei "last_business_day"/"first_business_day"
+   * wird dueDayOfMonth ignoriert — die Regel ersetzt den Kalendertag.
+   */
+  dueRule?: PfDueRule;
+  /** Ausweichrichtung, wenn der Termin auf einen bankfreien Tag faellt. */
+  businessDayAdjust?: PfBusinessDayAdjust;
+  /** Nur bei yearly/semiannual/quarterly: in welchem Monat (1–12) es zuerst fällig ist. */
+  dueMonth?: number | null;
+  /** Nächste Fälligkeit — die eine Zahl, auf der Vorschau und Kalender stehen. */
+  nextDueDate?: string | null;
+  lastChargedDate?: string | null;
+  startDate?: string | null;
+  /** Ab hier fließt nichts mehr (Vertragsende, Ratenende). */
+  endDate?: string | null;
+  status?: PfRecurringStatus;
+  /**
+   * Geplant statt echt: dieser Posten fliesst noch nicht, er ist Vorsatz
+   * ("ab Januar 400 € aufs Sparkonto"). Er zählt in der Zukunftsrechnung
+   * und in KEINER Auswertung der Gegenwart — es entsteht keine Erwartung,
+   * also kann er auch nicht als "ausgeblieben" gemeldet werden.
+   */
+  isPlanned?: boolean;
+  /** Von Hand angelegt oder aus den Buchungen erkannt. */
+  origin?: PfRecurringOrigin;
+  detectedAt?: Date | null;
+  /** ── Vertragsblock (optional; leer bei einem jederzeit kündbaren Abo) ───── */
+  contractStartDate?: string | null;
+  /** Mindestlaufzeit in Monaten (24 beim Handyvertrag). */
+  minimumTermMonths?: number | null;
+  /** Verlängert sich automatisch um so viele Monate, wenn nicht gekündigt. */
+  autoRenewMonths?: number | null;
+  /** Fester Endtermin statt Verlängerung. */
+  fixedEndDate?: string | null;
+  noticePeriodValue?: number | null;
+  noticePeriodUnit?: PfNoticeUnit | null;
+  noticeAnchor?: PfNoticeAnchor | null;
+  /**
+   * Errechneter letzter Tag, an dem eine Kündigung noch rechtzeitig ist.
+   * Wird beim Speichern aus dem Vertragsblock berechnet (cancellation.ts) und
+   * hier abgelegt, damit "was läuft mir davon" eine einfache Query ist statt
+   * einer Rechnung über alle Zeilen.
+   */
+  cancellationDeadline?: string | null;
+  /** Gekündigt am — gesetzt, sobald status auf cancelled geht. */
+  cancelledAt?: string | null;
+  /** Zu welchem Datum die Kündigung wirkt (läuft bis dahin weiter). */
+  cancellationEffectiveDate?: string | null;
+  cancellationUrl?: string | null;
+  contractNumber?: string | null;
+  customerNumber?: string | null;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfBankAdapter = {
+  id: number;
+  /** NULL = eingebaut und für alle sichtbar. Sonst: selbst angelegt. */
+  ownerUserId: number | null;
+  slug: string;
+  name: string;
+  institutionHint: string | null;
+  delimiter: string;
+  encoding: string;
+  /** Wie viele Zeilen vor der Kopfzeile übersprungen werden (Banken schreiben gern Präambeln). */
+  skipRows: number;
+  hasHeader: boolean;
+  dateFormat: string;
+  decimalSeparator: string;
+  thousandsSeparator: string;
+  amountMode: PfAmountMode;
+  /**
+   * Spaltenzuordnung: welcher Spaltenkopf der Datei füllt welches Feld.
+   * Werte dürfen mehrere Kandidaten nennen — der Import nimmt den ersten,
+   * den die Datei wirklich hat. Damit überlebt ein Adapter kleine
+   * Formatänderungen der Bank.
+   */
+  columnMap: any | null;
+  isBuiltIn: boolean;
+  isActive: boolean;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfBankAdapterInsert = {
+  /** NULL = eingebaut und für alle sichtbar. Sonst: selbst angelegt. */
+  ownerUserId?: number | null;
+  slug: string;
+  name: string;
+  institutionHint?: string | null;
+  delimiter?: string;
+  encoding?: string;
+  /** Wie viele Zeilen vor der Kopfzeile übersprungen werden (Banken schreiben gern Präambeln). */
+  skipRows?: number;
+  hasHeader?: boolean;
+  dateFormat?: string;
+  decimalSeparator?: string;
+  thousandsSeparator?: string;
+  amountMode?: PfAmountMode;
+  /**
+   * Spaltenzuordnung: welcher Spaltenkopf der Datei füllt welches Feld.
+   * Werte dürfen mehrere Kandidaten nennen — der Import nimmt den ersten,
+   * den die Datei wirklich hat. Damit überlebt ein Adapter kleine
+   * Formatänderungen der Bank.
+   */
+  columnMap?: any | null;
+  isBuiltIn?: boolean;
+  isActive?: boolean;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfImportBatch = {
+  id: number;
+  ownerUserId: number;
+  accountId: number;
+  adapterSlug: string;
+  fileName: string | null;
+  /**
+   * SHA-256 des Dateiinhalts. Zweimal dieselbe Datei hochzuladen ist der
+   * häufigste Bedienfehler; darauf antwortet der Import mit "kenne ich schon"
+   * statt mit doppelten Buchungen.
+   * Die Datei selbst wird NICHT gespeichert. Sie enthält vollständige
+   * Bewegungsdaten; im Bestand bleiben nur die geparsten Buchungen, die
+   * über das Löschen des Batches wieder verschwinden (Ticket, Abschnitt 8).
+   */
+  fileHash: string;
+  rowsTotal: number;
+  rowsImported: number;
+  rowsDuplicate: number;
+  rowsFailed: number;
+  periodFrom: string | null;
+  periodTo: string | null;
+  /** Endsaldo laut Datei, falls die Bank ihn mitliefert. */
+  closingBalanceCents: number | null;
+  status: PfImportStatus;
+  errorMessage: string | null;
+  warnings: string[];
+  createdAt: Date;
+  committedAt: Date | null;
+};
+
+export type PfImportBatchInsert = {
+  ownerUserId: number;
+  accountId: number;
+  adapterSlug: string;
+  fileName?: string | null;
+  /**
+   * SHA-256 des Dateiinhalts. Zweimal dieselbe Datei hochzuladen ist der
+   * häufigste Bedienfehler; darauf antwortet der Import mit "kenne ich schon"
+   * statt mit doppelten Buchungen.
+   * Die Datei selbst wird NICHT gespeichert. Sie enthält vollständige
+   * Bewegungsdaten; im Bestand bleiben nur die geparsten Buchungen, die
+   * über das Löschen des Batches wieder verschwinden (Ticket, Abschnitt 8).
+   */
+  fileHash: string;
+  rowsTotal?: number;
+  rowsImported?: number;
+  rowsDuplicate?: number;
+  rowsFailed?: number;
+  periodFrom?: string | null;
+  periodTo?: string | null;
+  /** Endsaldo laut Datei, falls die Bank ihn mitliefert. */
+  closingBalanceCents?: number | null;
+  status?: PfImportStatus;
+  errorMessage?: string | null;
+  warnings?: string[];
+  createdAt?: Date;
+  committedAt?: Date | null;
+};
+
+export type PfTransaction = {
+  id: number;
+  ownerUserId: number;
+  accountId: number;
+  importBatchId: number | null;
+  bookingDate: string;
+  valueDate: string | null;
+  /** Vorzeichenbehaftet: negativ = Geld weg. */
+  amountCents: number;
+  currency: string;
+  counterpartyName: string | null;
+  counterpartyIban: string | null;
+  /** Verwendungszweck */
+  purpose: string | null;
+  /** "LASTSCHRIFT", "GUTSCHRIFT" */
+  bookingText: string | null;
+  endToEndId: string | null;
+  mandateReference: string | null;
+  /** Gläubiger-ID (SEPA) */
+  creditorId: string | null;
+  balanceAfterCents: number | null;
+  /**
+   * ── Was FinTS zusätzlich liefert (TKT-000020) ────────────────────────────
+   * Eine CSV aus dem Online-Banking hat diese Angaben nicht, ein FinTS-Abruf
+   * schon. Sie stehen hier als eigene Spalten statt im `raw`-Feld, weil auf
+   * ihnen ausgewertet wird und man auf jsonb schlechter filtert und indiziert.
+   * MT940-Geschäftsvorfallcode, z.B. "005" Lastschrift, "051" Überweisung.
+   * Die verlässlichste Grundlage für automatische Kategorisierung: er kommt
+   * von der Bank und nicht aus geratenem Text im Verwendungszweck.
+   */
+  transactionCode: string | null;
+  /** BIC der Gegenseite. Achtung: NICHT die IBAN — MT940 liefert beides getrennt. */
+  counterpartyBic: string | null;
+  /** Referenz des Auftraggebers und Referenz der Bank. Die Klammer zum Beleg. */
+  customerReference: string | null;
+  bankReference: string | null;
+  /**
+   * Vormerkposten: von der Bank angezeigt, aber noch nicht gebucht.
+   * Muss unterscheidbar bleiben, sonst zählt eine Auswertung eine Zahlung
+   * doppelt, sobald aus der Vormerkung die endgültige Buchung wird.
+   */
+  isPending: boolean;
+  categoryId: number | null;
+  /** Zuordnung zu einer wiederkehrenden Zahlung — so wird aus "Abbuchung" ein "Abo". */
+  recurringItemId: number | null;
+  debtId: number | null;
+  /** Umbuchung zwischen eigenen Konten — zählt nicht als Ausgabe. */
+  isInternalTransfer: boolean;
+  /** Die Gegenbuchung auf dem anderen eigenen Konto. */
+  transferCounterpartId: number | null;
+  /**
+   * Das andere eigene Konto, auch wenn dessen Gegenbuchung noch fehlt.
+   * Beispiel: Revolut wird nur halbjaehrlich importiert, die Sparkasse aber
+   * monatlich. Trifft auf der Sparkasse eine Buchung mit der Revolut-IBAN ein,
+   * ist die Eigenueberweisung bereits sicher belegt. transferCounterpartId
+   * bleibt bis zum spaeteren Revolut-Import leer, die Buchung darf trotzdem
+   * schon aus Einnahmen/Ausgaben herausgerechnet und einem bekannten
+   * Dauerauftrag zugeordnet werden.
+   */
+  internalCounterAccountId: number | null;
+  /**
+   * Fingerabdruck aus Konto + Datum + Betrag + Zweck + Gegenpartei.
+   * Trägt die Dublettenerkennung über sich überlappende Auszüge hinweg.
+   */
+  dedupeHash: string;
+  /** Die Rohzeile, wie die Bank sie geliefert hat — für Nachvollziehbarkeit. */
+  raw: any | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfTransactionInsert = {
+  ownerUserId: number;
+  accountId: number;
+  importBatchId?: number | null;
+  bookingDate: string;
+  valueDate?: string | null;
+  /** Vorzeichenbehaftet: negativ = Geld weg. */
+  amountCents: number;
+  currency?: string;
+  counterpartyName?: string | null;
+  counterpartyIban?: string | null;
+  /** Verwendungszweck */
+  purpose?: string | null;
+  /** "LASTSCHRIFT", "GUTSCHRIFT" */
+  bookingText?: string | null;
+  endToEndId?: string | null;
+  mandateReference?: string | null;
+  /** Gläubiger-ID (SEPA) */
+  creditorId?: string | null;
+  balanceAfterCents?: number | null;
+  /**
+   * ── Was FinTS zusätzlich liefert (TKT-000020) ────────────────────────────
+   * Eine CSV aus dem Online-Banking hat diese Angaben nicht, ein FinTS-Abruf
+   * schon. Sie stehen hier als eigene Spalten statt im `raw`-Feld, weil auf
+   * ihnen ausgewertet wird und man auf jsonb schlechter filtert und indiziert.
+   * MT940-Geschäftsvorfallcode, z.B. "005" Lastschrift, "051" Überweisung.
+   * Die verlässlichste Grundlage für automatische Kategorisierung: er kommt
+   * von der Bank und nicht aus geratenem Text im Verwendungszweck.
+   */
+  transactionCode?: string | null;
+  /** BIC der Gegenseite. Achtung: NICHT die IBAN — MT940 liefert beides getrennt. */
+  counterpartyBic?: string | null;
+  /** Referenz des Auftraggebers und Referenz der Bank. Die Klammer zum Beleg. */
+  customerReference?: string | null;
+  bankReference?: string | null;
+  /**
+   * Vormerkposten: von der Bank angezeigt, aber noch nicht gebucht.
+   * Muss unterscheidbar bleiben, sonst zählt eine Auswertung eine Zahlung
+   * doppelt, sobald aus der Vormerkung die endgültige Buchung wird.
+   */
+  isPending?: boolean;
+  categoryId?: number | null;
+  /** Zuordnung zu einer wiederkehrenden Zahlung — so wird aus "Abbuchung" ein "Abo". */
+  recurringItemId?: number | null;
+  debtId?: number | null;
+  /** Umbuchung zwischen eigenen Konten — zählt nicht als Ausgabe. */
+  isInternalTransfer?: boolean;
+  /** Die Gegenbuchung auf dem anderen eigenen Konto. */
+  transferCounterpartId?: number | null;
+  /**
+   * Das andere eigene Konto, auch wenn dessen Gegenbuchung noch fehlt.
+   * Beispiel: Revolut wird nur halbjaehrlich importiert, die Sparkasse aber
+   * monatlich. Trifft auf der Sparkasse eine Buchung mit der Revolut-IBAN ein,
+   * ist die Eigenueberweisung bereits sicher belegt. transferCounterpartId
+   * bleibt bis zum spaeteren Revolut-Import leer, die Buchung darf trotzdem
+   * schon aus Einnahmen/Ausgaben herausgerechnet und einem bekannten
+   * Dauerauftrag zugeordnet werden.
+   */
+  internalCounterAccountId?: number | null;
+  /**
+   * Fingerabdruck aus Konto + Datum + Betrag + Zweck + Gegenpartei.
+   * Trägt die Dublettenerkennung über sich überlappende Auszüge hinweg.
+   */
+  dedupeHash: string;
+  /** Die Rohzeile, wie die Bank sie geliefert hat — für Nachvollziehbarkeit. */
+  raw?: any | null;
+  notes?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfExpectedCharge = {
+  id: number;
+  ownerUserId: number;
+  recurringItemId: number;
+  accountId: number | null;
+  /** Der Termin laut Plan. Zusammen mit recurringItemId der Schlüssel. */
+  dueDate: string;
+  /**
+   * Was zu diesem Zeitpunkt erwartet wurde — eingefroren, damit eine spätere
+   * Preisänderung am Posten die Vergangenheit nicht umschreibt.
+   */
+  expectedAmountCents: number;
+  direction: PfFlowDirection;
+  status: PfExpectationStatus;
+  /** Die Buchung, die diese Erwartung eingelöst hat. */
+  matchedTransactionId: number | null;
+  matchedAmountCents: number | null;
+  matchedDate: string | null;
+  /** Abweichung in Cent (matched − expected), vorzeichenbehaftet. */
+  deltaCents: number | null;
+  /**
+   * Bis wann eine Buchung noch als "zu diesem Termin gehörend" gilt.
+   * Banken buchen an Wochenenden nicht, Lastschriften wandern um Tage.
+   * Nach diesem Datum ohne Treffer: missed.
+   */
+  graceUntil: string;
+  /** Wann zuletzt abgeglichen wurde — trennt "nichts gefunden" von "nie gesucht". */
+  lastCheckedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfExpectedChargeInsert = {
+  ownerUserId: number;
+  recurringItemId: number;
+  accountId?: number | null;
+  /** Der Termin laut Plan. Zusammen mit recurringItemId der Schlüssel. */
+  dueDate: string;
+  /**
+   * Was zu diesem Zeitpunkt erwartet wurde — eingefroren, damit eine spätere
+   * Preisänderung am Posten die Vergangenheit nicht umschreibt.
+   */
+  expectedAmountCents: number;
+  direction: PfFlowDirection;
+  status?: PfExpectationStatus;
+  /** Die Buchung, die diese Erwartung eingelöst hat. */
+  matchedTransactionId?: number | null;
+  matchedAmountCents?: number | null;
+  matchedDate?: string | null;
+  /** Abweichung in Cent (matched − expected), vorzeichenbehaftet. */
+  deltaCents?: number | null;
+  /**
+   * Bis wann eine Buchung noch als "zu diesem Termin gehörend" gilt.
+   * Banken buchen an Wochenenden nicht, Lastschriften wandern um Tage.
+   * Nach diesem Datum ohne Treffer: missed.
+   */
+  graceUntil: string;
+  /** Wann zuletzt abgeglichen wurde — trennt "nichts gefunden" von "nie gesucht". */
+  lastCheckedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfInsight = {
+  id: number;
+  ownerUserId: number;
+  kind: PfInsightKind;
+  severity: PfInsightSeverity;
+  status: PfInsightStatus;
+  /**
+   * Die Ursache, nicht der Anlass. Zwei Läufe, die dasselbe finden, schreiben
+   * denselben Schlüssel und damit dieselbe Zeile — sonst steht nach einer
+   * Woche zwanzigmal "Netflix fehlt" auf der Liste.
+   */
+  subjectKey: string;
+  recurringItemId: number | null;
+  accountId: number | null;
+  title: string;
+  /** Ein Satz, der die Zahl erklärt. Steht so im Dashboard. */
+  detail: string | null;
+  /** Der Beleg: Termine, Beträge, Buchungs-IDs. Frei je kind, aber nie leer. */
+  evidence: any | null;
+  /**
+   * Was das System täte, wenn man zustimmt — als Datensatz, nicht als Text.
+   * z.B. { action: "update_amount", recurringItemId: 7, amountCents: 1499 }
+   * Null = es gibt nichts anzuwenden, der Befund ist reine Information.
+   */
+  proposedAction: any | null;
+  /** Geldwirkung pro Monat, wenn bekannt — sortiert die Liste nach Relevanz. */
+  monthlyImpactCents: number | null;
+  firstSeenAt: Date;
+  lastSeenAt: Date;
+  resolvedAt: Date | null;
+  /** Wann zuletzt gemeldet (Telegram/Dashboard) — verhindert tägliches Nachtreten. */
+  notifiedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfInsightInsert = {
+  ownerUserId: number;
+  kind: PfInsightKind;
+  severity?: PfInsightSeverity;
+  status?: PfInsightStatus;
+  /**
+   * Die Ursache, nicht der Anlass. Zwei Läufe, die dasselbe finden, schreiben
+   * denselben Schlüssel und damit dieselbe Zeile — sonst steht nach einer
+   * Woche zwanzigmal "Netflix fehlt" auf der Liste.
+   */
+  subjectKey: string;
+  recurringItemId?: number | null;
+  accountId?: number | null;
+  title: string;
+  /** Ein Satz, der die Zahl erklärt. Steht so im Dashboard. */
+  detail?: string | null;
+  /** Der Beleg: Termine, Beträge, Buchungs-IDs. Frei je kind, aber nie leer. */
+  evidence?: any | null;
+  /**
+   * Was das System täte, wenn man zustimmt — als Datensatz, nicht als Text.
+   * z.B. { action: "update_amount", recurringItemId: 7, amountCents: 1499 }
+   * Null = es gibt nichts anzuwenden, der Befund ist reine Information.
+   */
+  proposedAction?: any | null;
+  /** Geldwirkung pro Monat, wenn bekannt — sortiert die Liste nach Relevanz. */
+  monthlyImpactCents?: number | null;
+  firstSeenAt?: Date;
+  lastSeenAt?: Date;
+  resolvedAt?: Date | null;
+  /** Wann zuletzt gemeldet (Telegram/Dashboard) — verhindert tägliches Nachtreten. */
+  notifiedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type PfBalanceSnapshot = {
+  id: number;
+  ownerUserId: number;
+  accountId: number;
+  /** Kalendertag in Berliner Zeit — dieselbe Zeitrechnung wie überall hier. */
+  snapshotDate: string;
+  balanceCents: number;
+  /**
+   * Was davon zweckgebunden war. Der Verlauf des VERFÜGBAREN Geldes ist
+   * die eigentlich interessante Kurve, nicht der des Saldos.
+   */
+  earmarkedCents: number;
+  availableCents: number;
+  /**
+   * Wie alt der zugrunde liegende Kontostand an diesem Tag war. 0 = am selben
+   * Tag erhoben. Ein Verlauf aus 40 Tage alten Ständen ist eine gerade Linie,
+   * die Sicherheit vortäuscht — diese Zahl macht das sichtbar.
+   */
+  balanceAgeDays: number | null;
+  balanceSource: string | null;
+  createdAt: Date;
+};
+
+export type PfBalanceSnapshotInsert = {
+  ownerUserId: number;
+  accountId: number;
+  /** Kalendertag in Berliner Zeit — dieselbe Zeitrechnung wie überall hier. */
+  snapshotDate: string;
+  balanceCents: number;
+  /**
+   * Was davon zweckgebunden war. Der Verlauf des VERFÜGBAREN Geldes ist
+   * die eigentlich interessante Kurve, nicht der des Saldos.
+   */
+  earmarkedCents?: number;
+  availableCents: number;
+  /**
+   * Wie alt der zugrunde liegende Kontostand an diesem Tag war. 0 = am selben
+   * Tag erhoben. Ein Verlauf aus 40 Tage alten Ständen ist eine gerade Linie,
+   * die Sicherheit vortäuscht — diese Zahl macht das sichtbar.
+   */
+  balanceAgeDays?: number | null;
+  balanceSource?: string | null;
+  createdAt?: Date;
+};
+
+export type PfAllocationRule = {
+  id: number;
+  ownerUserId: number;
+  name: string;
+  /** Wohin das Geld soll. Der Topf IST die Regel. */
+  targetAccountId: number;
+  /** Von wo es kommt. Leer = vom Konto, auf dem das Einkommen eingeht. */
+  sourceAccountId: number | null;
+  kind: PfAllocationKind;
+  /** Nur bei kind=percent. 2500 = 25,00 %. */
+  percentBasisPoints: number | null;
+  /** Nur bei kind=fixed. */
+  fixedCents: number | null;
+  /** Unter-/Obergrenze für prozentuale Regeln ("mindestens 200 €, höchstens 600 €"). */
+  minCents: number | null;
+  maxCents: number | null;
+  /**
+   * Der Dauerauftrag, der diese Regel AUSFÜHRT (kind='internal_transfer').
+   * Das ist der Unterschied zwischen einem Plan und einem Vorsatz: ohne
+   * diesen Verweis misst der Soll/Ist-Vergleich "irgendein Eingang auf dem
+   * Zielkonto" — eine einmalige Umbuchung sähe dann aus wie eine erfüllte
+   * Regel. Mit ihm wird genau die Buchung gezählt, die zu dieser Regel
+   * gehört, und eine Regel ohne Dauerauftrag ist als solche erkennbar.
+   */
+  recurringItemId: number | null;
+  /** Reihenfolge der Anwendung. Kleiner zuerst; remainder kommt immer zuletzt. */
+  priority: number;
+  /**
+   * Anteil am frei werdenden Geld, wenn die Schulden getilgt sind — in
+   * Basispunkten. Beantwortet Niclas' Frage "wenn die Raten wegfallen, wohin
+   * dann?", ohne dass jemand den Plan an dem Tag umschreiben muss. Ist die
+   * Summe über alle Regeln < 100 %, bleibt der Rest verfügbar.
+   */
+  debtFreedShareBasisPoints: number | null;
+  note: string | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PfAllocationRuleInsert = {
+  ownerUserId: number;
+  name: string;
+  /** Wohin das Geld soll. Der Topf IST die Regel. */
+  targetAccountId: number;
+  /** Von wo es kommt. Leer = vom Konto, auf dem das Einkommen eingeht. */
+  sourceAccountId?: number | null;
+  kind?: PfAllocationKind;
+  /** Nur bei kind=percent. 2500 = 25,00 %. */
+  percentBasisPoints?: number | null;
+  /** Nur bei kind=fixed. */
+  fixedCents?: number | null;
+  /** Unter-/Obergrenze für prozentuale Regeln ("mindestens 200 €, höchstens 600 €"). */
+  minCents?: number | null;
+  maxCents?: number | null;
+  /**
+   * Der Dauerauftrag, der diese Regel AUSFÜHRT (kind='internal_transfer').
+   * Das ist der Unterschied zwischen einem Plan und einem Vorsatz: ohne
+   * diesen Verweis misst der Soll/Ist-Vergleich "irgendein Eingang auf dem
+   * Zielkonto" — eine einmalige Umbuchung sähe dann aus wie eine erfüllte
+   * Regel. Mit ihm wird genau die Buchung gezählt, die zu dieser Regel
+   * gehört, und eine Regel ohne Dauerauftrag ist als solche erkennbar.
+   */
+  recurringItemId?: number | null;
+  /** Reihenfolge der Anwendung. Kleiner zuerst; remainder kommt immer zuletzt. */
+  priority?: number;
+  /**
+   * Anteil am frei werdenden Geld, wenn die Schulden getilgt sind — in
+   * Basispunkten. Beantwortet Niclas' Frage "wenn die Raten wegfallen, wohin
+   * dann?", ohne dass jemand den Plan an dem Tag umschreiben muss. Ist die
+   * Summe über alle Regeln < 100 %, bleibt der Rest verfügbar.
+   */
+  debtFreedShareBasisPoints?: number | null;
+  note?: string | null;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type FintsBankConnection = {
+  id: number;
+  ownerUserId: number | null;
+  managingCompanyId: number | null;
+  bankName: string;
+  /** Bankleitzahl bzw. FinTS bank_identifier. */
+  blz: string;
+  /** FinTS-3.0-Endpunkt. Wird gegen eine Host-Allowlist geprueft, bevor die PIN fliegt. */
+  serverUrl: string;
+  username: string;
+  /** AES-256-GCM (iv:authTag:data), Schluessel FINTS_SECRET_KEY. Verlaesst die Maschine nie. */
+  encryptedPin: string;
+  /**
+   * Verschluesselter FinTS-Client-Zustand (client.deconstruct(including_private=True)).
+   * DAS ist der Unterschied zwischen "funktioniert" und "die Bank will jedes Mal eine TAN":
+   * ohne gespeicherten Zustand gilt jeder Abruf als Neuanmeldung eines neuen Geraets.
+   */
+  encryptedClientState: string | null;
+  clientStateUpdatedAt: Date | null;
+  /** Bis wann die Bank ohne frische TAN Auskunft gibt (PSD2-Freistellung, meist 90 Tage). */
+  scaValidUntil: Date | null;
+  accountHolder: string | null;
+  /** Gewaehltes TAN-Verfahren (z.B. "921" pushTAN-decoupled). */
+  tanMechanism: string | null;
+  /** Name des TAN-Mediums, falls die Bank mehrere kennt (z.B. "pushTAN-Handy"). */
+  tanMedium: string | null;
+  /** active | needs_tan | locked | error | disabled */
+  status: string;
+  /**
+   * Fehlversuche gegen die Bank seit dem letzten Erfolg. Bei 2 wird gesperrt,
+   * weil die Bank bei 3 den Zugang zumacht. Nur ein Erfolg setzt zurueck.
+   */
+  failedAuthAttempts: number;
+  lockedAt: Date | null;
+  lockedReason: string | null;
+  lastSyncedAt: Date | null;
+  lastSuccessAt: Date | null;
+  /** Bereits bereinigte Fehlermeldung (ohne PIN, ohne Traceback, ohne Rohausgabe). */
+  lastError: string | null;
+  lastErrorAt: Date | null;
+  metadata: any | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FintsBankConnectionInsert = {
+  ownerUserId?: number | null;
+  managingCompanyId?: number | null;
+  bankName?: string;
+  /** Bankleitzahl bzw. FinTS bank_identifier. */
+  blz: string;
+  /** FinTS-3.0-Endpunkt. Wird gegen eine Host-Allowlist geprueft, bevor die PIN fliegt. */
+  serverUrl: string;
+  username: string;
+  /** AES-256-GCM (iv:authTag:data), Schluessel FINTS_SECRET_KEY. Verlaesst die Maschine nie. */
+  encryptedPin: string;
+  /**
+   * Verschluesselter FinTS-Client-Zustand (client.deconstruct(including_private=True)).
+   * DAS ist der Unterschied zwischen "funktioniert" und "die Bank will jedes Mal eine TAN":
+   * ohne gespeicherten Zustand gilt jeder Abruf als Neuanmeldung eines neuen Geraets.
+   */
+  encryptedClientState?: string | null;
+  clientStateUpdatedAt?: Date | null;
+  /** Bis wann die Bank ohne frische TAN Auskunft gibt (PSD2-Freistellung, meist 90 Tage). */
+  scaValidUntil?: Date | null;
+  accountHolder?: string | null;
+  /** Gewaehltes TAN-Verfahren (z.B. "921" pushTAN-decoupled). */
+  tanMechanism?: string | null;
+  /** Name des TAN-Mediums, falls die Bank mehrere kennt (z.B. "pushTAN-Handy"). */
+  tanMedium?: string | null;
+  /** active | needs_tan | locked | error | disabled */
+  status?: string;
+  /**
+   * Fehlversuche gegen die Bank seit dem letzten Erfolg. Bei 2 wird gesperrt,
+   * weil die Bank bei 3 den Zugang zumacht. Nur ein Erfolg setzt zurueck.
+   */
+  failedAuthAttempts?: number;
+  lockedAt?: Date | null;
+  lockedReason?: string | null;
+  lastSyncedAt?: Date | null;
+  lastSuccessAt?: Date | null;
+  /** Bereits bereinigte Fehlermeldung (ohne PIN, ohne Traceback, ohne Rohausgabe). */
+  lastError?: string | null;
+  lastErrorAt?: Date | null;
+  metadata?: any | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type FintsTanChallenge = {
+  id: number;
+  connectionId: number;
+  /** sync — was der Vorgang tut. */
+  purpose: string;
+  /**
+   * Verschluesselter pausierter Dialogzustand + serialisierter NeedTANResponse.
+   * Leer, solange die Bank keine TAN verlangt hat.
+   */
+  encryptedDialogState: string | null;
+  /** Verschluesselte Ausfuehrungsparameter (IBANs, Zeitraum), damit der Abruf fortsetzbar ist. */
+  encryptedResumePayload: string | null;
+  /** Klartext-Aufforderung der Bank, z.B. "Bitte in der S-App bestaetigen". Keine Geheimnisse. */
+  challenge: string | null;
+  /** true = decoupled (Bestaetigung in der Bank-App, keine Eingabe einer Zahl). */
+  decoupled: boolean;
+  /** Darf Boss den Freigabestatus selbst abfragen? Die Bank sagt es in ihren Parametern. */
+  automatedPolling: boolean;
+  /**
+   * Schon gestellte Statusabfragen fuer die aktuelle Freigabe. Die Obergrenze der
+   * Bank gilt fuer die ganze Freigabe, nicht je Aufruf.
+   */
+  pollCount: number;
+  /** Siehe Tabellenkommentar. */
+  status: string;
+  /** Wer den Vorgang gestartet hat (amp, telegram, discord, local). */
+  origin: string | null;
+  /** Wann Boss zuletzt mit der Bank gesprochen hat. */
+  armedAt: Date | null;
+  /** Stabiler Fehlercode bei status=failed, fuer die Oberflaeche. */
+  errorCode: string | null;
+  /**
+   * Das Ergebnis des fortgesetzten Abrufs, verschluesselt, zum genau einmaligen Abholen.
+   * Grund: Der Abruf kann in amp beginnen und in Telegram bestaetigt werden. Dann
+   * liegen die Umsaetze bei Boss, waehrend amp noch auf seine Antwort wartet. Ohne
+   * diese Ablage waere die Bestaetigung ueber Telegram eine Sackgasse und der ganze
+   * Abruf muesste (mit neuer TAN) wiederholt werden. amp holt hier ab, danach wird
+   * der Inhalt geloescht.
+   */
+  encryptedResult: string | null;
+  resultReadyAt: Date | null;
+  resultFetchedAt: Date | null;
+  expiresAt: Date;
+  resolvedAt: Date | null;
+  resultMessage: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FintsTanChallengeInsert = {
+  connectionId: number;
+  /** sync — was der Vorgang tut. */
+  purpose: string;
+  /**
+   * Verschluesselter pausierter Dialogzustand + serialisierter NeedTANResponse.
+   * Leer, solange die Bank keine TAN verlangt hat.
+   */
+  encryptedDialogState?: string | null;
+  /** Verschluesselte Ausfuehrungsparameter (IBANs, Zeitraum), damit der Abruf fortsetzbar ist. */
+  encryptedResumePayload?: string | null;
+  /** Klartext-Aufforderung der Bank, z.B. "Bitte in der S-App bestaetigen". Keine Geheimnisse. */
+  challenge?: string | null;
+  /** true = decoupled (Bestaetigung in der Bank-App, keine Eingabe einer Zahl). */
+  decoupled?: boolean;
+  /** Darf Boss den Freigabestatus selbst abfragen? Die Bank sagt es in ihren Parametern. */
+  automatedPolling?: boolean;
+  /**
+   * Schon gestellte Statusabfragen fuer die aktuelle Freigabe. Die Obergrenze der
+   * Bank gilt fuer die ganze Freigabe, nicht je Aufruf.
+   */
+  pollCount?: number;
+  /** Siehe Tabellenkommentar. */
+  status?: string;
+  /** Wer den Vorgang gestartet hat (amp, telegram, discord, local). */
+  origin?: string | null;
+  /** Wann Boss zuletzt mit der Bank gesprochen hat. */
+  armedAt?: Date | null;
+  /** Stabiler Fehlercode bei status=failed, fuer die Oberflaeche. */
+  errorCode?: string | null;
+  /**
+   * Das Ergebnis des fortgesetzten Abrufs, verschluesselt, zum genau einmaligen Abholen.
+   * Grund: Der Abruf kann in amp beginnen und in Telegram bestaetigt werden. Dann
+   * liegen die Umsaetze bei Boss, waehrend amp noch auf seine Antwort wartet. Ohne
+   * diese Ablage waere die Bestaetigung ueber Telegram eine Sackgasse und der ganze
+   * Abruf muesste (mit neuer TAN) wiederholt werden. amp holt hier ab, danach wird
+   * der Inhalt geloescht.
+   */
+  encryptedResult?: string | null;
+  resultReadyAt?: Date | null;
+  resultFetchedAt?: Date | null;
+  expiresAt: Date;
+  resolvedAt?: Date | null;
+  resultMessage?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type FintsBankAccount = {
+  id: number;
+  connectionId: number;
+  /** IBAN, sonst "<Kontonummer>/<Unterkonto>". Eindeutig je Verbindung. */
+  accountKey: string;
+  iban: string | null;
+  bic: string | null;
+  accountNumber: string | null;
+  subaccount: string | null;
+  /** Kontoart nach FinTS (1-9 Giro, 10-19 Spar, 50-59 Kreditkarte, ...). */
+  accountType: number | null;
+  /** checking | savings | fixed_deposit | securities | loan | credit_card | fund | building_savings | insurance | other */
+  kind: string;
+  productName: string | null;
+  currency: string | null;
+  ownerName: string | null;
+  /** Geschaeftsvorfaelle, die die Bank fuer dieses Konto freigibt (HKSAL, HKKAZ, HKCCS, ...). null = keine Angabe der Bank. */
+  allowedOperations: string[] | null | null;
+  /** Hat eine IBAN, laesst sich also ueber SEPA-Geschaeftsvorfaelle ansprechen. */
+  sepa: boolean;
+  balanceCents: number | null;
+  balanceCurrency: string | null;
+  balanceDate: string | null;
+  balanceFetchedAt: Date | null;
+  /** Warum Saldo oder Umsaetze beim letzten Abgleich nicht kamen. Bereinigt. */
+  lastError: string | null;
+  /** Von Niclas: dieses Konto nicht abfragen, auch keinen Saldo. */
+  ignoredAt: Date | null;
+  firstSeenAt: Date;
+  lastSeenAt: Date;
+  /** Die Bank nennt das Konto nicht mehr. Die Zeile bleibt, damit das sichtbar ist. */
+  goneSince: Date | null;
+  updatedAt: Date;
+};
+
+export type FintsBankAccountInsert = {
+  connectionId: number;
+  /** IBAN, sonst "<Kontonummer>/<Unterkonto>". Eindeutig je Verbindung. */
+  accountKey: string;
+  iban?: string | null;
+  bic?: string | null;
+  accountNumber?: string | null;
+  subaccount?: string | null;
+  /** Kontoart nach FinTS (1-9 Giro, 10-19 Spar, 50-59 Kreditkarte, ...). */
+  accountType?: number | null;
+  /** checking | savings | fixed_deposit | securities | loan | credit_card | fund | building_savings | insurance | other */
+  kind?: string;
+  productName?: string | null;
+  currency?: string | null;
+  ownerName?: string | null;
+  /** Geschaeftsvorfaelle, die die Bank fuer dieses Konto freigibt (HKSAL, HKKAZ, HKCCS, ...). null = keine Angabe der Bank. */
+  allowedOperations?: string[] | null | null;
+  /** Hat eine IBAN, laesst sich also ueber SEPA-Geschaeftsvorfaelle ansprechen. */
+  sepa?: boolean;
+  balanceCents?: number | null;
+  balanceCurrency?: string | null;
+  balanceDate?: string | null;
+  balanceFetchedAt?: Date | null;
+  /** Warum Saldo oder Umsaetze beim letzten Abgleich nicht kamen. Bereinigt. */
+  lastError?: string | null;
+  /** Von Niclas: dieses Konto nicht abfragen, auch keinen Saldo. */
+  ignoredAt?: Date | null;
+  firstSeenAt?: Date;
+  lastSeenAt?: Date;
+  /** Die Bank nennt das Konto nicht mehr. Die Zeile bleibt, damit das sichtbar ist. */
+  goneSince?: Date | null;
+  updatedAt?: Date;
+};
+
+export type FintsAuditLogEntry = {
+  id: number;
+  ownerUserId: number | null;
+  managingCompanyId: number | null;
+  connectionId: number | null;
+  /** create | test | sync | tan_requested | tan_armed | tan_confirmed | lock | unlock | delete | rotate_pin */
+  action: string;
+  /** Woher kam der Auslöser: amp | telegram | discord | local | service */
+  origin: string;
+  /** Nutzerkennung des Auslösers, soweit bekannt. */
+  actor: string | null;
+  remoteIp: string | null;
+  success: boolean;
+  /** Bereinigte Kurzmeldung. Niemals Rohausgaben. */
+  message: string | null;
+  createdAt: Date;
+};
+
+export type FintsAuditLogInsert = {
+  ownerUserId?: number | null;
+  managingCompanyId?: number | null;
+  connectionId?: number | null;
+  /** create | test | sync | tan_requested | tan_armed | tan_confirmed | lock | unlock | delete | rotate_pin */
+  action: string;
+  /** Woher kam der Auslöser: amp | telegram | discord | local | service */
+  origin?: string;
+  /** Nutzerkennung des Auslösers, soweit bekannt. */
+  actor?: string | null;
+  remoteIp?: string | null;
+  success?: boolean;
+  /** Bereinigte Kurzmeldung. Niemals Rohausgaben. */
+  message?: string | null;
+  createdAt?: Date;
+};
+
 
 // ============================================================================
 // OAUTH2 TYPES
@@ -4793,6 +6389,20 @@ export type OAuth2Client = {
   /** Spalten der App (src/routes/oauth2/individual/oauth2-client.columns.ts). */
   lastRotatedAt: Date | null;
   supersededAt: Date | null;
+  /**
+   * Welche App (appId in AMP, klein geschrieben) diesen Client als Verbraucher der Faehigkeit
+   * `invoicing` benutzt (TSK-000251). Ein Client je Verbraucher: meldet AMP dieselbe App noch
+   * einmal an, gilt derselbe Client. Leer bei Clients, die ein Mensch fuer sich angelegt hat.
+   */
+  consumerAppId: string | null;
+  /**
+   * Abdruecke der Geheimnisse, die node-bill fuer die Faehigkeit `invoicing` ausgestellt hat
+   * (amp-sdk 0.34, TSK-000251). Schluessel ist der Abdruck des argon2-Hashs, zu dem der Wert
+   * gehoert, Wert der Abdruck des Geheimnisses selbst. So passt ein Eintrag nur, solange genau
+   * dieser Hash gilt: dreht jemand das Geheimnis auf einem anderen Weg, meldet `status` fuer
+   * ihn nichts statt eines falschen Abdrucks. Nie ein Wert, nie ein Hash.
+   */
+  capabilitySecretPrints: any | null;
 };
 
 export type OAuth2ClientInsert = {
@@ -4880,6 +6490,20 @@ export type OAuth2ClientInsert = {
   /** Spalten der App (src/routes/oauth2/individual/oauth2-client.columns.ts). */
   lastRotatedAt?: Date | null;
   supersededAt?: Date | null;
+  /**
+   * Welche App (appId in AMP, klein geschrieben) diesen Client als Verbraucher der Faehigkeit
+   * `invoicing` benutzt (TSK-000251). Ein Client je Verbraucher: meldet AMP dieselbe App noch
+   * einmal an, gilt derselbe Client. Leer bei Clients, die ein Mensch fuer sich angelegt hat.
+   */
+  consumerAppId?: string | null;
+  /**
+   * Abdruecke der Geheimnisse, die node-bill fuer die Faehigkeit `invoicing` ausgestellt hat
+   * (amp-sdk 0.34, TSK-000251). Schluessel ist der Abdruck des argon2-Hashs, zu dem der Wert
+   * gehoert, Wert der Abdruck des Geheimnisses selbst. So passt ein Eintrag nur, solange genau
+   * dieser Hash gilt: dreht jemand das Geheimnis auf einem anderen Weg, meldet `status` fuer
+   * ihn nichts statt eines falschen Abdrucks. Nie ein Wert, nie ein Hash.
+   */
+  capabilitySecretPrints?: any | null;
 };
 
 export type OAuth2ClientId = OAuth2Client["id"];

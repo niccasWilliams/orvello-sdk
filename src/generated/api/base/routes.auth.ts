@@ -4,6 +4,23 @@
 
 import type { DirectAuthLoginResponse, DirectAuthMe, DirectAuthOkResponse, DirectAuthRequestVerificationResponse, DirectAuthResponse, DirectAuthSessionListResponse, DirectAuthTokens, DirectAuthUser, DirectAuthVerifyEmailResponse, GoogleAuthConfigResponse } from "../../frontend-types";
 
+export type AuthAccountConfigParams = undefined;
+export type AuthAccountConfigQuery = {
+
+};
+export type AuthAccountConfigBody = undefined;
+export type AuthAccountConfigResponseData = {
+  version: 1;
+  appId: string;
+  mode: "backend" | "frontend" | "service";
+  credentialAuthority: "self" | "upstream" | "none";
+  authorityAppId: string | null;
+  directLogin: boolean;
+  browserLogin: false;
+  selfService: Array<string>;
+};
+export type AuthAccountConfigResponse = import("../types").ApiEnvelope<AuthAccountConfigResponseData>;
+
 export type AuthMfaCompleteParams = undefined;
 export type AuthMfaCompleteQuery = undefined;
 export type AuthMfaCompleteBody = {
@@ -242,6 +259,16 @@ export type AuthPushTokenUpsertResponseData = {
 };
 export type AuthPushTokenUpsertResponse = import("../types").ApiEnvelope<AuthPushTokenUpsertResponseData>;
 
+export type AuthPushTokenRemoveParams = undefined;
+export type AuthPushTokenRemoveQuery = undefined;
+export type AuthPushTokenRemoveBody = {
+  token: string;
+};
+export type AuthPushTokenRemoveResponseData = {
+
+};
+export type AuthPushTokenRemoveResponse = import("../types").ApiEnvelope<AuthPushTokenRemoveResponseData>;
+
 export type AuthVerifyEmailRequestParams = undefined;
 export type AuthVerifyEmailRequestQuery = undefined;
 export type AuthVerifyEmailRequestBody = {
@@ -336,6 +363,24 @@ export type AuthSessionsRevokeOtherResponseData = DirectAuthOkResponse;
 export type AuthSessionsRevokeOtherResponse = import("../types").ApiEnvelope<AuthSessionsRevokeOtherResponseData>;
 
 export const apiRoutes_auth = {
+  // Contract source: explicit
+  "auth_account_config": {
+    method: "GET",
+    path: "/auth/account-config",
+    auth: {"type":"public"},
+    meta: {
+      tags: ["auth"],
+      summary: "Discover the product credential owner and supported account operations",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: AuthAccountConfigParams;
+      query: AuthAccountConfigQuery;
+      body: AuthAccountConfigBody;
+      response: AuthAccountConfigResponse;
+      responseData: AuthAccountConfigResponseData;
+    },
+  },
   // Contract source: explicit
   "auth_mfa_complete": {
     method: "POST",
@@ -672,6 +717,25 @@ export const apiRoutes_auth = {
       body: AuthPushTokenUpsertBody;
       response: AuthPushTokenUpsertResponse;
       responseData: AuthPushTokenUpsertResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_push_token_remove": {
+    method: "DELETE",
+    path: "/auth/push-token",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["auth"],
+      summary: "Unregister the current user's device push token before logout",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthPushTokenRemoveParams;
+      query: AuthPushTokenRemoveQuery;
+      body: AuthPushTokenRemoveBody;
+      response: AuthPushTokenRemoveResponse;
+      responseData: AuthPushTokenRemoveResponseData;
     },
   },
   // Contract source: explicit

@@ -8,6 +8,7 @@ export * from "./features/routes.admin";
 export * from "./base/routes.amp_mail";
 export * from "./base/routes.app_info";
 export * from "./base/routes.auth";
+export * from "./features/routes.banking";
 export * from "./features/routes.bookkeeping";
 export * from "./features/routes.currency_rates";
 export * from "./features/routes.customer_companies";
@@ -28,6 +29,7 @@ export * from "./features/routes.managing_company_logos";
 export * from "./base/routes.oauth2";
 export * from "./base/routes.oauth2_external";
 export * from "./base/routes.permissions";
+export * from "./features/routes.personal_finance";
 export * from "./base/routes.roles";
 export * from "./base/routes.security";
 export * from "./base/routes.settings";
@@ -42,6 +44,7 @@ import { apiRoutes_admin } from "./features/routes.admin";
 import { apiRoutes_amp_mail } from "./base/routes.amp_mail";
 import { apiRoutes_app_info } from "./base/routes.app_info";
 import { apiRoutes_auth } from "./base/routes.auth";
+import { apiRoutes_banking } from "./features/routes.banking";
 import { apiRoutes_bookkeeping } from "./features/routes.bookkeeping";
 import { apiRoutes_currency_rates } from "./features/routes.currency_rates";
 import { apiRoutes_customer_companies } from "./features/routes.customer_companies";
@@ -62,6 +65,7 @@ import { apiRoutes_managing_company_logos } from "./features/routes.managing_com
 import { apiRoutes_oauth2 } from "./base/routes.oauth2";
 import { apiRoutes_oauth2_external } from "./base/routes.oauth2_external";
 import { apiRoutes_permissions } from "./base/routes.permissions";
+import { apiRoutes_personal_finance } from "./features/routes.personal_finance";
 import { apiRoutes_roles } from "./base/routes.roles";
 import { apiRoutes_security } from "./base/routes.security";
 import { apiRoutes_settings } from "./base/routes.settings";
@@ -76,6 +80,7 @@ export type ApiRoutes =
   & typeof apiRoutes_amp_mail
   & typeof apiRoutes_app_info
   & typeof apiRoutes_auth
+  & typeof apiRoutes_banking
   & typeof apiRoutes_bookkeeping
   & typeof apiRoutes_currency_rates
   & typeof apiRoutes_customer_companies
@@ -96,6 +101,7 @@ export type ApiRoutes =
   & typeof apiRoutes_oauth2
   & typeof apiRoutes_oauth2_external
   & typeof apiRoutes_permissions
+  & typeof apiRoutes_personal_finance
   & typeof apiRoutes_roles
   & typeof apiRoutes_security
   & typeof apiRoutes_settings
@@ -111,6 +117,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_amp_mail,
   ...apiRoutes_app_info,
   ...apiRoutes_auth,
+  ...apiRoutes_banking,
   ...apiRoutes_bookkeeping,
   ...apiRoutes_currency_rates,
   ...apiRoutes_customer_companies,
@@ -131,6 +138,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_oauth2,
   ...apiRoutes_oauth2_external,
   ...apiRoutes_permissions,
+  ...apiRoutes_personal_finance,
   ...apiRoutes_roles,
   ...apiRoutes_security,
   ...apiRoutes_settings,

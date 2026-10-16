@@ -30,6 +30,8 @@ export const apiMountPrefixes = {
   "/admin/vat",
   "/apps/admin/work-tracking",
   "/apps/enterprise/onboarding",
+  "/banking/company",
+  "/banking/private",
   "/bookkeeping",
   "/currency-rates",
   "/customer-companies",
@@ -38,6 +40,14 @@ export const apiMountPrefixes = {
   "/invoices",
   "/managing-companies",
   "/oauth",
+  "/personal-finance/accounts",
+  "/personal-finance/allocation",
+  "/personal-finance/categories",
+  "/personal-finance/debts",
+  "/personal-finance/insights",
+  "/personal-finance/overview",
+  "/personal-finance/recurring",
+  "/personal-finance/statements",
   "/tax-years"
 ],
 } as const;
@@ -111,6 +121,10 @@ export const apiGroups = {
     "module": "./features/routes.admin"
   },
   {
+    "key": "banking",
+    "module": "./features/routes.banking"
+  },
+  {
     "key": "bookkeeping",
     "module": "./features/routes.bookkeeping"
   },
@@ -167,6 +181,10 @@ export const apiGroups = {
     "module": "./features/routes.managing_company_logos"
   },
   {
+    "key": "personal_finance",
+    "module": "./features/routes.personal_finance"
+  },
+  {
     "key": "tax_years",
     "module": "./features/routes.tax_years"
   },
@@ -191,6 +209,10 @@ export const apiGroups = {
   {
     "key": "auth",
     "module": "./base/routes.auth"
+  },
+  {
+    "key": "banking",
+    "module": "./features/routes.banking"
   },
   {
     "key": "bookkeeping",
@@ -271,6 +293,10 @@ export const apiGroups = {
   {
     "key": "permissions",
     "module": "./base/routes.permissions"
+  },
+  {
+    "key": "personal_finance",
+    "module": "./features/routes.personal_finance"
   },
   {
     "key": "roles",
