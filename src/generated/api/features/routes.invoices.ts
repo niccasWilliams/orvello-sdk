@@ -4,6 +4,216 @@
 
 import type { CustomerCompany, Invoice, PaginatedResult } from "../../frontend-types";
 
+export type InvoicesVersionsParams = {
+  invoiceId: number;
+};
+export type InvoicesVersionsQuery = {
+  companyId: number;
+};
+export type InvoicesVersionsBody = undefined;
+export type InvoicesVersionsResponseData = {
+  legacyDocumentId: number | null;
+  versions: Array<{
+  id: number;
+  invoiceId: number;
+  managingCompanyId: number;
+  revision: number;
+  documentId: number;
+  documentNumber: string | null;
+  structuredDocumentId: number | null;
+  structuredSha256: string | null;
+  issuer: Record<string, string | null>;
+  sha256: string;
+  reason: string;
+  actorUserId: number | null;
+  createdAt: string | string;
+  fileName: string;
+  actorName: string;
+  deliveries: Array<{
+  id: number;
+  recipient: string;
+  status: string;
+  createdAt: string | string;
+}>;
+  changes: Array<{
+  field: string;
+  before: string | null;
+  after: string | null;
+}>;
+}>;
+  preferredVersionId: number | null;
+  effectiveVersionId: number | null;
+};
+export type InvoicesVersionsResponse = import("../types").ApiEnvelope<InvoicesVersionsResponseData>;
+
+export type InvoicesIssuerEvidenceParams = {
+  invoiceId: number;
+};
+export type InvoicesIssuerEvidenceQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerEvidenceBody = {
+  documentId: number;
+  companyName: string;
+  street: string;
+  streetNr: string;
+  zip: string;
+  city: string;
+  country: string;
+  taxId: string;
+  reason: string;
+  confirmsOriginalInspected: true;
+};
+export type InvoicesIssuerEvidenceResponseData = {
+  versionId: number;
+};
+export type InvoicesIssuerEvidenceResponse = import("../types").ApiEnvelope<InvoicesIssuerEvidenceResponseData>;
+
+export type InvoicesVersionsSendParams = {
+  invoiceId: number;
+  versionId: number;
+};
+export type InvoicesVersionsSendQuery = {
+  companyId: number;
+};
+export type InvoicesVersionsSendBody = {
+  requestId: string;
+  to: string;
+  subject: string;
+  message: string;
+};
+export type InvoicesVersionsSendResponseData = {
+  id: number;
+  status: string;
+};
+export type InvoicesVersionsSendResponse = import("../types").ApiEnvelope<InvoicesVersionsSendResponseData>;
+
+export type InvoicesVersionsPreferParams = {
+  invoiceId: number;
+};
+export type InvoicesVersionsPreferQuery = {
+  companyId: number;
+};
+export type InvoicesVersionsPreferBody = {
+  versionId: number;
+};
+export type InvoicesVersionsPreferResponseData = {
+  versionId: number;
+};
+export type InvoicesVersionsPreferResponse = import("../types").ApiEnvelope<InvoicesVersionsPreferResponseData>;
+
+export type InvoicesIssuerPreviewParams = undefined;
+export type InvoicesIssuerPreviewQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerPreviewBody = {
+  from: string;
+  through: string;
+  original: string;
+  replacement: string;
+};
+export type InvoicesIssuerPreviewResponseData = {
+  dateBasis: string;
+  results: Array<{
+  invoiceId: number;
+  invoiceNumber: string;
+  status: string;
+  invoiceDate: string | string;
+  original: string | null;
+  replacement: string;
+  formatNotes: Array<string>;
+  archived: boolean;
+  revision: number | null;
+  format: "pdf" | "cii";
+  exclusion: string | null;
+  expectedHash: string | null;
+}>;
+};
+export type InvoicesIssuerPreviewResponse = import("../types").ApiEnvelope<InvoicesIssuerPreviewResponseData>;
+
+export type InvoicesIssuerStartParams = undefined;
+export type InvoicesIssuerStartQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerStartBody = {
+  requestKey: string;
+  replacement: string;
+  reason: string;
+  confirmsHistoricalError: true;
+  confirmsPdfFormPermitted: boolean;
+  items: Array<{
+  invoiceId: number;
+  expectedHash: string;
+}>;
+};
+export type InvoicesIssuerStartResponseData = {
+  runId: number;
+};
+export type InvoicesIssuerStartResponse = import("../types").ApiEnvelope<InvoicesIssuerStartResponseData>;
+
+export type InvoicesIssuerRunsParams = undefined;
+export type InvoicesIssuerRunsQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerRunsBody = undefined;
+export type InvoicesIssuerRunsResponseData = Array<{
+  id: number;
+  createdAt: string | string;
+  reason: string;
+}>;
+export type InvoicesIssuerRunsResponse = import("../types").ApiEnvelope<InvoicesIssuerRunsResponseData>;
+
+export type InvoicesIssuerResultParams = {
+  runId: number;
+};
+export type InvoicesIssuerResultQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerResultBody = undefined;
+export type InvoicesIssuerResultResponseData = {
+  counts: {
+  total: number;
+  pending: number;
+  done: number;
+  failed: number;
+  restricted: number;
+};
+  run: {
+  id: number;
+  managingCompanyId: number;
+  actorUserId: number;
+  reason: string;
+  replacement: string;
+  createdAt: string | string;
+};
+  items: Array<{
+  invoiceNumber: string;
+  item: {
+  id: number;
+  invoiceId: number;
+  status: string;
+  error: string | null;
+  versionId: number | null;
+  updatedAt: string | string;
+};
+}>;
+};
+export type InvoicesIssuerResultResponse = import("../types").ApiEnvelope<InvoicesIssuerResultResponseData>;
+
+export type InvoicesIssuerRetryParams = {
+  runId: number;
+};
+export type InvoicesIssuerRetryQuery = {
+  companyId: number;
+};
+export type InvoicesIssuerRetryBody = {
+
+};
+export type InvoicesIssuerRetryResponseData = {
+  runId: number;
+};
+export type InvoicesIssuerRetryResponse = import("../types").ApiEnvelope<InvoicesIssuerRetryResponseData>;
+
 export type InvoiceDunningSuggestionsParams = undefined;
 export type InvoiceDunningSuggestionsQuery = {
   asOf?: string;
@@ -375,7 +585,7 @@ export type InvoicesSearchQuery = {
   sortDir?: "asc" | "desc";
 };
 export type InvoicesSearchBody = undefined;
-export type InvoicesSearchResponseData = PaginatedResult<Invoice & { corrections: Array<Pick<Invoice, 'id'|'invoiceNumber'|'status'|'totalAmount'|'currency'|'invoiceDate'|'s3Key'|'publicShareToken'> & { documentType: 'credit_note'|'cancellation' }> }>;
+export type InvoicesSearchResponseData = PaginatedResult<Invoice & { versionCount: number; corrections: Array<Pick<Invoice, 'id'|'invoiceNumber'|'status'|'totalAmount'|'currency'|'invoiceDate'|'s3Key'|'publicShareToken'> & { documentType: 'credit_note'|'cancellation' }> }>;
 export type InvoicesSearchResponse = import("../types").ApiEnvelope<InvoicesSearchResponseData>;
 
 export type InvoicesListPendingParams = undefined;
@@ -573,6 +783,177 @@ export type InvoicesRepairPdfResponseData = {
 export type InvoicesRepairPdfResponse = import("../types").ApiEnvelope<InvoicesRepairPdfResponseData>;
 
 export const apiRoutes_invoices = {
+  // Contract source: explicit
+  "invoices_versions": {
+    method: "GET",
+    path: "/invoices/:invoiceId/versions",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Unverändertes Original, Berichtigungen und bevorzugte Anzeige",
+      description: "Unverändertes Original, Berichtigungen und bevorzugte Anzeige",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesVersionsParams;
+      query: InvoicesVersionsQuery;
+      body: InvoicesVersionsBody;
+      response: InvoicesVersionsResponse;
+      responseData: InvoicesVersionsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_evidence": {
+    method: "POST",
+    path: "/invoices/:invoiceId/versions/evidence",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Historische Ausstellerangaben am Original manuell belegen",
+      description: "Historische Ausstellerangaben am Original manuell belegen",
+      validated: {"params":true,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerEvidenceParams;
+      query: InvoicesIssuerEvidenceQuery;
+      body: InvoicesIssuerEvidenceBody;
+      response: InvoicesIssuerEvidenceResponse;
+      responseData: InvoicesIssuerEvidenceResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_versions_send": {
+    method: "POST",
+    path: "/invoices/:invoiceId/versions/:versionId/send",
+    auth: {"type":"frontend_permission_http","permission":"documents_manage"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Original und gewählte Berichtigungsfassung mit ausdrücklichem Versandauftrag zustellen",
+      description: "Original und gewählte Berichtigungsfassung mit ausdrücklichem Versandauftrag zustellen",
+      validated: {"params":true,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesVersionsSendParams;
+      query: InvoicesVersionsSendQuery;
+      body: InvoicesVersionsSendBody;
+      response: InvoicesVersionsSendResponse;
+      responseData: InvoicesVersionsSendResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_versions_prefer": {
+    method: "POST",
+    path: "/invoices/:invoiceId/versions/preferred",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Bevorzugte Anzeige wählen; rechtliche Berichtigungskette bleibt erhalten",
+      description: "Bevorzugte Anzeige wählen; rechtliche Berichtigungskette bleibt erhalten",
+      validated: {"params":true,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesVersionsPreferParams;
+      query: InvoicesVersionsPreferQuery;
+      body: InvoicesVersionsPreferBody;
+      response: InvoicesVersionsPreferResponse;
+      responseData: InvoicesVersionsPreferResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_preview": {
+    method: "POST",
+    path: "/invoices/issuer-corrections/preview",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Steuernummer-Berichtigung anhand veröffentlichter Ausstellerdaten prüfen",
+      description: "Steuernummer-Berichtigung anhand veröffentlichter Ausstellerdaten prüfen",
+      validated: {"params":false,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerPreviewParams;
+      query: InvoicesIssuerPreviewQuery;
+      body: InvoicesIssuerPreviewBody;
+      response: InvoicesIssuerPreviewResponse;
+      responseData: InvoicesIssuerPreviewResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_start": {
+    method: "POST",
+    path: "/invoices/issuer-corrections/runs",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Geprüfte PDF- oder CII-Steuernummer-Berichtigung ohne automatische Zustellung starten",
+      description: "Geprüfte PDF- oder CII-Steuernummer-Berichtigung ohne automatische Zustellung starten",
+      validated: {"params":false,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerStartParams;
+      query: InvoicesIssuerStartQuery;
+      body: InvoicesIssuerStartBody;
+      response: InvoicesIssuerStartResponse;
+      responseData: InvoicesIssuerStartResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_runs": {
+    method: "GET",
+    path: "/invoices/issuer-corrections/runs",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Eigene gespeicherte Berichtigungsläufe wiederfinden",
+      description: "Eigene gespeicherte Berichtigungsläufe wiederfinden",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerRunsParams;
+      query: InvoicesIssuerRunsQuery;
+      body: InvoicesIssuerRunsBody;
+      response: InvoicesIssuerRunsResponse;
+      responseData: InvoicesIssuerRunsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_result": {
+    method: "GET",
+    path: "/invoices/issuer-corrections/runs/:runId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Ergebnisse und Teilfehler des Berichtigungslaufs",
+      description: "Ergebnisse und Teilfehler des Berichtigungslaufs",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerResultParams;
+      query: InvoicesIssuerResultQuery;
+      body: InvoicesIssuerResultBody;
+      response: InvoicesIssuerResultResponse;
+      responseData: InvoicesIssuerResultResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_issuer_retry": {
+    method: "POST",
+    path: "/invoices/issuer-corrections/runs/:runId/retry",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Fehlgeschlagene Einträge unter erneuter Prüfung wiederaufnehmen",
+      description: "Fehlgeschlagene Einträge unter erneuter Prüfung wiederaufnehmen",
+      validated: {"params":true,"query":true,"body":true},
+    },
+    types: null as unknown as {
+      params: InvoicesIssuerRetryParams;
+      query: InvoicesIssuerRetryQuery;
+      body: InvoicesIssuerRetryBody;
+      response: InvoicesIssuerRetryResponse;
+      responseData: InvoicesIssuerRetryResponseData;
+    },
+  },
   // Contract source: explicit
   "invoice_dunning_suggestions": {
     method: "GET",

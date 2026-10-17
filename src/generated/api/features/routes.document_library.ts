@@ -71,6 +71,7 @@ export type DocumentLibraryListResponseData = {
   folderId: number | null;
   archivedAt: string | string | null;
   private: boolean;
+  versionCount: number;
   invoice: {
   id: number;
   invoiceNumber: string;
