@@ -1426,6 +1426,202 @@ export type ManagingCompaniesInvoiceTemplatesDuplicateResponseData = {
 };
 export type ManagingCompaniesInvoiceTemplatesDuplicateResponse = import("../types").ApiEnvelope<ManagingCompaniesInvoiceTemplatesDuplicateResponseData>;
 
+export type ManagingCompaniesProfileChangesParams = {
+  companyId: number;
+};
+export type ManagingCompaniesProfileChangesQuery = undefined;
+export type ManagingCompaniesProfileChangesBody = undefined;
+export type ManagingCompaniesProfileChangesResponseData = {
+  revision: number;
+  historySince: string;
+  today: string;
+  issuedInvoices: boolean;
+  values: Record<string, string | null>;
+  fields: Array<{
+  field: "companyName" | "companyLegalForm" | "companyManagingDirector" | "companyStreet" | "companyStreetNr" | "companyZip" | "companyCity" | "companyCountry" | "companyEmail" | "companyPhone" | "companyWebsite" | "companyCommercialRegister" | "companyRegistrationCourt" | "companyTaxId" | "companyVatId" | "bookkeepingBasis" | "baseCurrency";
+  label: string;
+  role: "admin" | "editor";
+  reasons: Array<string>;
+  evidenceRequired: boolean;
+  publishedFix: "issuer_run" | "single_review" | "none";
+  effective: "year_start" | "setup_only" | null;
+  onInvoice: boolean;
+}>;
+  reasons: Array<{
+  code: string;
+  label: string;
+}>;
+  changes: Array<{
+  id: number;
+  managingCompanyId: number;
+  kind: "baseline" | "setup" | "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  changes: Array<{
+  field: string;
+  from: string | null;
+  to: string | null;
+}>;
+  evidence: string | null;
+  status: "planned" | "applied" | "cancelled";
+  baseRevision: number;
+  createdBy: number | null;
+  createdAt: string | string;
+  appliedAt: string | string | null;
+  cancelledBy: number | null;
+  cancelledAt: string | string | null;
+  statusNote: string | null;
+  actorName: string;
+}>;
+};
+export type ManagingCompaniesProfileChangesResponse = import("../types").ApiEnvelope<ManagingCompaniesProfileChangesResponseData>;
+
+export type ManagingCompaniesProfileChangePreviewParams = {
+  companyId: number;
+};
+export type ManagingCompaniesProfileChangePreviewQuery = undefined;
+export type ManagingCompaniesProfileChangePreviewBody = {
+  kind: "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  values: {
+  companyName?: string | null;
+  companyLegalForm?: string | null;
+  companyManagingDirector?: string | null;
+  companyStreet?: string | null;
+  companyStreetNr?: string | null;
+  companyZip?: string | null;
+  companyCity?: string | null;
+  companyCountry?: string | null;
+  companyEmail?: string | null;
+  companyPhone?: string | null;
+  companyWebsite?: string | null;
+  companyCommercialRegister?: string | null;
+  companyRegistrationCourt?: string | null;
+  companyTaxId?: string | null;
+  companyVatId?: string | null;
+  bookkeepingBasis?: string | null;
+  baseCurrency?: string | null;
+};
+  evidence?: string | null;
+};
+export type ManagingCompaniesProfileChangePreviewResponseData = {
+  revision: number;
+  today: string;
+  historySince: string;
+  impacts: Array<{
+  field: "companyName" | "companyLegalForm" | "companyManagingDirector" | "companyStreet" | "companyStreetNr" | "companyZip" | "companyCity" | "companyCountry" | "companyEmail" | "companyPhone" | "companyWebsite" | "companyCommercialRegister" | "companyRegistrationCourt" | "companyTaxId" | "companyVatId" | "bookkeepingBasis" | "baseCurrency";
+  from: string | null;
+  to: string | null;
+  validUntil: string | null;
+  drafts: Array<number>;
+  publishedMismatch: Array<number>;
+  publishedChains: Array<number>;
+  publishedUnchanged: number;
+  publishedWithoutSnapshot: Array<number>;
+  hiddenInvoices: number;
+}>;
+  findings: Array<{
+  code: string;
+  severity: "block" | "warn" | "info";
+  message: string;
+  field?: "companyName" | "companyLegalForm" | "companyManagingDirector" | "companyStreet" | "companyStreetNr" | "companyZip" | "companyCity" | "companyCountry" | "companyEmail" | "companyPhone" | "companyWebsite" | "companyCommercialRegister" | "companyRegistrationCourt" | "companyTaxId" | "companyVatId" | "bookkeepingBasis" | "baseCurrency";
+  invoiceIds?: Array<number>;
+}>;
+  blocked: boolean;
+  applies: "now" | "planned";
+  previewHash: string;
+};
+export type ManagingCompaniesProfileChangePreviewResponse = import("../types").ApiEnvelope<ManagingCompaniesProfileChangePreviewResponseData>;
+
+export type ManagingCompaniesProfileChangeCreateParams = {
+  companyId: number;
+};
+export type ManagingCompaniesProfileChangeCreateQuery = undefined;
+export type ManagingCompaniesProfileChangeCreateBody = {
+  requestKey: string;
+  previewHash: string;
+  baseRevision: number;
+  change: {
+  kind: "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  values: {
+  companyName?: string | null;
+  companyLegalForm?: string | null;
+  companyManagingDirector?: string | null;
+  companyStreet?: string | null;
+  companyStreetNr?: string | null;
+  companyZip?: string | null;
+  companyCity?: string | null;
+  companyCountry?: string | null;
+  companyEmail?: string | null;
+  companyPhone?: string | null;
+  companyWebsite?: string | null;
+  companyCommercialRegister?: string | null;
+  companyRegistrationCourt?: string | null;
+  companyTaxId?: string | null;
+  companyVatId?: string | null;
+  bookkeepingBasis?: string | null;
+  baseCurrency?: string | null;
+};
+  evidence?: string | null;
+};
+};
+export type ManagingCompaniesProfileChangeCreateResponseData = {
+  id: number;
+  managingCompanyId: number;
+  kind: "baseline" | "setup" | "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  changes: Array<{
+  field: string;
+  from: string | null;
+  to: string | null;
+}>;
+  evidence: string | null;
+  status: "planned" | "applied" | "cancelled";
+  baseRevision: number;
+  createdBy: number | null;
+  createdAt: string | string;
+  appliedAt: string | string | null;
+  cancelledBy: number | null;
+  cancelledAt: string | string | null;
+  statusNote: string | null;
+};
+export type ManagingCompaniesProfileChangeCreateResponse = import("../types").ApiEnvelope<ManagingCompaniesProfileChangeCreateResponseData>;
+
+export type ManagingCompaniesProfileChangeCancelParams = {
+  companyId: number;
+  changeId: number;
+};
+export type ManagingCompaniesProfileChangeCancelQuery = undefined;
+export type ManagingCompaniesProfileChangeCancelBody = {
+  reason: string;
+};
+export type ManagingCompaniesProfileChangeCancelResponseData = {
+  id: number;
+  managingCompanyId: number;
+  kind: "baseline" | "setup" | "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  changes: Array<{
+  field: string;
+  from: string | null;
+  to: string | null;
+}>;
+  evidence: string | null;
+  status: "planned" | "applied" | "cancelled";
+  baseRevision: number;
+  createdBy: number | null;
+  createdAt: string | string;
+  appliedAt: string | string | null;
+  cancelledBy: number | null;
+  cancelledAt: string | string | null;
+  statusNote: string | null;
+};
+export type ManagingCompaniesProfileChangeCancelResponse = import("../types").ApiEnvelope<ManagingCompaniesProfileChangeCancelResponseData>;
+
 export type ManagingCompaniesCreateParams = undefined;
 export type ManagingCompaniesCreateQuery = undefined;
 export type ManagingCompaniesCreateBody = {
@@ -2567,6 +2763,82 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesInvoiceTemplatesDuplicateBody;
       response: ManagingCompaniesInvoiceTemplatesDuplicateResponse;
       responseData: ManagingCompaniesInvoiceTemplatesDuplicateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_profile_changes": {
+    method: "GET",
+    path: "/managing-companies/profile-changes/:companyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Stammdaten-Zeitachse: Grundlinie, Änderungen, Berichtigungen und Pläne mit Stichtag und Erfassungszeit",
+      description: "Stammdaten-Zeitachse: Grundlinie, Änderungen, Berichtigungen und Pläne mit Stichtag und Erfassungszeit",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesProfileChangesParams;
+      query: ManagingCompaniesProfileChangesQuery;
+      body: ManagingCompaniesProfileChangesBody;
+      response: ManagingCompaniesProfileChangesResponse;
+      responseData: ManagingCompaniesProfileChangesResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_profile_change_preview": {
+    method: "POST",
+    path: "/managing-companies/profile-changes/:companyId/preview",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Auswirkungen einer Stammdatenänderung mit Stichtag vor dem Speichern prüfen",
+      description: "Auswirkungen einer Stammdatenänderung mit Stichtag vor dem Speichern prüfen",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesProfileChangePreviewParams;
+      query: ManagingCompaniesProfileChangePreviewQuery;
+      body: ManagingCompaniesProfileChangePreviewBody;
+      response: ManagingCompaniesProfileChangePreviewResponse;
+      responseData: ManagingCompaniesProfileChangePreviewResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_profile_change_create": {
+    method: "POST",
+    path: "/managing-companies/profile-changes/:companyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Geprüfte Stammdatenänderung idempotent speichern; Stichtag in der Zukunft wird als Plan gespeichert",
+      description: "Geprüfte Stammdatenänderung idempotent speichern; Stichtag in der Zukunft wird als Plan gespeichert",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesProfileChangeCreateParams;
+      query: ManagingCompaniesProfileChangeCreateQuery;
+      body: ManagingCompaniesProfileChangeCreateBody;
+      response: ManagingCompaniesProfileChangeCreateResponse;
+      responseData: ManagingCompaniesProfileChangeCreateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_profile_change_cancel": {
+    method: "POST",
+    path: "/managing-companies/profile-changes/:companyId/:changeId/cancel",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Geplante Stammdatenänderung vor ihrem Stichtag stornieren",
+      description: "Geplante Stammdatenänderung vor ihrem Stichtag stornieren",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesProfileChangeCancelParams;
+      query: ManagingCompaniesProfileChangeCancelQuery;
+      body: ManagingCompaniesProfileChangeCancelBody;
+      response: ManagingCompaniesProfileChangeCancelResponse;
+      responseData: ManagingCompaniesProfileChangeCancelResponseData;
     },
   },
   // Contract source: explicit

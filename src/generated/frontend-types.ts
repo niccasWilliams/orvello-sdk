@@ -866,6 +866,8 @@ export type PaginatedResult<T> = {
 // FEATURE TYPES (individual schema)
 // ============================================================================
 
+export type CompanyProfileChangeEntry = { field: string; from: string | null; to: string | null };
+
 export type InvoiceIssuerSnapshot = {
     companyName: string;
     companyLegalForm: ManagingCompany["companyLegalForm"];
@@ -1732,6 +1734,14 @@ export type ManagingCompany = {
    * dann gilt wie frueher keine Grenze.
    */
   ownerUserId: number | null;
+  /**
+   * Fachliche Gueltigkeit der Stammdaten (TSK-000455 #1103). Jede Aenderung eines Feldes mit
+   * Gueltigkeit erhoeht die Revision (optimistische Sperre fuer Vorschau und Ausfuehrung).
+   * historySince: ab diesem Berlin-Tag ist die Zeitachse belegt; davor gelten die Werte als
+   * "vor Erfassungsbeginn" und werden nicht als belegte Historie ausgegeben.
+   */
+  profileRevision: number;
+  historySince: string;
   createdAt: Date;
   updatedAt: Date | null;
 };
@@ -1793,11 +1803,43 @@ export type ManagingCompanyInsert = {
    * dann gilt wie frueher keine Grenze.
    */
   ownerUserId?: number | null;
+  /**
+   * Fachliche Gueltigkeit der Stammdaten (TSK-000455 #1103). Jede Aenderung eines Feldes mit
+   * Gueltigkeit erhoeht die Revision (optimistische Sperre fuer Vorschau und Ausfuehrung).
+   * historySince: ab diesem Berlin-Tag ist die Zeitachse belegt; davor gelten die Werte als
+   * "vor Erfassungsbeginn" und werden nicht als belegte Historie ausgegeben.
+   */
+  profileRevision?: number;
+  historySince?: string;
   createdAt: Date;
   updatedAt?: Date | null;
 };
 
 export type ManagingCompanyId = number;
+
+export type ManagingCompanyChange = {
+  id: number;
+  managingCompanyId: number;
+  requestKey: string;
+  /** gleiche Wiederholung vs. anderer Inhalt */
+  requestHash: string;
+  /** baseline | setup | change | correction */
+  kind: string;
+  reasonCode: string;
+  /** null = von Beginn an (Grundlinie, Ersterfassung, Fehler seit Erfassung) */
+  effectiveFrom: string | null;
+  changes: CompanyProfileChangeEntry[];
+  evidence: string | null;
+  /** planned | applied | cancelled */
+  status: string;
+  baseRevision: number;
+  createdBy: number | null;
+  createdAt: Date;
+  appliedAt: Date | null;
+  cancelledBy: number | null;
+  cancelledAt: Date | null;
+  statusNote: string | null;
+};
 
 export type CompanyCostCenter = {
   id: number;
