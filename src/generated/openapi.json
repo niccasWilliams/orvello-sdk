@@ -52905,6 +52905,453 @@
         ]
       }
     },
+    "/bookkeeping/expenses/:id/foreign-receipt-versions": {
+      "get": {
+        "operationId": "expense_foreign_receipt_history",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Originalbelegpruefungen mit Kursnachweis",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "post": {
+        "operationId": "expense_foreign_receipt_save",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Originalbelegpruefung unveraenderlich versionieren",
+        "description": "Editor mit Kostenstellenzugang erforderlich. Revalidiert Vorschau, Originalbytes, Kursversion und Periodensperren. Archiviert die Originalbytes unabhaengig vom Arbeitsbeleg. Kein Update der Buchwerte und keine UStVA-Freigabe.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "review": {
+                    "type": "object",
+                    "properties": {
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "originalNet": {
+                        "type": "string",
+                        "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                      },
+                      "originalTax": {
+                        "type": "string",
+                        "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                      },
+                      "originalGross": {
+                        "type": "string",
+                        "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                      },
+                      "invoiceDay": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "performanceDay": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "invoiceReference": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "reviewNote": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 2000
+                      },
+                      "quoteVersionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "currency",
+                      "originalNet",
+                      "originalTax",
+                      "originalGross",
+                      "invoiceDay",
+                      "performanceDay",
+                      "invoiceReference",
+                      "reviewNote"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expectedExpenseFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "expectedPreviousFingerprint": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "expectedPreviewFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "review",
+                  "expectedExpenseFingerprint",
+                  "expectedPreviousFingerprint",
+                  "expectedPreviewFingerprint"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/foreign-receipt-preview": {
+      "post": {
+        "operationId": "expense_foreign_receipt_preview",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Originalwerte und BMF-Umrechnung vorpruefen",
+        "description": "Prueft einen vollstaendigen §13b-Leistungsbeleg ohne Lieferantensteuer. Keine Anzahlungen, Teilleistungen, OSS oder Einfuhrumsatzsteuer. Speichert nichts und entsperrt keine Berichte.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
+                  "originalNet": {
+                    "type": "string",
+                    "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                  },
+                  "originalTax": {
+                    "type": "string",
+                    "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                  },
+                  "originalGross": {
+                    "type": "string",
+                    "pattern": "^(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                  },
+                  "invoiceDay": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "performanceDay": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "invoiceReference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "reviewNote": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  },
+                  "quoteVersionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "currency",
+                  "originalNet",
+                  "originalTax",
+                  "originalGross",
+                  "invoiceDay",
+                  "performanceDay",
+                  "invoiceReference",
+                  "reviewNote"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/foreign-receipt-versions/:versionId/original": {
+      "get": {
+        "operationId": "expense_foreign_receipt_original",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Archivierten Originalbeleg mit Inhaltspruefung herunterladen",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/bookkeeping/expenses/external": {
       "post": {
         "operationId": "bookkeeping_expenses_create_external",

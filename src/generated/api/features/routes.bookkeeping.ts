@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -438,6 +438,64 @@ export type BookkeepingExpensesDeleteQuery = undefined;
 export type BookkeepingExpensesDeleteBody = undefined;
 export type BookkeepingExpensesDeleteResponseData = null;
 export type BookkeepingExpensesDeleteResponse = import("../types").ApiEnvelope<BookkeepingExpensesDeleteResponseData>;
+
+export type ExpenseForeignReceiptHistoryParams = {
+  id: number;
+};
+export type ExpenseForeignReceiptHistoryQuery = undefined;
+export type ExpenseForeignReceiptHistoryBody = undefined;
+export type ExpenseForeignReceiptHistoryResponseData = ForeignReceiptHistoryDto;
+export type ExpenseForeignReceiptHistoryResponse = import("../types").ApiEnvelope<ExpenseForeignReceiptHistoryResponseData>;
+
+export type ExpenseForeignReceiptPreviewParams = {
+  id: number;
+};
+export type ExpenseForeignReceiptPreviewQuery = undefined;
+export type ExpenseForeignReceiptPreviewBody = {
+  currency: string;
+  originalNet: string;
+  originalTax: string;
+  originalGross: string;
+  invoiceDay: string;
+  performanceDay: string;
+  invoiceReference: string;
+  reviewNote: string;
+  quoteVersionId?: string;
+};
+export type ExpenseForeignReceiptPreviewResponseData = ForeignReceiptPreviewDto;
+export type ExpenseForeignReceiptPreviewResponse = import("../types").ApiEnvelope<ExpenseForeignReceiptPreviewResponseData>;
+
+export type ExpenseForeignReceiptSaveParams = {
+  id: number;
+};
+export type ExpenseForeignReceiptSaveQuery = undefined;
+export type ExpenseForeignReceiptSaveBody = {
+  review: {
+  currency: string;
+  originalNet: string;
+  originalTax: string;
+  originalGross: string;
+  invoiceDay: string;
+  performanceDay: string;
+  invoiceReference: string;
+  reviewNote: string;
+  quoteVersionId?: string;
+};
+  expectedExpenseFingerprint: string;
+  expectedPreviousFingerprint: string | null;
+  expectedPreviewFingerprint: string;
+};
+export type ExpenseForeignReceiptSaveResponseData = ForeignReceiptSaveResultDto;
+export type ExpenseForeignReceiptSaveResponse = import("../types").ApiEnvelope<ExpenseForeignReceiptSaveResponseData>;
+
+export type ExpenseForeignReceiptOriginalParams = {
+  id: number;
+  versionId: number;
+};
+export type ExpenseForeignReceiptOriginalQuery = undefined;
+export type ExpenseForeignReceiptOriginalBody = undefined;
+export type ExpenseForeignReceiptOriginalResponseData = Blob;
+export type ExpenseForeignReceiptOriginalResponse = Blob;
 
 export type BookkeepingExpensesCreateExternalParams = undefined;
 export type BookkeepingExpensesCreateExternalQuery = undefined;
@@ -3449,6 +3507,80 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingExpensesDeleteBody;
       response: BookkeepingExpensesDeleteResponse;
       responseData: BookkeepingExpensesDeleteResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_foreign_receipt_history": {
+    method: "GET",
+    path: "/bookkeeping/expenses/:id/foreign-receipt-versions",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Originalbelegpruefungen mit Kursnachweis",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ExpenseForeignReceiptHistoryParams;
+      query: ExpenseForeignReceiptHistoryQuery;
+      body: ExpenseForeignReceiptHistoryBody;
+      response: ExpenseForeignReceiptHistoryResponse;
+      responseData: ExpenseForeignReceiptHistoryResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_foreign_receipt_preview": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/foreign-receipt-preview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Originalwerte und BMF-Umrechnung vorpruefen",
+      description: "Prueft einen vollstaendigen §13b-Leistungsbeleg ohne Lieferantensteuer. Keine Anzahlungen, Teilleistungen, OSS oder Einfuhrumsatzsteuer. Speichert nichts und entsperrt keine Berichte.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ExpenseForeignReceiptPreviewParams;
+      query: ExpenseForeignReceiptPreviewQuery;
+      body: ExpenseForeignReceiptPreviewBody;
+      response: ExpenseForeignReceiptPreviewResponse;
+      responseData: ExpenseForeignReceiptPreviewResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_foreign_receipt_save": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/foreign-receipt-versions",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Originalbelegpruefung unveraenderlich versionieren",
+      description: "Editor mit Kostenstellenzugang erforderlich. Revalidiert Vorschau, Originalbytes, Kursversion und Periodensperren. Archiviert die Originalbytes unabhaengig vom Arbeitsbeleg. Kein Update der Buchwerte und keine UStVA-Freigabe.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ExpenseForeignReceiptSaveParams;
+      query: ExpenseForeignReceiptSaveQuery;
+      body: ExpenseForeignReceiptSaveBody;
+      response: ExpenseForeignReceiptSaveResponse;
+      responseData: ExpenseForeignReceiptSaveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_foreign_receipt_original": {
+    method: "GET",
+    path: "/bookkeeping/expenses/:id/foreign-receipt-versions/:versionId/original",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Archivierten Originalbeleg mit Inhaltspruefung herunterladen",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ExpenseForeignReceiptOriginalParams;
+      query: ExpenseForeignReceiptOriginalQuery;
+      body: ExpenseForeignReceiptOriginalBody;
+      response: ExpenseForeignReceiptOriginalResponse;
+      responseData: ExpenseForeignReceiptOriginalResponseData;
     },
   },
   // Contract source: explicit

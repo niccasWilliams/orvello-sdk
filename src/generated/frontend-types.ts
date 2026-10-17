@@ -6914,6 +6914,62 @@ export type WebhookPayload = | WebhookPayloadStripe
 
 
 // ============================================================================
+// FOREIGN RECEIPT EVIDENCE
+// ============================================================================
+// Quelle: src/routes/bookkeeping/foreign-receipts/foreign-receipt.types.ts
+
+
+
+export interface ForeignReceiptReview {
+    currency: string;
+    originalNet: string;
+    originalTax: string;
+    originalGross: string;
+    invoiceDay: string;
+    performanceDay: string;
+    invoiceReference: string;
+    reviewNote: string;
+    quoteVersionId?: string;
+}
+
+export interface ForeignReceiptEvidence {
+    rule: "foreign-receipt-review-v1";
+    review: ForeignReceiptReview;
+    document: { id: number; sha256: string; archiveKey: string; byteLength: number; contentType: string };
+    conversion: {
+        rule: string; legalSource: string;
+        input: { managingCompanyId: number; documentVersionSha256: string; eventReference: string;
+            currency: string; originalAmount: string; taxation: "SOLL" | "IST";
+            event: "performance" | "advance" | "receipt"; eventDay: string };
+        quote: { kind: "bmf_month"; versionId: string; currency: string; month: string; foreignUnitsPerEur: string;
+            sourceUrl: string; sourceSha256: string; sourceLocation: string; publishedOn: string };
+        euroAmount: string; fingerprint: string;
+    };
+    reportingStatus: "evidence_only";
+}
+
+export interface ForeignReceiptVersionDto {
+    id: number; managingCompanyId: number; expenseId: number; revision: number;
+    previousFingerprint: string | null; fingerprint: string; expenseFingerprint: string;
+    evidence: ForeignReceiptEvidence; createdAt: string; createdBy: number;
+}
+
+export interface ForeignReceiptHistoryDto {
+    expenseFingerprint: string;
+    versions: (ForeignReceiptVersionDto & { current: boolean })[];
+}
+
+export interface ForeignReceiptPreviewDto {
+    evidence: ForeignReceiptEvidence; expenseFingerprint: string; previousFingerprint: string | null;
+    previewFingerprint: string; locked: boolean; lockedUntil: string | null; effect: string;
+}
+
+export interface ForeignReceiptSaveResultDto {
+    status: "saved" | "already_saved";
+    version: ForeignReceiptVersionDto;
+}
+
+// ============================================================================
 // GEBUEHRENBEHANDLUNG MIT GUELTIG-AB (TSK-000382)
 // ============================================================================
 // Quelle: src/routes/bookkeeping/payments/fee-treatments/fee-treatment.types.ts
