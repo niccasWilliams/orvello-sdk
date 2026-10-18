@@ -4,6 +4,130 @@
 
 import type { CompanyCostCenter, CompanyUserAssignment, CompanyUserInvite, FullSelectedCompany, ManagingCompany, PaginatedResult, UnsensitiveCompanyApiKey, UserSelectedCompany, VatSettings, VatSettingsHistory } from "../../frontend-types";
 
+export type ManagingCompaniesDatevProfilesGetParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesDatevProfilesGetQuery = undefined;
+export type ManagingCompaniesDatevProfilesGetBody = undefined;
+export type ManagingCompaniesDatevProfilesGetResponseData = {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  validFrom: string;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  config: {
+  skr: "skr03" | "skr04";
+  advisorNumber: string;
+  clientNumber: string;
+  accountLength: number;
+  cashAccount: number | null;
+  moneyAccounts: Array<{
+  paymentAccountId: number;
+  account: number;
+}>;
+  accounts: Array<{
+  direction: "revenue" | "expense";
+  category: string;
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  account: number;
+  automaticTax: boolean;
+}>;
+};
+}>;
+  paymentAccounts: Array<{
+  id: number;
+  name: string;
+  type: string;
+}>;
+  categories: {
+  revenue: Array<{
+  value: string;
+  label: string;
+}>;
+  expense: Array<{
+  value: string;
+  label: string;
+}>;
+};
+};
+export type ManagingCompaniesDatevProfilesGetResponse = import("../types").ApiEnvelope<ManagingCompaniesDatevProfilesGetResponseData>;
+
+export type ManagingCompaniesDatevProfilesSaveParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesDatevProfilesSaveQuery = undefined;
+export type ManagingCompaniesDatevProfilesSaveBody = {
+  revision: number;
+  validFrom: string;
+  reason: string;
+  config: {
+  skr: "skr03" | "skr04";
+  advisorNumber: string;
+  clientNumber: string;
+  accountLength: number;
+  cashAccount: number | null;
+  moneyAccounts: Array<{
+  paymentAccountId: number;
+  account: number;
+}>;
+  accounts: Array<{
+  direction: "revenue" | "expense";
+  category: string;
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  account: number;
+  automaticTax: boolean;
+}>;
+};
+};
+export type ManagingCompaniesDatevProfilesSaveResponseData = {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  validFrom: string;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  config: {
+  skr: "skr03" | "skr04";
+  advisorNumber: string;
+  clientNumber: string;
+  accountLength: number;
+  cashAccount: number | null;
+  moneyAccounts: Array<{
+  paymentAccountId: number;
+  account: number;
+}>;
+  accounts: Array<{
+  direction: "revenue" | "expense";
+  category: string;
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  account: number;
+  automaticTax: boolean;
+}>;
+};
+}>;
+  paymentAccounts: Array<{
+  id: number;
+  name: string;
+  type: string;
+}>;
+  categories: {
+  revenue: Array<{
+  value: string;
+  label: string;
+}>;
+  expense: Array<{
+  value: string;
+  label: string;
+}>;
+};
+};
+export type ManagingCompaniesDatevProfilesSaveResponse = import("../types").ApiEnvelope<ManagingCompaniesDatevProfilesSaveResponseData>;
+
 export type ManagingCompaniesInvoiceNumberingGetParams = {
   managingCompanyId: number;
 };
@@ -1722,6 +1846,42 @@ export type ManagingCompaniesDeleteResponseData = null;
 export type ManagingCompaniesDeleteResponse = import("../types").ApiEnvelope<ManagingCompaniesDeleteResponseData>;
 
 export const apiRoutes_managing_companies = {
+  // Contract source: explicit
+  "managing_companies_datev_profiles_get": {
+    method: "GET",
+    path: "/managing-companies/datev-profiles/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","datev"],
+      summary: "DATEV-Firmenprofile und Änderungsverlauf",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesDatevProfilesGetParams;
+      query: ManagingCompaniesDatevProfilesGetQuery;
+      body: ManagingCompaniesDatevProfilesGetBody;
+      response: ManagingCompaniesDatevProfilesGetResponse;
+      responseData: ManagingCompaniesDatevProfilesGetResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_datev_profiles_save": {
+    method: "PUT",
+    path: "/managing-companies/datev-profiles/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","datev"],
+      summary: "DATEV-Fassung mit Gültigkeit und Begründung speichern",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesDatevProfilesSaveParams;
+      query: ManagingCompaniesDatevProfilesSaveQuery;
+      body: ManagingCompaniesDatevProfilesSaveBody;
+      response: ManagingCompaniesDatevProfilesSaveResponse;
+      responseData: ManagingCompaniesDatevProfilesSaveResponseData;
+    },
+  },
   // Contract source: explicit
   "managing_companies_invoice_numbering_get": {
     method: "GET",

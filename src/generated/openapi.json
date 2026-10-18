@@ -82504,7 +82504,117 @@
                     },
                     "data": {
                       "anyOf": [
-                        {},
+                        {
+                          "type": "object",
+                          "properties": {
+                            "managingCompanyId": {
+                              "type": "number"
+                            },
+                            "availableYears": {
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "skrOptions": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "value": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "value",
+                                  "label"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "format": {
+                              "type": "string"
+                            },
+                            "note": {
+                              "type": "string"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                },
+                                "excluded": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "note": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "label",
+                                "excluded",
+                                "note"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "profileRevision": {
+                              "type": "number"
+                            },
+                            "profiles": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "validFrom": {
+                                    "type": "string"
+                                  },
+                                  "skr": {
+                                    "type": "string",
+                                    "enum": [
+                                      "skr03",
+                                      "skr04"
+                                    ]
+                                  },
+                                  "changedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "revision",
+                                  "validFrom",
+                                  "skr",
+                                  "changedAt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "managingCompanyId",
+                            "availableYears",
+                            "skrOptions",
+                            "format",
+                            "note",
+                            "scope",
+                            "profileRevision",
+                            "profiles"
+                          ],
+                          "additionalProperties": false
+                        },
                         {
                           "type": "null"
                         }
@@ -82540,7 +82650,7 @@
           "datev"
         ],
         "summary": "DATEV Buchungsstapel herunterladen",
-        "description": "Generiert und liefert einen DATEV-kompatiblen Buchungsstapel (Format EXTF, Version 12) als CSV. Enthält alle EÜR-wirksamen Einnahmen und Ausgaben für das angegebene Jahr/Monat. Query-Parameter: year (Pflicht), month (optional, 1-12), skr (optional, skr03|skr04).",
+        "description": "Generiert und liefert einen DATEV-kompatiblen Buchungsstapel (Format EXTF, Version 12) als CSV. EÜR-Zahlungsauszug mit bestätigten Einnahmen und abzugsfähigen Ausgaben, kein vollständiges Fibu-Journal. Konten aus versioniertem Firmenprofil. Query-Parameter: year (Pflicht), month (optional, 1-12), skr (optional, muss Firmenprofil entsprechen), profileRevision (optional, aktuellste Fassung), from/to (optionale Tage innerhalb des Zeitraums).",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -82591,6 +82701,67 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          },
+          {
+            "name": "skr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "skr03",
+                "skr04"
+              ]
+            }
+          },
+          {
+            "name": "profileRevision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []
@@ -82600,6 +82771,777 @@
         "x-permissions": [
           "bookkeeping_access"
         ]
+      }
+    },
+    "/managing-companies/datev-profiles/:managingCompanyId": {
+      "get": {
+        "operationId": "managing_companies_datev_profiles_get",
+        "tags": [
+          "managing-companies",
+          "datev"
+        ],
+        "summary": "DATEV-Firmenprofile und Änderungsverlauf",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "number"
+                            },
+                            "canManage": {
+                              "type": "boolean"
+                            },
+                            "history": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "validFrom": {
+                                    "type": "string"
+                                  },
+                                  "changedAt": {
+                                    "type": "string"
+                                  },
+                                  "changedBy": {
+                                    "type": "number"
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  },
+                                  "config": {
+                                    "type": "object",
+                                    "properties": {
+                                      "skr": {
+                                        "type": "string",
+                                        "enum": [
+                                          "skr03",
+                                          "skr04"
+                                        ]
+                                      },
+                                      "advisorNumber": {
+                                        "type": "string",
+                                        "pattern": "^[1-9]\\d{3,6}$"
+                                      },
+                                      "clientNumber": {
+                                        "type": "string",
+                                        "pattern": "^[1-9]\\d{0,4}$"
+                                      },
+                                      "accountLength": {
+                                        "type": "integer",
+                                        "minimum": 4,
+                                        "maximum": 8
+                                      },
+                                      "cashAccount": {
+                                        "anyOf": [
+                                          {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "maximum": 99999999
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "moneyAccounts": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "paymentAccountId": {
+                                              "type": "integer",
+                                              "exclusiveMinimum": 0
+                                            },
+                                            "account": {
+                                              "type": "integer",
+                                              "minimum": 1,
+                                              "maximum": 99999999
+                                            }
+                                          },
+                                          "required": [
+                                            "paymentAccountId",
+                                            "account"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      },
+                                      "accounts": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "direction": {
+                                              "type": "string",
+                                              "enum": [
+                                                "revenue",
+                                                "expense"
+                                              ]
+                                            },
+                                            "category": {
+                                              "type": "string",
+                                              "pattern": "^[a-z_]+$",
+                                              "maxLength": 80
+                                            },
+                                            "taxCase": {
+                                              "type": "string",
+                                              "enum": [
+                                                "sales_19",
+                                                "sales_7",
+                                                "input_19",
+                                                "input_7",
+                                                "no_deduction"
+                                              ]
+                                            },
+                                            "account": {
+                                              "type": "integer",
+                                              "minimum": 1,
+                                              "maximum": 99999999
+                                            },
+                                            "automaticTax": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "direction",
+                                            "category",
+                                            "taxCase",
+                                            "account",
+                                            "automaticTax"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "skr",
+                                      "advisorNumber",
+                                      "clientNumber",
+                                      "accountLength",
+                                      "cashAccount",
+                                      "moneyAccounts",
+                                      "accounts"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "revision",
+                                  "validFrom",
+                                  "changedAt",
+                                  "changedBy",
+                                  "reason",
+                                  "config"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "paymentAccounts": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "categories": {
+                              "type": "object",
+                              "properties": {
+                                "revenue": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "expense": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                }
+                              },
+                              "required": [
+                                "revenue",
+                                "expense"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "canManage",
+                            "history",
+                            "paymentAccounts",
+                            "categories"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      },
+      "put": {
+        "operationId": "managing_companies_datev_profiles_save",
+        "tags": [
+          "managing-companies",
+          "datev"
+        ],
+        "summary": "DATEV-Fassung mit Gültigkeit und Begründung speichern",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "number"
+                            },
+                            "canManage": {
+                              "type": "boolean"
+                            },
+                            "history": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "validFrom": {
+                                    "type": "string"
+                                  },
+                                  "changedAt": {
+                                    "type": "string"
+                                  },
+                                  "changedBy": {
+                                    "type": "number"
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  },
+                                  "config": {
+                                    "type": "object",
+                                    "properties": {
+                                      "skr": {
+                                        "type": "string",
+                                        "enum": [
+                                          "skr03",
+                                          "skr04"
+                                        ]
+                                      },
+                                      "advisorNumber": {
+                                        "type": "string",
+                                        "pattern": "^[1-9]\\d{3,6}$"
+                                      },
+                                      "clientNumber": {
+                                        "type": "string",
+                                        "pattern": "^[1-9]\\d{0,4}$"
+                                      },
+                                      "accountLength": {
+                                        "type": "integer",
+                                        "minimum": 4,
+                                        "maximum": 8
+                                      },
+                                      "cashAccount": {
+                                        "anyOf": [
+                                          {
+                                            "type": "integer",
+                                            "minimum": 1,
+                                            "maximum": 99999999
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "moneyAccounts": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "paymentAccountId": {
+                                              "type": "integer",
+                                              "exclusiveMinimum": 0
+                                            },
+                                            "account": {
+                                              "type": "integer",
+                                              "minimum": 1,
+                                              "maximum": 99999999
+                                            }
+                                          },
+                                          "required": [
+                                            "paymentAccountId",
+                                            "account"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      },
+                                      "accounts": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "direction": {
+                                              "type": "string",
+                                              "enum": [
+                                                "revenue",
+                                                "expense"
+                                              ]
+                                            },
+                                            "category": {
+                                              "type": "string",
+                                              "pattern": "^[a-z_]+$",
+                                              "maxLength": 80
+                                            },
+                                            "taxCase": {
+                                              "type": "string",
+                                              "enum": [
+                                                "sales_19",
+                                                "sales_7",
+                                                "input_19",
+                                                "input_7",
+                                                "no_deduction"
+                                              ]
+                                            },
+                                            "account": {
+                                              "type": "integer",
+                                              "minimum": 1,
+                                              "maximum": 99999999
+                                            },
+                                            "automaticTax": {
+                                              "type": "boolean"
+                                            }
+                                          },
+                                          "required": [
+                                            "direction",
+                                            "category",
+                                            "taxCase",
+                                            "account",
+                                            "automaticTax"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      }
+                                    },
+                                    "required": [
+                                      "skr",
+                                      "advisorNumber",
+                                      "clientNumber",
+                                      "accountLength",
+                                      "cashAccount",
+                                      "moneyAccounts",
+                                      "accounts"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": [
+                                  "revision",
+                                  "validFrom",
+                                  "changedAt",
+                                  "changedBy",
+                                  "reason",
+                                  "config"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "paymentAccounts": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "categories": {
+                              "type": "object",
+                              "properties": {
+                                "revenue": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "expense": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                }
+                              },
+                              "required": [
+                                "revenue",
+                                "expense"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "canManage",
+                            "history",
+                            "paymentAccounts",
+                            "categories"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "validFrom": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  },
+                  "config": {
+                    "type": "object",
+                    "properties": {
+                      "skr": {
+                        "type": "string",
+                        "enum": [
+                          "skr03",
+                          "skr04"
+                        ]
+                      },
+                      "advisorNumber": {
+                        "type": "string",
+                        "pattern": "^[1-9]\\d{3,6}$"
+                      },
+                      "clientNumber": {
+                        "type": "string",
+                        "pattern": "^[1-9]\\d{0,4}$"
+                      },
+                      "accountLength": {
+                        "type": "integer",
+                        "minimum": 4,
+                        "maximum": 8
+                      },
+                      "cashAccount": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99999999
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "moneyAccounts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "paymentAccountId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "account": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 99999999
+                            }
+                          },
+                          "required": [
+                            "paymentAccountId",
+                            "account"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "accounts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "direction": {
+                              "type": "string",
+                              "enum": [
+                                "revenue",
+                                "expense"
+                              ]
+                            },
+                            "category": {
+                              "type": "string",
+                              "pattern": "^[a-z_]+$",
+                              "maxLength": 80
+                            },
+                            "taxCase": {
+                              "type": "string",
+                              "enum": [
+                                "sales_19",
+                                "sales_7",
+                                "input_19",
+                                "input_7",
+                                "no_deduction"
+                              ]
+                            },
+                            "account": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 99999999
+                            },
+                            "automaticTax": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "direction",
+                            "category",
+                            "taxCase",
+                            "account",
+                            "automaticTax"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "skr",
+                      "advisorNumber",
+                      "clientNumber",
+                      "accountLength",
+                      "cashAccount",
+                      "moneyAccounts",
+                      "accounts"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "revision",
+                  "validFrom",
+                  "reason",
+                  "config"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
       }
     },
     "/managing-companies/invoice-numbering/:managingCompanyId": {
