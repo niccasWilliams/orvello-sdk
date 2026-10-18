@@ -29,12 +29,21 @@ export type ManagingCompaniesDatevProfilesGetResponseData = {
   account: number;
 }>;
   accounts: Array<{
-  direction: "revenue" | "expense";
+  direction: "revenue" | "expense" | "expense_non_deductible" | "asset";
   category: string;
-  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
   account: number;
   automaticTax: boolean;
+  taxKey?: number | null;
 }>;
+  privateAccounts?: {
+  withdrawal?: number | null;
+  deposit?: number | null;
+};
+  fxDifferenceAccounts?: {
+  gain?: number | null;
+  loss?: number | null;
+};
 };
 }>;
   paymentAccounts: Array<{
@@ -51,7 +60,17 @@ export type ManagingCompaniesDatevProfilesGetResponseData = {
   value: string;
   label: string;
 }>;
+  asset: Array<{
+  value: string;
+  label: string;
+}>;
 };
+  taxCases: Array<{
+  value: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
+  label: string;
+  directions: Array<"revenue" | "expense" | "expense_non_deductible" | "asset">;
+  special: boolean;
+}>;
 };
 export type ManagingCompaniesDatevProfilesGetResponse = import("../types").ApiEnvelope<ManagingCompaniesDatevProfilesGetResponseData>;
 
@@ -74,12 +93,21 @@ export type ManagingCompaniesDatevProfilesSaveBody = {
   account: number;
 }>;
   accounts: Array<{
-  direction: "revenue" | "expense";
+  direction: "revenue" | "expense" | "expense_non_deductible" | "asset";
   category: string;
-  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
   account: number;
   automaticTax: boolean;
+  taxKey?: number | null;
 }>;
+  privateAccounts?: {
+  withdrawal?: number | null;
+  deposit?: number | null;
+};
+  fxDifferenceAccounts?: {
+  gain?: number | null;
+  loss?: number | null;
+};
 };
 };
 export type ManagingCompaniesDatevProfilesSaveResponseData = {
@@ -102,12 +130,21 @@ export type ManagingCompaniesDatevProfilesSaveResponseData = {
   account: number;
 }>;
   accounts: Array<{
-  direction: "revenue" | "expense";
+  direction: "revenue" | "expense" | "expense_non_deductible" | "asset";
   category: string;
-  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction";
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
   account: number;
   automaticTax: boolean;
+  taxKey?: number | null;
 }>;
+  privateAccounts?: {
+  withdrawal?: number | null;
+  deposit?: number | null;
+};
+  fxDifferenceAccounts?: {
+  gain?: number | null;
+  loss?: number | null;
+};
 };
 }>;
   paymentAccounts: Array<{
@@ -124,9 +161,128 @@ export type ManagingCompaniesDatevProfilesSaveResponseData = {
   value: string;
   label: string;
 }>;
+  asset: Array<{
+  value: string;
+  label: string;
+}>;
 };
+  taxCases: Array<{
+  value: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
+  label: string;
+  directions: Array<"revenue" | "expense" | "expense_non_deductible" | "asset">;
+  special: boolean;
+}>;
 };
 export type ManagingCompaniesDatevProfilesSaveResponse = import("../types").ApiEnvelope<ManagingCompaniesDatevProfilesSaveResponseData>;
+
+export type ManagingCompaniesVatEntrepreneurProfilesGetParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesVatEntrepreneurProfilesGetQuery = undefined;
+export type ManagingCompaniesVatEntrepreneurProfilesGetBody = undefined;
+export type ManagingCompaniesVatEntrepreneurProfilesGetResponseData = {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  activityStartDate: string | null;
+  unitCompanyIds: Array<number>;
+  reason: string;
+  changedBy: number;
+  changedAt: string;
+}>;
+  selectableCompanies: Array<{
+  id: number;
+  name: string;
+}>;
+};
+export type ManagingCompaniesVatEntrepreneurProfilesGetResponse = import("../types").ApiEnvelope<ManagingCompaniesVatEntrepreneurProfilesGetResponseData>;
+
+export type ManagingCompaniesVatEntrepreneurProfilesSaveParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesVatEntrepreneurProfilesSaveQuery = undefined;
+export type ManagingCompaniesVatEntrepreneurProfilesSaveBody = {
+  revision: number;
+  activityStartDate: string | null;
+  unitCompanyIds: Array<number>;
+  reason: string;
+};
+export type ManagingCompaniesVatEntrepreneurProfilesSaveResponseData = {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  activityStartDate: string | null;
+  unitCompanyIds: Array<number>;
+  reason: string;
+  changedBy: number;
+  changedAt: string;
+}>;
+  selectableCompanies: Array<{
+  id: number;
+  name: string;
+}>;
+};
+export type ManagingCompaniesVatEntrepreneurProfilesSaveResponse = import("../types").ApiEnvelope<ManagingCompaniesVatEntrepreneurProfilesSaveResponseData>;
+
+export type ManagingCompaniesVatGesamtumsatzParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesVatGesamtumsatzQuery = {
+  year: number;
+};
+export type ManagingCompaniesVatGesamtumsatzBody = undefined;
+export type ManagingCompaniesVatGesamtumsatzResponseData = {
+  policy: string;
+  year: number;
+  managingCompanyId: number;
+  unit: {
+  companyIds: Array<number>;
+  declared: boolean;
+  consistent: boolean;
+  inconsistentCompanyIds: Array<number>;
+};
+  activityStart: {
+  date: string | null;
+  declared: boolean;
+};
+  included: number;
+  excluded: number;
+  unclear: number;
+  upperBound: number;
+  lines: Array<{
+  managingCompanyId: number;
+  source: "revenue" | "invoice";
+  documentId: number;
+  date: string;
+  category: string;
+  treatment: string | null;
+  received: number;
+  entgelt: number;
+  status: "included" | "excluded" | "unclear";
+  rule: string;
+  reason: string;
+}>;
+  warnings: Array<string>;
+  sourceFingerprint: string;
+  limits: {
+  ruleId: string;
+  previousYearLimit: number;
+  currentYearLimit: number;
+  appliedCurrentYearLimit: number;
+  startYear: boolean;
+  verdict: "below" | "exceeded" | "depends_on_unclear" | "not_checked";
+  sources: Array<{
+  norm: string;
+  url: string;
+  retrievedAt: string;
+  covers: string;
+}>;
+  openPoints: Array<string>;
+} | null;
+};
+export type ManagingCompaniesVatGesamtumsatzResponse = import("../types").ApiEnvelope<ManagingCompaniesVatGesamtumsatzResponseData>;
 
 export type ManagingCompaniesInvoiceNumberingGetParams = {
   managingCompanyId: number;
@@ -1880,6 +2036,62 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesDatevProfilesSaveBody;
       response: ManagingCompaniesDatevProfilesSaveResponse;
       responseData: ManagingCompaniesDatevProfilesSaveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_vat_entrepreneur_profiles_get": {
+    method: "GET",
+    path: "/managing-companies/vat-entrepreneur-profiles/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","vat"],
+      summary: "Tätigkeitsbeginn und Unternehmereinheit mit Verlauf",
+      description: "Angaben für den Gesamtumsatz nach § 19 Abs. 2 UStG. Ohne gespeicherte Fassung sind Tätigkeitsbeginn und Unternehmereinheit unerklärt; es gibt keine Vorbesetzung.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesVatEntrepreneurProfilesGetParams;
+      query: ManagingCompaniesVatEntrepreneurProfilesGetQuery;
+      body: ManagingCompaniesVatEntrepreneurProfilesGetBody;
+      response: ManagingCompaniesVatEntrepreneurProfilesGetResponse;
+      responseData: ManagingCompaniesVatEntrepreneurProfilesGetResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_vat_entrepreneur_profiles_save": {
+    method: "PUT",
+    path: "/managing-companies/vat-entrepreneur-profiles/:managingCompanyId",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","vat"],
+      summary: "Tätigkeitsbeginn und Unternehmereinheit als neue Fassung speichern",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesVatEntrepreneurProfilesSaveParams;
+      query: ManagingCompaniesVatEntrepreneurProfilesSaveQuery;
+      body: ManagingCompaniesVatEntrepreneurProfilesSaveBody;
+      response: ManagingCompaniesVatEntrepreneurProfilesSaveResponse;
+      responseData: ManagingCompaniesVatEntrepreneurProfilesSaveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_vat_gesamtumsatz": {
+    method: "GET",
+    path: "/managing-companies/vat-entrepreneur-profiles/:managingCompanyId/gesamtumsatz",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["managing-companies","vat"],
+      summary: "Gesamtumsatz nach § 19 Abs. 2 UStG mit Belegnachweis",
+      description: "Vereinnahmte Entgelte des Jahres je Zahlung, eingeordnet als einbezogen, ausgenommen oder ungeklärt, mit Regel und Quelle. Rechnet über die erklärte Unternehmereinheit. Die Grenzprüfung nennt, ob sie von ungeklärten Umsätzen abhängt.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesVatGesamtumsatzParams;
+      query: ManagingCompaniesVatGesamtumsatzQuery;
+      body: ManagingCompaniesVatGesamtumsatzBody;
+      response: ManagingCompaniesVatGesamtumsatzResponse;
+      responseData: ManagingCompaniesVatGesamtumsatzResponseData;
     },
   },
   // Contract source: explicit

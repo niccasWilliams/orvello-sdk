@@ -64,8 +64,8 @@ export type PaymentSource = 'bank_import' | 'manual' | 'transfer' | 'paypal_api'
 export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capital_movement';
 export type PaymentAllocationKind = 'payment' | 'refund' | 'fee' | 'writeoff' | 'discount';
 export type IabStatus = 'active' | 'dissolved' | 'reversed' | 'warning';
-export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement' | 'supplier';
-export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_issuer_correct' | 'invoice_issuer_evidence' | 'invoice_version_select' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
+export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement' | 'supplier' | 'tax_report';
+export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'expense_tax_event_recorded' | 'tax_report_archived' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_issuer_correct' | 'invoice_issuer_evidence' | 'invoice_version_select' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
 export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
 export type FeeTreatmentScope = 'provider' | 'account_fee';
 export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api' | 'fints';
@@ -6204,6 +6204,27 @@ export type FintsAuditLogInsert = {
   createdAt?: Date;
 };
 
+export type BookkeepingTaxEvent = {
+  id: number;
+  managingCompanyId: number;
+  expenseId: number;
+  receiptVersionId: number;
+  paymentId: number | null;
+  eventKey: string;
+  revision: number;
+  status: "active" | "withdrawn";
+  kind: "performance" | "advance" | "correction";
+  basis: "ABS1_EU_SERVICE" | "ABS2_NR1_FOREIGN";
+  taxPointDay: string;
+  baseCents: number;
+  taxCents: number;
+  previousFingerprint: string | null;
+  fingerprint: string;
+  evidence: TaxEventEvidence;
+  createdAt: Date;
+  createdBy: number;
+};
+
 
 // ============================================================================
 // OAUTH2 TYPES
@@ -7500,3 +7521,106 @@ export type SupplierAssignResultDto = {
   /** Waren schon diesem Lieferanten zugeordnet. */
   unchanged: number[];
 };
+
+
+
+
+
+// ============================================================================
+// STEUEREREIGNISSE §13b/§16 ABS. 6 (TSK-000381)
+// ============================================================================
+// Quelle: src/routes/bookkeeping/tax-events/tax-event.types.ts
+
+export type TaxEventKind = "performance" | "advance" | "correction";
+
+export type Section13bBasis = "ABS1_EU_SERVICE" | "ABS2_NR1_FOREIGN";
+
+export type TaxEventStatus = "active" | "withdrawn";
+
+export type TaxEventRate = "standard" | "reduced";
+
+
+
+export interface TaxEventRequest {
+    /** Nur zum Ueberarbeiten eines bestehenden Ereignisses; sonst wird der Schluessel abgeleitet. */
+    eventKey?: string;
+    kind: TaxEventKind;
+    basis: Section13bBasis;
+    rate: TaxEventRate;
+    /** Originalnetto dieses Teils in Belegwaehrung; bei Berichtigung die (vorzeichenbehaftete) Aenderung. */
+    originalNet: string;
+    /** Leistung: Tag der Ausfuehrung. Anzahlung: Zahltag. Berichtigung: Tag der Aenderung. */
+    eventDay: string;
+    paymentId?: number;
+    correctsEventKey?: string;
+    note: string;
+    quoteVersionId?: string;
+}
+
+export interface TaxEventEvidence {
+    rule: "tax-event-13b-v1";
+    request: TaxEventRequest;
+    receipt: { versionId: number; fingerprint: string; originalNet: string; currency: string;
+        invoiceDay: string; performanceDay: string; documentSha256: string };
+    supplier: { id: number | null; country: string | null };
+    /** Tag, dessen Voranmeldungszeitraum die Steuer traegt. */
+    taxPointDay: string;
+    taxPointRule: string;
+    /** Monat des §16-Abs.-6-Kurses; bei Berichtigungen der des berichtigten Ereignisses. */
+    fxMonth: string;
+    fxBasis: "event_month" | "corrected_event";
+    conversion: { rule: string; legalSource: string; quote: { kind: "bmf_month"; versionId: string; currency: string;
+        month: string; foreignUnitsPerEur: string; sourceUrl: string; sourceSha256: string; sourceLocation: string; publishedOn: string };
+        euroAmount: string; fingerprint: string };
+    vatRate: string;
+    baseCents: number;
+    taxCents: number;
+    /** §15 Abs. 1 Satz 1 Nr. 4: Vorsteuer entsteht mit der Steuer; ob abziehbar, entscheidet der Bericht. */
+    inputVatDay: string;
+    payment: { id: number; bookedDay: string; amount: string; currency: string } | null;
+    corrects: { eventId: number; fingerprint: string } | null;
+    expenseTaxFingerprint: string;
+    legalSources: string[];
+    withdrawal?: { note: string; day: string };
+}
+
+export interface TaxEventDto {
+    id: number; managingCompanyId: number; expenseId: number; eventKey: string; revision: number;
+    status: TaxEventStatus; kind: TaxEventKind; basis: Section13bBasis; taxPointDay: string;
+    baseCents: number; taxCents: number; previousFingerprint: string | null; fingerprint: string;
+    evidence: TaxEventEvidence; createdAt: string; createdBy: number;
+}
+
+export interface TaxEventCoverageDto {
+    receiptVersionId: number | null;
+    reviewedOriginalNet: string | null;
+    coveredOriginalNet: string;
+    complete: boolean;
+    problems: string[];
+}
+
+export interface TaxEventListDto {
+    expenseTaxFingerprint: string;
+    events: (TaxEventDto & { current: boolean })[];
+    coverage: TaxEventCoverageDto;
+}
+
+export interface TaxEventPreviewDto {
+    evidence: TaxEventEvidence;
+    previousFingerprint: string | null;
+    previewFingerprint: string;
+    locked: boolean;
+    lockedUntil: string | null;
+    effect: string;
+}
+
+export interface TaxEventSaveResultDto {
+    status: "saved" | "already_saved";
+    event: TaxEventDto;
+}
+
+export interface TaxReportArchiveDto {
+    id: number; managingCompanyId: number; reportKind: "ustva"; periodStart: string; periodEnd: string;
+    revision: number; previousFingerprint: string | null; reportFingerprint: string;
+    eventRefs: { id: number; fingerprint: string }[]; note: string; createdAt: string; createdBy: number;
+}

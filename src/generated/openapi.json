@@ -54939,6 +54939,538 @@
         ]
       }
     },
+    "/bookkeeping/expenses/:id/tax-events": {
+      "get": {
+        "operationId": "expense_tax_events",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Steuerereignisse einer §13b-Ausgabe in Fremdwaehrung",
+        "description": "Alle Revisionen samt Abdeckung des geprueften Originalnettos. Nur vollstaendig abgedeckte Belege fliessen in die UStVA.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "post": {
+        "operationId": "expense_tax_event_save",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Steuerereignis als neue Revision speichern",
+        "description": "Editor mit Kostenstellenzugang. Revalidiert die Vorschau und Periodensperren; Version und Audit in einer Transaktion. Buchwerte bleiben unveraendert.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "request": {
+                    "type": "object",
+                    "properties": {
+                      "eventKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120,
+                        "pattern": "^[a-z0-9:._-]+$"
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "performance",
+                          "advance",
+                          "correction"
+                        ]
+                      },
+                      "basis": {
+                        "type": "string",
+                        "enum": [
+                          "ABS1_EU_SERVICE",
+                          "ABS2_NR1_FOREIGN"
+                        ]
+                      },
+                      "rate": {
+                        "type": "string",
+                        "enum": [
+                          "standard",
+                          "reduced"
+                        ]
+                      },
+                      "originalNet": {
+                        "type": "string",
+                        "pattern": "^-?(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                      },
+                      "eventDay": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "paymentId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      "correctsEventKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "note": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 2000
+                      },
+                      "quoteVersionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "basis",
+                      "rate",
+                      "originalNet",
+                      "eventDay",
+                      "note"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expectedPreviousFingerprint": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "expectedPreviewFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "request",
+                  "expectedPreviousFingerprint",
+                  "expectedPreviewFingerprint"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/tax-event-preview": {
+      "post": {
+        "operationId": "expense_tax_event_preview",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Steuerereignis vorpruefen",
+        "description": "Leistung, Anzahlung oder Berichtigung: Steuerentstehung, BMF-Monatskurs, Bemessungsgrundlage und Steuer. Speichert nichts.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eventKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120,
+                    "pattern": "^[a-z0-9:._-]+$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "performance",
+                      "advance",
+                      "correction"
+                    ]
+                  },
+                  "basis": {
+                    "type": "string",
+                    "enum": [
+                      "ABS1_EU_SERVICE",
+                      "ABS2_NR1_FOREIGN"
+                    ]
+                  },
+                  "rate": {
+                    "type": "string",
+                    "enum": [
+                      "standard",
+                      "reduced"
+                    ]
+                  },
+                  "originalNet": {
+                    "type": "string",
+                    "pattern": "^-?(?:0|[1-9]\\d{0,15})(?:\\.\\d{1,6})?$"
+                  },
+                  "eventDay": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "paymentId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "correctsEventKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  },
+                  "quoteVersionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "kind",
+                  "basis",
+                  "rate",
+                  "originalNet",
+                  "eventDay",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/tax-events/withdraw": {
+      "post": {
+        "operationId": "expense_tax_event_withdraw",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Steuerereignis zuruecknehmen",
+        "description": "Haengt eine zurueckgenommene Revision an; die alte bleibt erhalten.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eventKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 2000
+                  },
+                  "expectedPreviousFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "eventKey",
+                  "note",
+                  "expectedPreviousFingerprint"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/bookkeeping/expenses/external": {
       "post": {
         "operationId": "bookkeeping_expenses_create_external",
@@ -58047,6 +58579,208 @@
         ]
       }
     },
+    "/bookkeeping/reports/anlage-euer": {
+      "get": {
+        "operationId": "bookkeeping_reports_anlage_euer",
+        "tags": [
+          "bookkeeping",
+          "reports"
+        ],
+        "summary": "Anlage EÜR nach amtlichem Vordruck",
+        "description": "Kennzahlen und Zeilen der Anlage EÜR des gewählten Jahres aus denselben Zuflüssen und derselben AfA wie der EÜR-Bericht, mit Quelle der Formularfassung. Mehrdeutige Kategorien stehen unter `open`, nicht in einer geratenen Zeile. Ohne veröffentlichte Formularfassung für das Jahr: 422.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "year": {
+                              "type": "number"
+                            },
+                            "formId": {
+                              "type": "string"
+                            },
+                            "sources": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "norm": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": "string"
+                                  },
+                                  "retrievedAt": {
+                                    "type": "string"
+                                  },
+                                  "covers": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "norm",
+                                  "url",
+                                  "retrievedAt",
+                                  "covers"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "openPoints": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "complete": {
+                              "type": "boolean"
+                            },
+                            "lines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "kz": {
+                                    "type": "string"
+                                  },
+                                  "zeile": {
+                                    "type": "number"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "kz",
+                                  "zeile",
+                                  "label",
+                                  "amount"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "open": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "enum": [
+                                      "expense_category",
+                                      "asset_type",
+                                      "revenue_regime",
+                                      "depreciation"
+                                    ]
+                                  },
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "number"
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "kind",
+                                  "key",
+                                  "amount",
+                                  "reason"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "sourceFingerprint": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "year",
+                            "formId",
+                            "sources",
+                            "openPoints",
+                            "complete",
+                            "lines",
+                            "open",
+                            "sourceFingerprint"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/bookkeeping/reports/summary": {
       "get": {
         "operationId": "bookkeeping_reports_summary",
@@ -59547,6 +60281,8 @@
                                 "reverseCharge": {},
                                 "section13bReceived": {},
                                 "section13bTax": {},
+                                "section13bOtherReceived": {},
+                                "section13bOtherTax": {},
                                 "euB2b": {},
                                 "euB2bServices": {},
                                 "export": {},
@@ -59562,6 +60298,8 @@
                                 "reverseCharge",
                                 "section13bReceived",
                                 "section13bTax",
+                                "section13bOtherReceived",
+                                "section13bOtherTax",
                                 "euB2b",
                                 "euB2bServices",
                                 "export",
@@ -59654,6 +60392,72 @@
                                 ],
                                 "additionalProperties": false
                               }
+                            },
+                            "reportFingerprint": {
+                              "type": "string"
+                            },
+                            "taxEvents": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "expenseId": {
+                                    "type": "number"
+                                  },
+                                  "eventKey": {
+                                    "type": "string"
+                                  },
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "fingerprint": {
+                                    "type": "string"
+                                  },
+                                  "kind": {
+                                    "type": "string"
+                                  },
+                                  "basis": {
+                                    "type": "string"
+                                  },
+                                  "kennziffer": {
+                                    "type": "string",
+                                    "enum": [
+                                      "46",
+                                      "84"
+                                    ]
+                                  },
+                                  "taxPointDay": {
+                                    "type": "string"
+                                  },
+                                  "baseCents": {
+                                    "type": "number"
+                                  },
+                                  "taxCents": {
+                                    "type": "number"
+                                  },
+                                  "inputVatCents": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "expenseId",
+                                  "eventKey",
+                                  "revision",
+                                  "fingerprint",
+                                  "kind",
+                                  "basis",
+                                  "kennziffer",
+                                  "taxPointDay",
+                                  "baseCents",
+                                  "taxCents",
+                                  "inputVatCents"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -59724,6 +60528,199 @@
                 "json",
                 "csv"
               ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/reports/vat/ustva/archives": {
+      "post": {
+        "operationId": "bookkeeping_reports_vat_ustva_archive",
+        "tags": [
+          "bookkeeping",
+          "reports"
+        ],
+        "summary": "UStVA-Fassung archivieren",
+        "description": "Erzeugt den Bericht erneut, vergleicht ihn mit dem angezeigten Fingerabdruck und speichert ihn unveraenderlich samt Verknuepfung auf jede verwendete Steuerereignisrevision.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "integer",
+                    "minimum": 2000,
+                    "maximum": 2100
+                  },
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "monthly",
+                      "quarterly",
+                      "annual"
+                    ]
+                  },
+                  "periodNumber": {
+                    "type": "integer"
+                  },
+                  "expectedReportFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "year",
+                  "period",
+                  "expectedReportFingerprint",
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "get": {
+        "operationId": "bookkeeping_reports_vat_ustva_archives",
+        "tags": [
+          "bookkeeping",
+          "reports"
+        ],
+        "summary": "Archivierte UStVA-Fassungen eines Jahres",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
             }
           }
         ],
@@ -82550,6 +83547,12 @@
                                 "label": {
                                   "type": "string"
                                 },
+                                "included": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
                                 "excluded": {
                                   "type": "array",
                                   "items": {
@@ -82563,6 +83566,7 @@
                               "required": [
                                 "id",
                                 "label",
+                                "included",
                                 "excluded",
                                 "note"
                               ],
@@ -82642,6 +83646,293 @@
         ]
       }
     },
+    "/exports/bookkeeping/datev/preview": {
+      "get": {
+        "operationId": "exports_datev_preview",
+        "tags": [
+          "exports",
+          "datev"
+        ],
+        "summary": "DATEV-Stapel prüfen",
+        "description": "Rechnet denselben Stapel wie der Download und liefert Umfang, Zeilenzahl, Profilfassung, Eingabefingerabdruck, abweichende Steuerperioden und bewusst nicht gebuchte Bewegungen ohne Geldfluss. Fachliche Sperren kommen als 422 wie beim Download.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "profileRevision": {
+                              "type": "number"
+                            },
+                            "effectiveProfileRevision": {
+                              "type": "number"
+                            },
+                            "sourceFingerprint": {
+                              "type": "string"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "label": {
+                                  "type": "string"
+                                },
+                                "included": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "excluded": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "note": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "label",
+                                "included",
+                                "excluded",
+                                "note"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "skr": {
+                              "type": "string",
+                              "enum": [
+                                "skr03",
+                                "skr04"
+                              ]
+                            },
+                            "rowCount": {
+                              "type": "number"
+                            },
+                            "period": {
+                              "type": "object",
+                              "properties": {
+                                "start": {
+                                  "type": "string"
+                                },
+                                "end": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "start",
+                                "end"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "taxPeriodDeviations": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "reference": {
+                                    "type": "string"
+                                  },
+                                  "taxCase": {
+                                    "type": "string",
+                                    "enum": [
+                                      "sales_19",
+                                      "sales_7",
+                                      "input_19",
+                                      "input_7",
+                                      "no_deduction",
+                                      "sales_eu_supply",
+                                      "sales_eu_service",
+                                      "sales_export",
+                                      "sales_not_taxable_abroad",
+                                      "sales_exempt",
+                                      "sales_reverse_charge",
+                                      "reverse_charge_19",
+                                      "reverse_charge_7",
+                                      "reverse_charge_no_deduction_19",
+                                      "reverse_charge_no_deduction_7"
+                                    ]
+                                  },
+                                  "paymentDate": {
+                                    "type": "string"
+                                  },
+                                  "documentDate": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "reference",
+                                  "taxCase",
+                                  "paymentDate",
+                                  "documentDate",
+                                  "amount"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "excludedNonCashCapitalMovements": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "movementId": {
+                                    "type": "number"
+                                  },
+                                  "subType": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "movementId",
+                                  "subType",
+                                  "amount"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "profileRevision",
+                            "effectiveProfileRevision",
+                            "sourceFingerprint",
+                            "scope",
+                            "skr",
+                            "rowCount",
+                            "period",
+                            "taxPeriodDeviations",
+                            "excludedNonCashCapitalMovements"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          },
+          {
+            "name": "skr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "skr03",
+                "skr04"
+              ]
+            }
+          },
+          {
+            "name": "profileRevision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/exports/bookkeeping/datev/buchungsstapel": {
       "get": {
         "operationId": "exports_datev_buchungsstapel",
@@ -82650,7 +83941,138 @@
           "datev"
         ],
         "summary": "DATEV Buchungsstapel herunterladen",
-        "description": "Generiert und liefert einen DATEV-kompatiblen Buchungsstapel (Format EXTF, Version 12) als CSV. EÜR-Zahlungsauszug mit bestätigten Einnahmen und abzugsfähigen Ausgaben, kein vollständiges Fibu-Journal. Konten aus versioniertem Firmenprofil. Query-Parameter: year (Pflicht), month (optional, 1-12), skr (optional, muss Firmenprofil entsprechen), profileRevision (optional, aktuellste Fassung), from/to (optionale Tage innerhalb des Zeitraums).",
+        "description": "Generiert und liefert einen DATEV-kompatiblen Buchungsstapel (Format EXTF, Version 12) als CSV. EÜR-Buchungsjournal (euer_cash_journal_v2): bestätigte Einnahmen, abzugsfähige und nicht abzugsfähige Ausgaben, aktivierte Anschaffungen und Kapitalbewegungen mit Geldfluss, je Zahlung am Zahlungstag. Ohne AfA und offene Posten. Konten und Sonderfall-Schlüssel aus versioniertem Firmenprofil. Query-Parameter: year (Pflicht), month (optional, 1-12), skr (optional, muss Firmenprofil entsprechen), profileRevision (optional, aktuellste Fassung), from/to (optionale Tage innerhalb des Zeitraums).",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          },
+          {
+            "name": "skr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "skr03",
+                "skr04"
+              ]
+            }
+          },
+          {
+            "name": "profileRevision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/exports/bookkeeping/datev/kursjournal": {
+      "get": {
+        "operationId": "exports_datev_kursjournal",
+        "tags": [
+          "exports",
+          "datev"
+        ],
+        "summary": "DATEV-Kursjournal herunterladen",
+        "description": "Eigener Buchungsstapel (EXTF) der realisierten Kursdifferenzen aus Rechnungszuordnungen in Fremdwährung, Belegfeld KD-<Zuordnung>, am Zahlungstag. Teilt den im EÜR-Stapel gebuchten Zahlbetrag in Erlös zum Buchwert und Kursgewinn/-verlust auf (Konten fxDifferenceAccounts des Firmenprofils); die EÜR-Summe bleibt gleich. Nicht zusätzlich zum EÜR-Stapel addieren.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -82909,7 +84331,9 @@
                                               "type": "string",
                                               "enum": [
                                                 "revenue",
-                                                "expense"
+                                                "expense",
+                                                "expense_non_deductible",
+                                                "asset"
                                               ]
                                             },
                                             "category": {
@@ -82924,7 +84348,17 @@
                                                 "sales_7",
                                                 "input_19",
                                                 "input_7",
-                                                "no_deduction"
+                                                "no_deduction",
+                                                "sales_eu_supply",
+                                                "sales_eu_service",
+                                                "sales_export",
+                                                "sales_not_taxable_abroad",
+                                                "sales_exempt",
+                                                "sales_reverse_charge",
+                                                "reverse_charge_19",
+                                                "reverse_charge_7",
+                                                "reverse_charge_no_deduction_19",
+                                                "reverse_charge_no_deduction_7"
                                               ]
                                             },
                                             "account": {
@@ -82934,6 +84368,19 @@
                                             },
                                             "automaticTax": {
                                               "type": "boolean"
+                                            },
+                                            "taxKey": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "integer",
+                                                  "minimum": 1,
+                                                  "maximum": 9999,
+                                                  "default": null
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
                                             }
                                           },
                                           "required": [
@@ -82944,6 +84391,78 @@
                                             "automaticTax"
                                           ],
                                           "additionalProperties": false
+                                        }
+                                      },
+                                      "privateAccounts": {
+                                        "type": "object",
+                                        "properties": {
+                                          "withdrawal": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "deposit": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "additionalProperties": false,
+                                        "default": {
+                                          "withdrawal": null,
+                                          "deposit": null
+                                        }
+                                      },
+                                      "fxDifferenceAccounts": {
+                                        "type": "object",
+                                        "properties": {
+                                          "gain": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "loss": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "additionalProperties": false,
+                                        "default": {
+                                          "gain": null,
+                                          "loss": null
                                         }
                                       }
                                     },
@@ -83033,13 +84552,86 @@
                                     ],
                                     "additionalProperties": false
                                   }
+                                },
+                                "asset": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
                                 }
                               },
                               "required": [
                                 "revenue",
-                                "expense"
+                                "expense",
+                                "asset"
                               ],
                               "additionalProperties": false
+                            },
+                            "taxCases": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "value": {
+                                    "type": "string",
+                                    "enum": [
+                                      "sales_19",
+                                      "sales_7",
+                                      "input_19",
+                                      "input_7",
+                                      "no_deduction",
+                                      "sales_eu_supply",
+                                      "sales_eu_service",
+                                      "sales_export",
+                                      "sales_not_taxable_abroad",
+                                      "sales_exempt",
+                                      "sales_reverse_charge",
+                                      "reverse_charge_19",
+                                      "reverse_charge_7",
+                                      "reverse_charge_no_deduction_19",
+                                      "reverse_charge_no_deduction_7"
+                                    ]
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "directions": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "revenue",
+                                        "expense",
+                                        "expense_non_deductible",
+                                        "asset"
+                                      ]
+                                    }
+                                  },
+                                  "special": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "value",
+                                  "label",
+                                  "directions",
+                                  "special"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -83047,7 +84639,8 @@
                             "canManage",
                             "history",
                             "paymentAccounts",
-                            "categories"
+                            "categories",
+                            "taxCases"
                           ],
                           "additionalProperties": false
                         },
@@ -83220,7 +84813,9 @@
                                               "type": "string",
                                               "enum": [
                                                 "revenue",
-                                                "expense"
+                                                "expense",
+                                                "expense_non_deductible",
+                                                "asset"
                                               ]
                                             },
                                             "category": {
@@ -83235,7 +84830,17 @@
                                                 "sales_7",
                                                 "input_19",
                                                 "input_7",
-                                                "no_deduction"
+                                                "no_deduction",
+                                                "sales_eu_supply",
+                                                "sales_eu_service",
+                                                "sales_export",
+                                                "sales_not_taxable_abroad",
+                                                "sales_exempt",
+                                                "sales_reverse_charge",
+                                                "reverse_charge_19",
+                                                "reverse_charge_7",
+                                                "reverse_charge_no_deduction_19",
+                                                "reverse_charge_no_deduction_7"
                                               ]
                                             },
                                             "account": {
@@ -83245,6 +84850,19 @@
                                             },
                                             "automaticTax": {
                                               "type": "boolean"
+                                            },
+                                            "taxKey": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "integer",
+                                                  "minimum": 1,
+                                                  "maximum": 9999,
+                                                  "default": null
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
                                             }
                                           },
                                           "required": [
@@ -83255,6 +84873,78 @@
                                             "automaticTax"
                                           ],
                                           "additionalProperties": false
+                                        }
+                                      },
+                                      "privateAccounts": {
+                                        "type": "object",
+                                        "properties": {
+                                          "withdrawal": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "deposit": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "additionalProperties": false,
+                                        "default": {
+                                          "withdrawal": null,
+                                          "deposit": null
+                                        }
+                                      },
+                                      "fxDifferenceAccounts": {
+                                        "type": "object",
+                                        "properties": {
+                                          "gain": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "loss": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": 1,
+                                                "maximum": 99999999,
+                                                "default": null
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "additionalProperties": false,
+                                        "default": {
+                                          "gain": null,
+                                          "loss": null
                                         }
                                       }
                                     },
@@ -83344,13 +85034,86 @@
                                     ],
                                     "additionalProperties": false
                                   }
+                                },
+                                "asset": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "value": {
+                                        "type": "string"
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "value",
+                                      "label"
+                                    ],
+                                    "additionalProperties": false
+                                  }
                                 }
                               },
                               "required": [
                                 "revenue",
-                                "expense"
+                                "expense",
+                                "asset"
                               ],
                               "additionalProperties": false
+                            },
+                            "taxCases": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "value": {
+                                    "type": "string",
+                                    "enum": [
+                                      "sales_19",
+                                      "sales_7",
+                                      "input_19",
+                                      "input_7",
+                                      "no_deduction",
+                                      "sales_eu_supply",
+                                      "sales_eu_service",
+                                      "sales_export",
+                                      "sales_not_taxable_abroad",
+                                      "sales_exempt",
+                                      "sales_reverse_charge",
+                                      "reverse_charge_19",
+                                      "reverse_charge_7",
+                                      "reverse_charge_no_deduction_19",
+                                      "reverse_charge_no_deduction_7"
+                                    ]
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "directions": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "revenue",
+                                        "expense",
+                                        "expense_non_deductible",
+                                        "asset"
+                                      ]
+                                    }
+                                  },
+                                  "special": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "value",
+                                  "label",
+                                  "directions",
+                                  "special"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
@@ -83358,7 +85121,8 @@
                             "canManage",
                             "history",
                             "paymentAccounts",
-                            "categories"
+                            "categories",
+                            "taxCases"
                           ],
                           "additionalProperties": false
                         },
@@ -83475,7 +85239,9 @@
                               "type": "string",
                               "enum": [
                                 "revenue",
-                                "expense"
+                                "expense",
+                                "expense_non_deductible",
+                                "asset"
                               ]
                             },
                             "category": {
@@ -83490,7 +85256,17 @@
                                 "sales_7",
                                 "input_19",
                                 "input_7",
-                                "no_deduction"
+                                "no_deduction",
+                                "sales_eu_supply",
+                                "sales_eu_service",
+                                "sales_export",
+                                "sales_not_taxable_abroad",
+                                "sales_exempt",
+                                "sales_reverse_charge",
+                                "reverse_charge_19",
+                                "reverse_charge_7",
+                                "reverse_charge_no_deduction_19",
+                                "reverse_charge_no_deduction_7"
                               ]
                             },
                             "account": {
@@ -83500,6 +85276,19 @@
                             },
                             "automaticTax": {
                               "type": "boolean"
+                            },
+                            "taxKey": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 9999,
+                                  "default": null
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": [
@@ -83510,6 +85299,78 @@
                             "automaticTax"
                           ],
                           "additionalProperties": false
+                        }
+                      },
+                      "privateAccounts": {
+                        "type": "object",
+                        "properties": {
+                          "withdrawal": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 99999999,
+                                "default": null
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "deposit": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 99999999,
+                                "default": null
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "default": {
+                          "withdrawal": null,
+                          "deposit": null
+                        }
+                      },
+                      "fxDifferenceAccounts": {
+                        "type": "object",
+                        "properties": {
+                          "gain": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 99999999,
+                                "default": null
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "loss": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 99999999,
+                                "default": null
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "additionalProperties": false,
+                        "default": {
+                          "gain": null,
+                          "loss": null
                         }
                       }
                     },
@@ -83536,6 +85397,709 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
+    "/managing-companies/vat-entrepreneur-profiles/:managingCompanyId": {
+      "get": {
+        "operationId": "managing_companies_vat_entrepreneur_profiles_get",
+        "tags": [
+          "managing-companies",
+          "vat"
+        ],
+        "summary": "Tätigkeitsbeginn und Unternehmereinheit mit Verlauf",
+        "description": "Angaben für den Gesamtumsatz nach § 19 Abs. 2 UStG. Ohne gespeicherte Fassung sind Tätigkeitsbeginn und Unternehmereinheit unerklärt; es gibt keine Vorbesetzung.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "number"
+                            },
+                            "canManage": {
+                              "type": "boolean"
+                            },
+                            "history": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "activityStartDate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "unitCompanyIds": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  },
+                                  "changedBy": {
+                                    "type": "number"
+                                  },
+                                  "changedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "revision",
+                                  "activityStartDate",
+                                  "unitCompanyIds",
+                                  "reason",
+                                  "changedBy",
+                                  "changedAt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "selectableCompanies": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "canManage",
+                            "history",
+                            "selectableCompanies"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      },
+      "put": {
+        "operationId": "managing_companies_vat_entrepreneur_profiles_save",
+        "tags": [
+          "managing-companies",
+          "vat"
+        ],
+        "summary": "Tätigkeitsbeginn und Unternehmereinheit als neue Fassung speichern",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "revision": {
+                              "type": "number"
+                            },
+                            "canManage": {
+                              "type": "boolean"
+                            },
+                            "history": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "revision": {
+                                    "type": "number"
+                                  },
+                                  "activityStartDate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "unitCompanyIds": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  },
+                                  "changedBy": {
+                                    "type": "number"
+                                  },
+                                  "changedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "revision",
+                                  "activityStartDate",
+                                  "unitCompanyIds",
+                                  "reason",
+                                  "changedBy",
+                                  "changedAt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "selectableCompanies": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "revision",
+                            "canManage",
+                            "history",
+                            "selectableCompanies"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "activityStartDate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "unitCompanyIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "revision",
+                  "activityStartDate",
+                  "unitCompanyIds",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
+    "/managing-companies/vat-entrepreneur-profiles/:managingCompanyId/gesamtumsatz": {
+      "get": {
+        "operationId": "managing_companies_vat_gesamtumsatz",
+        "tags": [
+          "managing-companies",
+          "vat"
+        ],
+        "summary": "Gesamtumsatz nach § 19 Abs. 2 UStG mit Belegnachweis",
+        "description": "Vereinnahmte Entgelte des Jahres je Zahlung, eingeordnet als einbezogen, ausgenommen oder ungeklärt, mit Regel und Quelle. Rechnet über die erklärte Unternehmereinheit. Die Grenzprüfung nennt, ob sie von ungeklärten Umsätzen abhängt.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "policy": {
+                              "type": "string"
+                            },
+                            "year": {
+                              "type": "number"
+                            },
+                            "managingCompanyId": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "object",
+                              "properties": {
+                                "companyIds": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                },
+                                "declared": {
+                                  "type": "boolean"
+                                },
+                                "consistent": {
+                                  "type": "boolean"
+                                },
+                                "inconsistentCompanyIds": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "companyIds",
+                                "declared",
+                                "consistent",
+                                "inconsistentCompanyIds"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "activityStart": {
+                              "type": "object",
+                              "properties": {
+                                "date": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "declared": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "date",
+                                "declared"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "included": {
+                              "type": "number"
+                            },
+                            "excluded": {
+                              "type": "number"
+                            },
+                            "unclear": {
+                              "type": "number"
+                            },
+                            "upperBound": {
+                              "type": "number"
+                            },
+                            "lines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "managingCompanyId": {
+                                    "type": "number"
+                                  },
+                                  "source": {
+                                    "type": "string",
+                                    "enum": [
+                                      "revenue",
+                                      "invoice"
+                                    ]
+                                  },
+                                  "documentId": {
+                                    "type": "number"
+                                  },
+                                  "date": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "treatment": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "received": {
+                                    "type": "number"
+                                  },
+                                  "entgelt": {
+                                    "type": "number"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "included",
+                                      "excluded",
+                                      "unclear"
+                                    ]
+                                  },
+                                  "rule": {
+                                    "type": "string"
+                                  },
+                                  "reason": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "managingCompanyId",
+                                  "source",
+                                  "documentId",
+                                  "date",
+                                  "category",
+                                  "treatment",
+                                  "received",
+                                  "entgelt",
+                                  "status",
+                                  "rule",
+                                  "reason"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "sourceFingerprint": {
+                              "type": "string"
+                            },
+                            "limits": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "ruleId": {
+                                      "type": "string"
+                                    },
+                                    "previousYearLimit": {
+                                      "type": "number"
+                                    },
+                                    "currentYearLimit": {
+                                      "type": "number"
+                                    },
+                                    "appliedCurrentYearLimit": {
+                                      "type": "number"
+                                    },
+                                    "startYear": {
+                                      "type": "boolean"
+                                    },
+                                    "verdict": {
+                                      "type": "string",
+                                      "enum": [
+                                        "below",
+                                        "exceeded",
+                                        "depends_on_unclear",
+                                        "not_checked"
+                                      ]
+                                    },
+                                    "sources": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "norm": {
+                                            "type": "string"
+                                          },
+                                          "url": {
+                                            "type": "string"
+                                          },
+                                          "retrievedAt": {
+                                            "type": "string"
+                                          },
+                                          "covers": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "norm",
+                                          "url",
+                                          "retrievedAt",
+                                          "covers"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "openPoints": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "ruleId",
+                                    "previousYearLimit",
+                                    "currentYearLimit",
+                                    "appliedCurrentYearLimit",
+                                    "startYear",
+                                    "verdict",
+                                    "sources",
+                                    "openPoints"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "policy",
+                            "year",
+                            "managingCompanyId",
+                            "unit",
+                            "activityStart",
+                            "included",
+                            "excluded",
+                            "unclear",
+                            "upperBound",
+                            "lines",
+                            "warnings",
+                            "sourceFingerprint",
+                            "limits"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []

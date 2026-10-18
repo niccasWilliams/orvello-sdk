@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, TaxEventListDto, TaxEventPreviewDto, TaxEventSaveResultDto, TaxReportArchiveDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -497,6 +497,68 @@ export type ExpenseForeignReceiptOriginalBody = undefined;
 export type ExpenseForeignReceiptOriginalResponseData = Blob;
 export type ExpenseForeignReceiptOriginalResponse = Blob;
 
+export type ExpenseTaxEventsParams = {
+  id: number;
+};
+export type ExpenseTaxEventsQuery = undefined;
+export type ExpenseTaxEventsBody = undefined;
+export type ExpenseTaxEventsResponseData = TaxEventListDto;
+export type ExpenseTaxEventsResponse = import("../types").ApiEnvelope<ExpenseTaxEventsResponseData>;
+
+export type ExpenseTaxEventPreviewParams = {
+  id: number;
+};
+export type ExpenseTaxEventPreviewQuery = undefined;
+export type ExpenseTaxEventPreviewBody = {
+  eventKey?: string;
+  kind: "performance" | "advance" | "correction";
+  basis: "ABS1_EU_SERVICE" | "ABS2_NR1_FOREIGN";
+  rate: "standard" | "reduced";
+  originalNet: string;
+  eventDay: string;
+  paymentId?: number;
+  correctsEventKey?: string;
+  note: string;
+  quoteVersionId?: string;
+};
+export type ExpenseTaxEventPreviewResponseData = TaxEventPreviewDto;
+export type ExpenseTaxEventPreviewResponse = import("../types").ApiEnvelope<ExpenseTaxEventPreviewResponseData>;
+
+export type ExpenseTaxEventSaveParams = {
+  id: number;
+};
+export type ExpenseTaxEventSaveQuery = undefined;
+export type ExpenseTaxEventSaveBody = {
+  request: {
+  eventKey?: string;
+  kind: "performance" | "advance" | "correction";
+  basis: "ABS1_EU_SERVICE" | "ABS2_NR1_FOREIGN";
+  rate: "standard" | "reduced";
+  originalNet: string;
+  eventDay: string;
+  paymentId?: number;
+  correctsEventKey?: string;
+  note: string;
+  quoteVersionId?: string;
+};
+  expectedPreviousFingerprint: string | null;
+  expectedPreviewFingerprint: string;
+};
+export type ExpenseTaxEventSaveResponseData = TaxEventSaveResultDto;
+export type ExpenseTaxEventSaveResponse = import("../types").ApiEnvelope<ExpenseTaxEventSaveResponseData>;
+
+export type ExpenseTaxEventWithdrawParams = {
+  id: number;
+};
+export type ExpenseTaxEventWithdrawQuery = undefined;
+export type ExpenseTaxEventWithdrawBody = {
+  eventKey: string;
+  note: string;
+  expectedPreviousFingerprint: string;
+};
+export type ExpenseTaxEventWithdrawResponseData = TaxEventSaveResultDto;
+export type ExpenseTaxEventWithdrawResponse = import("../types").ApiEnvelope<ExpenseTaxEventWithdrawResponseData>;
+
 export type BookkeepingExpensesCreateExternalParams = undefined;
 export type BookkeepingExpensesCreateExternalQuery = undefined;
 export type BookkeepingExpensesCreateExternalBody = {
@@ -870,6 +932,38 @@ export type BookkeepingReportsEuerResponseData = {
 };
 export type BookkeepingReportsEuerResponse = import("../types").ApiEnvelope<BookkeepingReportsEuerResponseData>;
 
+export type BookkeepingReportsAnlageEuerParams = undefined;
+export type BookkeepingReportsAnlageEuerQuery = {
+  year: number;
+};
+export type BookkeepingReportsAnlageEuerBody = undefined;
+export type BookkeepingReportsAnlageEuerResponseData = {
+  year: number;
+  formId: string;
+  sources: Array<{
+  norm: string;
+  url: string;
+  retrievedAt: string;
+  covers: string;
+}>;
+  openPoints: Array<string>;
+  complete: boolean;
+  lines: Array<{
+  kz: string;
+  zeile: number;
+  label: string;
+  amount: number;
+}>;
+  open: Array<{
+  kind: "expense_category" | "asset_type" | "revenue_regime" | "depreciation";
+  key: string;
+  amount: number;
+  reason: string;
+}>;
+  sourceFingerprint: string;
+};
+export type BookkeepingReportsAnlageEuerResponse = import("../types").ApiEnvelope<BookkeepingReportsAnlageEuerResponseData>;
+
 export type BookkeepingReportsSummaryParams = undefined;
 export type BookkeepingReportsSummaryQuery = {
   year?: number;
@@ -1107,6 +1201,8 @@ export type BookkeepingReportsVatUstvaResponseData = {
   reverseCharge: any;
   section13bReceived: any;
   section13bTax: any;
+  section13bOtherReceived: any;
+  section13bOtherTax: any;
   euB2b: any;
   euB2bServices: any;
   export: any;
@@ -1136,8 +1232,43 @@ export type BookkeepingReportsVatUstvaResponseData = {
   invoiceId: number;
   message: string;
 }>;
+  reportFingerprint?: string;
+  taxEvents?: Array<{
+  id: number;
+  expenseId: number;
+  eventKey: string;
+  revision: number;
+  fingerprint: string;
+  kind: string;
+  basis: string;
+  kennziffer: "46" | "84";
+  taxPointDay: string;
+  baseCents: number;
+  taxCents: number;
+  inputVatCents: number;
+}>;
 };
 export type BookkeepingReportsVatUstvaResponse = import("../types").ApiEnvelope<BookkeepingReportsVatUstvaResponseData>;
+
+export type BookkeepingReportsVatUstvaArchiveParams = undefined;
+export type BookkeepingReportsVatUstvaArchiveQuery = undefined;
+export type BookkeepingReportsVatUstvaArchiveBody = {
+  year: number;
+  period: "monthly" | "quarterly" | "annual";
+  periodNumber?: number;
+  expectedReportFingerprint: string;
+  note: string;
+};
+export type BookkeepingReportsVatUstvaArchiveResponseData = { status: "saved" | "already_saved"; archive: TaxReportArchiveDto };
+export type BookkeepingReportsVatUstvaArchiveResponse = import("../types").ApiEnvelope<BookkeepingReportsVatUstvaArchiveResponseData>;
+
+export type BookkeepingReportsVatUstvaArchivesParams = undefined;
+export type BookkeepingReportsVatUstvaArchivesQuery = {
+  year: number;
+};
+export type BookkeepingReportsVatUstvaArchivesBody = undefined;
+export type BookkeepingReportsVatUstvaArchivesResponseData = (TaxReportArchiveDto & { report: Record<string, unknown>; intact: boolean })[];
+export type BookkeepingReportsVatUstvaArchivesResponse = import("../types").ApiEnvelope<BookkeepingReportsVatUstvaArchivesResponseData>;
 
 export type PaymentsImportCsvParams = undefined;
 export type PaymentsImportCsvQuery = undefined;
@@ -3584,6 +3715,82 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "expense_tax_events": {
+    method: "GET",
+    path: "/bookkeeping/expenses/:id/tax-events",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Steuerereignisse einer §13b-Ausgabe in Fremdwaehrung",
+      description: "Alle Revisionen samt Abdeckung des geprueften Originalnettos. Nur vollstaendig abgedeckte Belege fliessen in die UStVA.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ExpenseTaxEventsParams;
+      query: ExpenseTaxEventsQuery;
+      body: ExpenseTaxEventsBody;
+      response: ExpenseTaxEventsResponse;
+      responseData: ExpenseTaxEventsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_tax_event_preview": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/tax-event-preview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Steuerereignis vorpruefen",
+      description: "Leistung, Anzahlung oder Berichtigung: Steuerentstehung, BMF-Monatskurs, Bemessungsgrundlage und Steuer. Speichert nichts.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ExpenseTaxEventPreviewParams;
+      query: ExpenseTaxEventPreviewQuery;
+      body: ExpenseTaxEventPreviewBody;
+      response: ExpenseTaxEventPreviewResponse;
+      responseData: ExpenseTaxEventPreviewResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_tax_event_save": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/tax-events",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Steuerereignis als neue Revision speichern",
+      description: "Editor mit Kostenstellenzugang. Revalidiert die Vorschau und Periodensperren; Version und Audit in einer Transaktion. Buchwerte bleiben unveraendert.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ExpenseTaxEventSaveParams;
+      query: ExpenseTaxEventSaveQuery;
+      body: ExpenseTaxEventSaveBody;
+      response: ExpenseTaxEventSaveResponse;
+      responseData: ExpenseTaxEventSaveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "expense_tax_event_withdraw": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/tax-events/withdraw",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Steuerereignis zuruecknehmen",
+      description: "Haengt eine zurueckgenommene Revision an; die alte bleibt erhalten.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: ExpenseTaxEventWithdrawParams;
+      query: ExpenseTaxEventWithdrawQuery;
+      body: ExpenseTaxEventWithdrawBody;
+      response: ExpenseTaxEventWithdrawResponse;
+      responseData: ExpenseTaxEventWithdrawResponseData;
+    },
+  },
+  // Contract source: explicit
   "bookkeeping_expenses_create_external": {
     method: "POST",
     path: "/bookkeeping/expenses/external",
@@ -4039,6 +4246,25 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "bookkeeping_reports_anlage_euer": {
+    method: "GET",
+    path: "/bookkeeping/reports/anlage-euer",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","reports"],
+      summary: "Anlage EÜR nach amtlichem Vordruck",
+      description: "Kennzahlen und Zeilen der Anlage EÜR des gewählten Jahres aus denselben Zuflüssen und derselben AfA wie der EÜR-Bericht, mit Quelle der Formularfassung. Mehrdeutige Kategorien stehen unter `open`, nicht in einer geratenen Zeile. Ohne veröffentlichte Formularfassung für das Jahr: 422.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingReportsAnlageEuerParams;
+      query: BookkeepingReportsAnlageEuerQuery;
+      body: BookkeepingReportsAnlageEuerBody;
+      response: BookkeepingReportsAnlageEuerResponse;
+      responseData: BookkeepingReportsAnlageEuerResponseData;
+    },
+  },
+  // Contract source: explicit
   "bookkeeping_reports_summary": {
     method: "GET",
     path: "/bookkeeping/reports/summary",
@@ -4186,6 +4412,43 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingReportsVatUstvaBody;
       response: BookkeepingReportsVatUstvaResponse;
       responseData: BookkeepingReportsVatUstvaResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_reports_vat_ustva_archive": {
+    method: "POST",
+    path: "/bookkeeping/reports/vat/ustva/archives",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","reports"],
+      summary: "UStVA-Fassung archivieren",
+      description: "Erzeugt den Bericht erneut, vergleicht ihn mit dem angezeigten Fingerabdruck und speichert ihn unveraenderlich samt Verknuepfung auf jede verwendete Steuerereignisrevision.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingReportsVatUstvaArchiveParams;
+      query: BookkeepingReportsVatUstvaArchiveQuery;
+      body: BookkeepingReportsVatUstvaArchiveBody;
+      response: BookkeepingReportsVatUstvaArchiveResponse;
+      responseData: BookkeepingReportsVatUstvaArchiveResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_reports_vat_ustva_archives": {
+    method: "GET",
+    path: "/bookkeeping/reports/vat/ustva/archives",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","reports"],
+      summary: "Archivierte UStVA-Fassungen eines Jahres",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingReportsVatUstvaArchivesParams;
+      query: BookkeepingReportsVatUstvaArchivesQuery;
+      body: BookkeepingReportsVatUstvaArchivesBody;
+      response: BookkeepingReportsVatUstvaArchivesResponse;
+      responseData: BookkeepingReportsVatUstvaArchivesResponseData;
     },
   },
   // Contract source: explicit
