@@ -113644,6 +113644,14 @@
                     "minLength": 1,
                     "maxLength": 500
                   },
+                  "projectId": {
+                    "type": "string"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
                   "platform": {
                     "type": "string",
                     "enum": [
@@ -113741,6 +113749,11 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 500
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
                   }
                 },
                 "required": [

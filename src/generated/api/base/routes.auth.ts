@@ -252,6 +252,8 @@ export type AuthPushTokenUpsertParams = undefined;
 export type AuthPushTokenUpsertQuery = undefined;
 export type AuthPushTokenUpsertBody = {
   token: string;
+  projectId?: string;
+  deviceId?: string;
   platform: "ios" | "android" | "web" | "expo";
 };
 export type AuthPushTokenUpsertResponseData = {
@@ -263,6 +265,7 @@ export type AuthPushTokenRemoveParams = undefined;
 export type AuthPushTokenRemoveQuery = undefined;
 export type AuthPushTokenRemoveBody = {
   token: string;
+  deviceId?: string;
 };
 export type AuthPushTokenRemoveResponseData = {
 

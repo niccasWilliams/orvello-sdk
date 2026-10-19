@@ -257,7 +257,11 @@ export type AuthRefreshTokenInsert = {
 export type AuthPushToken = {
   id: number;
   userId: number;
+  /** Legacy unbound registrations are deliberately ineligible for delivery. */
+  refreshTokenId: number | null;
   token: string;
+  /** Public EAS project identity; legacy null tokens cannot receive notifications. */
+  projectId: string | null;
   platform: string;
   createdAt: Date;
   updatedAt: Date;
@@ -265,7 +269,11 @@ export type AuthPushToken = {
 
 export type AuthPushTokenInsert = {
   userId: number;
+  /** Legacy unbound registrations are deliberately ineligible for delivery. */
+  refreshTokenId?: number | null;
   token: string;
+  /** Public EAS project identity; legacy null tokens cannot receive notifications. */
+  projectId?: string | null;
   platform: string;
   createdAt: Date;
   updatedAt: Date;
