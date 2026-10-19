@@ -16,7 +16,12 @@ export type AuthAccountConfigResponseData = {
   credentialAuthority: "self" | "upstream" | "none";
   authorityAppId: string | null;
   directLogin: boolean;
-  browserLogin: false;
+  browserLogin: false | {
+  authorizeUrl: string;
+  exchange: "auth_account_bridge_exchange";
+  redirectUris: Array<string>;
+  accountManagement: "authority";
+};
   selfService: Array<string>;
 };
 export type AuthAccountConfigResponse = import("../types").ApiEnvelope<AuthAccountConfigResponseData>;
@@ -130,6 +135,24 @@ export type AuthLoginBody = {
 };
 export type AuthLoginResponseData = DirectAuthLoginResponse;
 export type AuthLoginResponse = import("../types").ApiEnvelope<AuthLoginResponseData>;
+
+export type AuthAccountBridgeExchangeParams = undefined;
+export type AuthAccountBridgeExchangeQuery = undefined;
+export type AuthAccountBridgeExchangeBody = {
+  grant: string;
+  codeVerifier: string;
+  redirectUri: string;
+  device?: {
+  deviceId?: string;
+  deviceName?: string;
+  deviceModel?: string;
+  deviceOs?: string;
+  appVersion?: string;
+  platform?: "ios" | "android" | "web" | "expo";
+};
+};
+export type AuthAccountBridgeExchangeResponseData = DirectAuthResponse;
+export type AuthAccountBridgeExchangeResponse = import("../types").ApiEnvelope<AuthAccountBridgeExchangeResponseData>;
 
 export type AuthRefreshParams = undefined;
 export type AuthRefreshQuery = undefined;
@@ -514,6 +537,25 @@ export const apiRoutes_auth = {
       body: AuthLoginBody;
       response: AuthLoginResponse;
       responseData: AuthLoginResponseData;
+    },
+  },
+  // Contract source: explicit
+  "auth_account_bridge_exchange": {
+    method: "POST",
+    path: "/auth/account-bridge/exchange",
+    auth: {"type":"public"},
+    meta: {
+      tags: ["auth"],
+      summary: "Exchange a grant from the account-owning Next frontend for sessions of this backend (PKCE)",
+      bodyContentType: "application/json",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: AuthAccountBridgeExchangeParams;
+      query: AuthAccountBridgeExchangeQuery;
+      body: AuthAccountBridgeExchangeBody;
+      response: AuthAccountBridgeExchangeResponse;
+      responseData: AuthAccountBridgeExchangeResponseData;
     },
   },
   // Contract source: explicit

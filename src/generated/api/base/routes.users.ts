@@ -60,6 +60,16 @@ export type UsersDeleteExternalImageBody = undefined;
 export type UsersDeleteExternalImageResponseData = NodeBillUser;
 export type UsersDeleteExternalImageResponse = import("../types").ApiEnvelope<UsersDeleteExternalImageResponseData>;
 
+export type UsersRevokeExternalSessionsParams = {
+  frontendUserId: number;
+};
+export type UsersRevokeExternalSessionsQuery = undefined;
+export type UsersRevokeExternalSessionsBody = undefined;
+export type UsersRevokeExternalSessionsResponseData = {
+
+};
+export type UsersRevokeExternalSessionsResponse = import("../types").ApiEnvelope<UsersRevokeExternalSessionsResponseData>;
+
 export type UsersDeleteParams = {
   userId: number;
 };
@@ -204,6 +214,24 @@ export const apiRoutes_users = {
       body: UsersDeleteExternalImageBody;
       response: UsersDeleteExternalImageResponse;
       responseData: UsersDeleteExternalImageResponseData;
+    },
+  },
+  // Contract source: explicit
+  "users_revoke_external_sessions": {
+    method: "DELETE",
+    path: "/users/update/external/:frontendUserId/sessions",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["users"],
+      summary: "Revoke every session this backend issued to the frontend user through the account bridge",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: UsersRevokeExternalSessionsParams;
+      query: UsersRevokeExternalSessionsQuery;
+      body: UsersRevokeExternalSessionsBody;
+      response: UsersRevokeExternalSessionsResponse;
+      responseData: UsersRevokeExternalSessionsResponseData;
     },
   },
   // Contract source: explicit

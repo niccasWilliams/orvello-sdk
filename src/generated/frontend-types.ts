@@ -101,6 +101,8 @@ export type PfAllocationKind = 'percent' | 'fixed' | 'remainder';
 // BASE APP TYPES (schema.ts)
 // ============================================================================
 
+export type SessionOrigin = "direct" | "account_bridge";
+
 export type NodeBillUser = {
   id: number;
   /** Wer den Nutzer fuehrt. "frontend": das Next-Frontend legt ihn ueber /internal/users an. */
@@ -234,6 +236,11 @@ export type AuthRefreshToken = {
   deviceOs: string | null;
   appVersion: string | null;
   platform: string | null;
+  /**
+   * Wie die Sitzung entstand: "direct" (eigenes Konto) oder "account_bridge" (Konto des Next-Frontends,
+   * TSK-000145 #1137). Sie gilt nur, solange das Konto dieselbe Fuehrung hat (direct-account.ts).
+   */
+  issuedVia: SessionOrigin;
   createdAt: Date;
 };
 
@@ -251,6 +258,11 @@ export type AuthRefreshTokenInsert = {
   deviceOs?: string | null;
   appVersion?: string | null;
   platform?: string | null;
+  /**
+   * Wie die Sitzung entstand: "direct" (eigenes Konto) oder "account_bridge" (Konto des Next-Frontends,
+   * TSK-000145 #1137). Sie gilt nur, solange das Konto dieselbe Fuehrung hat (direct-account.ts).
+   */
+  issuedVia?: SessionOrigin;
   createdAt: Date;
 };
 

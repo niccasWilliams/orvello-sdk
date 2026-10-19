@@ -150,7 +150,38 @@
                               "type": "boolean"
                             },
                             "browserLogin": {
-                              "const": false
+                              "anyOf": [
+                                {
+                                  "const": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "authorizeUrl": {
+                                      "type": "string"
+                                    },
+                                    "exchange": {
+                                      "const": "auth_account_bridge_exchange"
+                                    },
+                                    "redirectUris": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "accountManagement": {
+                                      "const": "authority"
+                                    }
+                                  },
+                                  "required": [
+                                    "authorizeUrl",
+                                    "exchange",
+                                    "redirectUris",
+                                    "accountManagement"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ]
                             },
                             "selfService": {
                               "type": "array",
@@ -109342,6 +109373,86 @@
         "x-transport": "http"
       }
     },
+    "/users/update/external/:frontendUserId/sessions": {
+      "delete": {
+        "operationId": "users_revoke_external_sessions",
+        "tags": [
+          "users"
+        ],
+        "summary": "Revoke every session this backend issued to the frontend user through the account bridge",
+        "responses": {
+          "204": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "frontendUserId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
     "/users/delete/:userId": {
       "delete": {
         "operationId": "users_delete",
@@ -112554,6 +112665,138 @@
                 "required": [
                   "email",
                   "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/account-bridge/exchange": {
+      "post": {
+        "operationId": "auth_account_bridge_exchange",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Exchange a grant from the account-owning Next frontend for sessions of this backend (PKCE)",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 4096
+                  },
+                  "codeVerifier": {
+                    "type": "string",
+                    "minLength": 43,
+                    "maxLength": 128
+                  },
+                  "redirectUri": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "deviceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "deviceName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "deviceModel": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "deviceOs": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "appVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      },
+                      "platform": {
+                        "type": "string",
+                        "enum": [
+                          "ios",
+                          "android",
+                          "web",
+                          "expo"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "grant",
+                  "codeVerifier",
+                  "redirectUri"
                 ],
                 "additionalProperties": false
               }
