@@ -107022,6 +107022,390 @@
         "x-transport": "https"
       }
     },
+    "/merchant-invoicing/external/token": {
+      "post": {
+        "operationId": "merchant_invoicing_token_external",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "Kurzlebigen firmengebundenen Shop-Rechnungszugang beziehen",
+        "description": "Nur registrierter aktiver Shop-OAuth-Dienst; andere Firmen benötigen einen expliziten Firmenadmin-Grant. bindingId bleibt der Rechnungs-Idempotenznamespace.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "access_token": {
+                              "type": "string"
+                            },
+                            "token_type": {
+                              "const": "Bearer"
+                            },
+                            "expires_in": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "scope": {
+                              "type": "string"
+                            },
+                            "managingCompanyId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "bindingId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "access_token",
+                            "token_type",
+                            "expires_in",
+                            "scope",
+                            "managingCompanyId",
+                            "bindingId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "managingCompanyId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "managingCompanyId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2Bearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": false,
+          "allowUserSession": false,
+          "requireRole": null
+        }
+      }
+    },
+    "/merchant-invoicing/companies/:managingCompanyId": {
+      "get": {
+        "operationId": "merchant_invoicing_company_get",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "Rechnungsanbindung der eigenen Firma prüfen",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "managingCompanyId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "bindingId": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "defaultCostCenterId": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "exclusiveMinimum": 0
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "managingCompanyId",
+                            "enabled",
+                            "bindingId",
+                            "defaultCostCenterId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      },
+      "put": {
+        "operationId": "merchant_invoicing_company_configure",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "Shop-Rechnungsanbindung als Firmenadmin aktivieren oder sperren",
+        "description": "Interner Firmenworkflow ohne Kundenschlüssel. Sperrung stoppt bestehende Tokens; erneute Aktivierung behält bindingId und Rechnungs-Idempotenznamespace.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "managingCompanyId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "bindingId": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "defaultCostCenterId": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "exclusiveMinimum": 0
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "managingCompanyId",
+                            "enabled",
+                            "bindingId",
+                            "defaultCostCenterId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "managingCompanyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "defaultCostCenterId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "enabled",
+                  "defaultCostCenterId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
     "/api/amp-mail/brands/:slug/logo": {
       "get": {
         "operationId": "GET__api_amp_mail_brand_logo",

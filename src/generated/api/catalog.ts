@@ -39,6 +39,7 @@ export const apiMountPrefixes = {
   "/exports",
   "/invoices",
   "/managing-companies",
+  "/merchant-invoicing",
   "/oauth",
   "/personal-finance/accounts",
   "/personal-finance/allocation",
@@ -181,6 +182,10 @@ export const apiGroups = {
     "module": "./features/routes.managing_company_logos"
   },
   {
+    "key": "merchant_invoicing",
+    "module": "./features/routes.merchant_invoicing"
+  },
+  {
     "key": "personal_finance",
     "module": "./features/routes.personal_finance"
   },
@@ -281,6 +286,10 @@ export const apiGroups = {
   {
     "key": "managing_company_logos",
     "module": "./features/routes.managing_company_logos"
+  },
+  {
+    "key": "merchant_invoicing",
+    "module": "./features/routes.merchant_invoicing"
   },
   {
     "key": "oauth2",

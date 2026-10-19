@@ -2,6 +2,12 @@
 
 - Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
 
+## 0.7.22 - 2026-10-19
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: MerchantInvoicingTokenExternalParams, MerchantInvoicingTokenExternalQuery, MerchantInvoicingTokenExternalBody, MerchantInvoicingTokenExternalResponseData, MerchantInvoicingTokenExternalResponse, MerchantInvoicingCompanyGetParams, MerchantInvoicingCompanyGetQuery, MerchantInvoicingCompanyGetBody (+8)
+
 ## 0.7.21 - 2026-10-19
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
