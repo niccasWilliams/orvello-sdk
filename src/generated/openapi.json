@@ -272,166 +272,11 @@
                                 "unhealthy"
                               ]
                             },
-                            "uptime": {
-                              "type": "number"
-                            },
-                            "timestamp": {
-                              "type": "string"
-                            },
-                            "version": {
-                              "type": "string"
-                            },
-                            "checks": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string"
-                                  },
-                                  "status": {
-                                    "type": "string",
-                                    "enum": [
-                                      "ok",
-                                      "warning",
-                                      "error"
-                                    ]
-                                  },
-                                  "latencyMs": {
-                                    "anyOf": [
-                                      {
-                                        "type": "number"
-                                      },
-                                      {
-                                        "type": "null"
-                                      }
-                                    ]
-                                  },
-                                  "message": {
-                                    "type": "string"
-                                  },
-                                  "details": {
-                                    "type": "object",
-                                    "additionalProperties": {}
-                                  }
-                                },
-                                "required": [
-                                  "name",
-                                  "status",
-                                  "latencyMs"
-                                ],
-                                "additionalProperties": false
-                              }
-                            },
-                            "dependencies": {
-                              "type": "array",
-                              "items": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string"
-                                  },
-                                  "status": {
-                                    "type": "string",
-                                    "enum": [
-                                      "ok",
-                                      "warning",
-                                      "error"
-                                    ]
-                                  },
-                                  "latencyMs": {
-                                    "anyOf": [
-                                      {
-                                        "type": "number"
-                                      },
-                                      {
-                                        "type": "null"
-                                      }
-                                    ]
-                                  },
-                                  "message": {
-                                    "type": "string"
-                                  },
-                                  "details": {
-                                    "type": "object",
-                                    "additionalProperties": {}
-                                  }
-                                },
-                                "required": [
-                                  "name",
-                                  "status",
-                                  "latencyMs"
-                                ],
-                                "additionalProperties": false
-                              }
-                            }
-                          },
-                          "required": [
-                            "status",
-                            "uptime",
-                            "timestamp",
-                            "version",
-                            "checks",
-                            "dependencies"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "data"
-                  ],
-                  "additionalProperties": false
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "JSON response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "message": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "code": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "data": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "status": {
+                            "environment": {
                               "type": "string",
                               "enum": [
-                                "healthy",
-                                "degraded",
-                                "unhealthy"
+                                "production",
+                                "staging"
                               ]
                             },
                             "uptime": {
@@ -530,6 +375,177 @@
                           },
                           "required": [
                             "status",
+                            "environment",
+                            "uptime",
+                            "timestamp",
+                            "version",
+                            "checks",
+                            "dependencies"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "healthy",
+                                "degraded",
+                                "unhealthy"
+                              ]
+                            },
+                            "environment": {
+                              "type": "string",
+                              "enum": [
+                                "production",
+                                "staging"
+                              ]
+                            },
+                            "uptime": {
+                              "type": "number"
+                            },
+                            "timestamp": {
+                              "type": "string"
+                            },
+                            "version": {
+                              "type": "string"
+                            },
+                            "checks": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "ok",
+                                      "warning",
+                                      "error"
+                                    ]
+                                  },
+                                  "latencyMs": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "message": {
+                                    "type": "string"
+                                  },
+                                  "details": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "status",
+                                  "latencyMs"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "dependencies": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "ok",
+                                      "warning",
+                                      "error"
+                                    ]
+                                  },
+                                  "latencyMs": {
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "message": {
+                                    "type": "string"
+                                  },
+                                  "details": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "status",
+                                  "latencyMs"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "environment",
                             "uptime",
                             "timestamp",
                             "version",

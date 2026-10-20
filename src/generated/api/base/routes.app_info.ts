@@ -9,6 +9,7 @@ export type AppInfoHealthQuery = undefined;
 export type AppInfoHealthBody = undefined;
 export type AppInfoHealthResponseData = {
   status: "healthy" | "degraded" | "unhealthy";
+  environment: "production" | "staging";
   uptime: number;
   timestamp: string;
   version: string;
