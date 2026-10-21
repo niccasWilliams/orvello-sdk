@@ -34319,6 +34319,201 @@
         ]
       }
     },
+    "/documents/private-import/external": {
+      "post": {
+        "operationId": "documents_private_import_external",
+        "tags": [
+          "documents-private-import"
+        ],
+        "summary": "Privaten Mailbeleg in ausdrücklich autorisierter Ablage übernehmen",
+        "description": "OAuth Firmenzugriff und expenses:write allein reichen nicht: eine aktive, serverseitig auditierte Bindung aus Client, Firma, Quellbenutzer und Mailkonto bestimmt den privaten Eigentümer. Keine Benutzeranlage, Buchung oder Zahlungsbestätigung. Wiederholungen derselben Mailanlage liefern den vorhandenen Beleg; abweichende oder gelöschte Belege erzeugen einen Konflikt.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "imported",
+                                "already_imported"
+                              ]
+                            },
+                            "documentId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "folderId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "bindingId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "ownerUserId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0
+                            },
+                            "space": {
+                              "const": "private"
+                            },
+                            "sourceSha256": {
+                              "type": "string",
+                              "pattern": "^[a-f0-9]{64}$"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "documentId",
+                            "folderId",
+                            "bindingId",
+                            "ownerUserId",
+                            "space",
+                            "sourceSha256"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sourceAppId": {
+                    "const": "node-amp"
+                  },
+                  "sourceCompanyId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "sourceOwnerId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "accountKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "pattern": "^[a-zA-Z0-9:_-]+$"
+                  },
+                  "sourceEmailId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "attachmentIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "sourceMessageId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "fileName": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 255,
+                    "pattern": "^[^\\/\\\\\\x00-\\x1f]+\\.pdf$"
+                  },
+                  "pdfBase64": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 11184812
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "sourceAppId",
+                  "sourceCompanyId",
+                  "sourceOwnerId",
+                  "accountKey",
+                  "sourceEmailId",
+                  "attachmentIndex",
+                  "fileName",
+                  "pdfBase64",
+                  "sha256"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2Bearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": false,
+          "allowUserSession": false,
+          "requireRole": "editor"
+        },
+        "x-scopes": [
+          "expenses:write"
+        ]
+      }
+    },
     "/documents/library/settings": {
       "get": {
         "operationId": "document_library_settings",

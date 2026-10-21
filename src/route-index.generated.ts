@@ -269,6 +269,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "documents_download_url": ["GET", "/documents/admin/byId/:documentId/download-url", "b", "frontend_permission_http", 3],
   "documents_get_by_id": ["GET", "/documents/admin/byId/:documentId", "b", "frontend_permission_http", 1],
   "documents_get_full_by_id": ["GET", "/documents/admin/byId/:documentId/full", "b", "frontend_permission_http", 1],
+  "documents_private_import_external": ["POST", "/documents/private-import/external", "b", "unified_bearer", 4, ["expenses:write"]],
   "documents_search": ["GET", "/documents/admin/search", "b", "frontend_permission_http", 2],
   "documents_set_lock": ["PUT", "/documents/admin/lock/:documentId", "b", "frontend_permission_http", 5],
   "documents_stream": ["GET", "/documents/admin/stream/:documentId", "b", "frontend_permission_http", 3],

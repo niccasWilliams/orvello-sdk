@@ -15,6 +15,7 @@ export * from "./features/routes.customer_companies";
 export * from "./features/routes.customer_companies_external";
 export * from "./features/routes.document_library";
 export * from "./features/routes.documents";
+export * from "./features/routes.documents_private_import";
 export * from "./features/routes.dunning_external";
 export * from "./features/routes.enterprise";
 export * from "./base/routes.entitlements";
@@ -52,6 +53,7 @@ import { apiRoutes_customer_companies } from "./features/routes.customer_compani
 import { apiRoutes_customer_companies_external } from "./features/routes.customer_companies_external";
 import { apiRoutes_document_library } from "./features/routes.document_library";
 import { apiRoutes_documents } from "./features/routes.documents";
+import { apiRoutes_documents_private_import } from "./features/routes.documents_private_import";
 import { apiRoutes_dunning_external } from "./features/routes.dunning_external";
 import { apiRoutes_enterprise } from "./features/routes.enterprise";
 import { apiRoutes_entitlements } from "./base/routes.entitlements";
@@ -89,6 +91,7 @@ export type ApiRoutes =
   & typeof apiRoutes_customer_companies_external
   & typeof apiRoutes_document_library
   & typeof apiRoutes_documents
+  & typeof apiRoutes_documents_private_import
   & typeof apiRoutes_dunning_external
   & typeof apiRoutes_enterprise
   & typeof apiRoutes_entitlements
@@ -127,6 +130,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_customer_companies_external,
   ...apiRoutes_document_library,
   ...apiRoutes_documents,
+  ...apiRoutes_documents_private_import,
   ...apiRoutes_dunning_external,
   ...apiRoutes_enterprise,
   ...apiRoutes_entitlements,

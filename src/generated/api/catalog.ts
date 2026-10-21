@@ -36,6 +36,7 @@ export const apiMountPrefixes = {
   "/currency-rates",
   "/customer-companies",
   "/documents",
+  "/documents/private-import/external",
   "/exports",
   "/invoices",
   "/managing-companies",
@@ -150,6 +151,10 @@ export const apiGroups = {
     "module": "./features/routes.documents"
   },
   {
+    "key": "documents_private_import",
+    "module": "./features/routes.documents_private_import"
+  },
+  {
     "key": "dunning_external",
     "module": "./features/routes.dunning_external"
   },
@@ -242,6 +247,10 @@ export const apiGroups = {
   {
     "key": "documents",
     "module": "./features/routes.documents"
+  },
+  {
+    "key": "documents_private_import",
+    "module": "./features/routes.documents_private_import"
   },
   {
     "key": "dunning_external",
