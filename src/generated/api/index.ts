@@ -27,6 +27,7 @@ export * from "./base/routes.logs";
 export * from "./features/routes.managing_companies";
 export * from "./features/routes.managing_companies_external";
 export * from "./features/routes.managing_company_logos";
+export * from "./features/routes.managing_company_postal_account";
 export * from "./features/routes.merchant_invoicing";
 export * from "./base/routes.oauth2";
 export * from "./base/routes.oauth2_external";
@@ -65,6 +66,7 @@ import { apiRoutes_logs } from "./base/routes.logs";
 import { apiRoutes_managing_companies } from "./features/routes.managing_companies";
 import { apiRoutes_managing_companies_external } from "./features/routes.managing_companies_external";
 import { apiRoutes_managing_company_logos } from "./features/routes.managing_company_logos";
+import { apiRoutes_managing_company_postal_account } from "./features/routes.managing_company_postal_account";
 import { apiRoutes_merchant_invoicing } from "./features/routes.merchant_invoicing";
 import { apiRoutes_oauth2 } from "./base/routes.oauth2";
 import { apiRoutes_oauth2_external } from "./base/routes.oauth2_external";
@@ -103,6 +105,7 @@ export type ApiRoutes =
   & typeof apiRoutes_managing_companies
   & typeof apiRoutes_managing_companies_external
   & typeof apiRoutes_managing_company_logos
+  & typeof apiRoutes_managing_company_postal_account
   & typeof apiRoutes_merchant_invoicing
   & typeof apiRoutes_oauth2
   & typeof apiRoutes_oauth2_external
@@ -142,6 +145,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_managing_companies,
   ...apiRoutes_managing_companies_external,
   ...apiRoutes_managing_company_logos,
+  ...apiRoutes_managing_company_postal_account,
   ...apiRoutes_merchant_invoicing,
   ...apiRoutes_oauth2,
   ...apiRoutes_oauth2_external,

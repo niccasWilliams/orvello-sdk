@@ -187,6 +187,10 @@ export const apiGroups = {
     "module": "./features/routes.managing_company_logos"
   },
   {
+    "key": "managing_company_postal_account",
+    "module": "./features/routes.managing_company_postal_account"
+  },
+  {
     "key": "merchant_invoicing",
     "module": "./features/routes.merchant_invoicing"
   },
@@ -295,6 +299,10 @@ export const apiGroups = {
   {
     "key": "managing_company_logos",
     "module": "./features/routes.managing_company_logos"
+  },
+  {
+    "key": "managing_company_postal_account",
+    "module": "./features/routes.managing_company_postal_account"
   },
   {
     "key": "merchant_invoicing",
