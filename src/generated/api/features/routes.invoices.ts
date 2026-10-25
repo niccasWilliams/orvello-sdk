@@ -645,10 +645,10 @@ export type InvoicesCreditNotePreviewResponseData = {
   taxAmount: string;
   taxRate: string | null;
   totalAmount: string;
-  vatTreatment: any;
+  vatTreatment?: any;
   vatLegalRef: string | null;
   vatNote: string | null;
-  vatCustom: any;
+  vatCustom?: any;
   notes: string | null;
   correctionReason: string;
   correctsInvoiceId: number;

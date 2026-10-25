@@ -223,7 +223,7 @@ export type DocumentLibraryDraftGetResponseData = {
   id: number;
   title: string;
   docType: string;
-  content: any;
+  content?: any;
   revision: number;
   isTemplate: boolean;
   privateUserId: number | null;
@@ -279,7 +279,7 @@ export type DocumentLibraryDraftCreateResponseData = {
   id: number;
   title: string;
   docType: string;
-  content: any;
+  content?: any;
   revision: number;
   isTemplate: boolean;
   privateUserId: number | null;
@@ -337,7 +337,7 @@ export type DocumentLibraryDraftUpdateResponseData = {
   id: number;
   title: string;
   docType: string;
-  content: any;
+  content?: any;
   revision: number;
   isTemplate: boolean;
   privateUserId: number | null;

@@ -806,7 +806,7 @@ export type TaxYearsHistoryParams = {
   year: string;
 };
 export type TaxYearsHistoryQuery = {
-  beforeRevision?: any;
+  beforeRevision?: string;
 };
 export type TaxYearsHistoryBody = undefined;
 export type TaxYearsHistoryResponseData = {

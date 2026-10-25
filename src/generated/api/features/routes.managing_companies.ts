@@ -757,7 +757,7 @@ export type ManagingCompaniesVatSettingsDecisionUpsertParams = {
 export type ManagingCompaniesVatSettingsDecisionUpsertQuery = undefined;
 export type ManagingCompaniesVatSettingsDecisionUpsertBody = {
   /** Der Entscheidungswert. Haengt vom decisionKey ab: vat.regime → { regime: 'kleinunternehmer' | 'regelbesteuert' } | vat.regime.auto_switch_consent → { enabled: true | false } (true = System darf bei §19-Grenzwert-Ueberschreitung automatisch  */
-  value: any;
+  value?: any;
   /** Optionale Begruendung/Notiz zur Entscheidung (z.B. 'Steuerberater-Empfehlung vom 01.01.2025'). Wird im Audit-Log gespeichert. */
   note?: string;
   /** ISO-Zeitstempel ab wann die Entscheidung gelten soll. Wenn nicht angegeben: sofort (Server-Zeitpunkt). Nur relevant fuer vat.regime – bestimmt ab welchem Datum das neue Regime im Buchungssystem gilt. */
@@ -1054,7 +1054,7 @@ export type ManagingCompaniesInvoiceTransparencyContextResponseData = {
   regimeValidTo: string | null;
   regimeReason: string | null;
   decisionRequired: boolean;
-  explicitRegimeDecision: any | null;
+  explicitRegimeDecision?: any | null;
   shouldShowVatOnInvoices: boolean;
   defaultVatTreatmentHint: string | null;
   legalVatHint: {

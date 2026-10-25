@@ -8,4 +8,4 @@
 //
 // `test/diagnose.test.ts` recomputes this from `src/generated` on every
 // `npm run check`, so a hand-edited contract cannot leave the constant stale.
-export const CONTRACT_SHA256 = "1e81b251bf945720330a20dcb194623b92a96b2ee413d807b738475967979320";
+export const CONTRACT_SHA256 = "8c49aa4589915203f299bb2de2b01cf45dc166f02066554f6fd2c01ec721bd47";

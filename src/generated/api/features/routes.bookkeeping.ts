@@ -740,12 +740,12 @@ export type BookkeepingAssetsGetByIdParams = {
 export type BookkeepingAssetsGetByIdQuery = undefined;
 export type BookkeepingAssetsGetByIdBody = undefined;
 export type BookkeepingAssetsGetByIdResponseData = {
-  asset: any;
-  depreciationSchedule: any;
+  asset?: any;
+  depreciationSchedule?: any;
   linkedDisposalRevenue: {
   id: number;
   amount: string;
-  revenueDate: any;
+  revenueDate?: any;
   isConfirmed: boolean;
 } | null;
 };
@@ -1141,14 +1141,14 @@ export type BookkeepingReportsVatStatusResponseData = {
   warningLevel: "none" | "info" | "warning" | "critical";
   userDecisionRequired: boolean;
   regimeRecommendation: {
-  currentYear: any;
-  nextYear: any;
+  currentYear?: any;
+  nextYear?: any;
 };
   taxDecisions: Record<string, any>;
   accountingMethod: string;
   ustva: {
   filingPreference: string;
-  recommendation: any;
+  recommendation?: any;
   thresholds: {
   monthlyVatDueThreshold: number;
   annualVatDueExemptThreshold: number;
@@ -1196,25 +1196,25 @@ export type BookkeepingReportsVatUstvaResponseData = {
 };
   generatedAt: string;
   outputVat: {
-  standard19: any;
-  reduced7: any;
-  reverseCharge: any;
-  section13bReceived: any;
-  section13bTax: any;
-  section13bOtherReceived: any;
-  section13bOtherTax: any;
-  euB2b: any;
-  euB2bServices: any;
-  export: any;
-  notTaxable: any;
-  exempt: any;
+  standard19?: any;
+  reduced7?: any;
+  reverseCharge?: any;
+  section13bReceived?: any;
+  section13bTax?: any;
+  section13bOtherReceived?: any;
+  section13bOtherTax?: any;
+  euB2b?: any;
+  euB2bServices?: any;
+  export?: any;
+  notTaxable?: any;
+  exempt?: any;
   total: number;
 };
   inputVat: {
-  standard19: any;
-  reduced7: any;
-  section13b: any;
-  other: any;
+  standard19?: any;
+  reduced7?: any;
+  section13b?: any;
+  other?: any;
   total: number;
 };
   taxLiability: {
@@ -1438,7 +1438,7 @@ export type PaymentsMatchSuggestionsQuery = {
 };
 export type PaymentsMatchSuggestionsBody = undefined;
 export type PaymentsMatchSuggestionsResponseData = {
-  payment: any;
+  payment?: any;
   remainingAmount: string;
   suggestions: Array<any>;
   allocations: Array<any>;
@@ -1529,7 +1529,7 @@ export type PaymentsReversalPreviewParams = {
 export type PaymentsReversalPreviewQuery = undefined;
 export type PaymentsReversalPreviewBody = undefined;
 export type PaymentsReversalPreviewResponseData = {
-  payment: any;
+  payment?: any;
   allocations: Array<any>;
   warnings: Array<string>;
   canReverse: boolean;
@@ -1545,7 +1545,7 @@ export type PaymentsReverseBody = {
   reason: string;
 };
 export type PaymentsReverseResponseData = {
-  reversalPayment: any;
+  reversalPayment?: any;
   reversedAllocations: Array<any>;
   updatedInvoices: Array<any>;
 };
@@ -1586,8 +1586,8 @@ export type PaymentsAllocationReversalPreviewParams = {
 export type PaymentsAllocationReversalPreviewQuery = undefined;
 export type PaymentsAllocationReversalPreviewBody = undefined;
 export type PaymentsAllocationReversalPreviewResponseData = {
-  allocation: any;
-  invoice: any | null;
+  allocation?: any;
+  invoice?: any | null;
   newInvoiceStatus: string | null;
   remainingAllocationAfterReversal: string;
   impact: string;
@@ -1603,8 +1603,8 @@ export type PaymentsAllocationReverseParams = {
 export type PaymentsAllocationReverseQuery = undefined;
 export type PaymentsAllocationReverseBody = undefined;
 export type PaymentsAllocationReverseResponseData = {
-  reversalAllocation: any;
-  updatedInvoice: any | null;
+  reversalAllocation?: any;
+  updatedInvoice?: any | null;
 };
 export type PaymentsAllocationReverseResponse = import("../types").ApiEnvelope<PaymentsAllocationReverseResponseData>;
 
@@ -2091,7 +2091,7 @@ export type BookkeepingLocksRecommendationResponseData = {
   asOf: string;
   companyPreference: string;
   vatRegime: string | null;
-  ustvaRecommendation: any;
+  ustvaRecommendation?: any;
   thresholds: {
   ustvaMonthlyVatDueThreshold: number;
   ustvaAnnualVatDueExemptThreshold: number;
