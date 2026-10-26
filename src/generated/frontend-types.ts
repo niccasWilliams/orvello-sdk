@@ -906,6 +906,22 @@ export type InvoiceIssuerSnapshot = {
     companyVatId: string | null;
 };
 
+export type IapContractProfile = {
+  id: number;
+  managingCompanyId: number;
+  platform: IapPayoutPlatform;
+  partnerName: string;
+  partnerVatId: string;
+  validFrom: string;
+  validTo: string | null;
+  legalSource: string;
+  documentId: number;
+  createdAt: Date;
+  createdBy: number | null;
+};
+
+export type IapContractSnapshot = Pick<IapContractProfile, "partnerName" | "partnerVatId" | "legalSource" | "documentId" | "validFrom" | "validTo">;
+
 export type IapPayoutImport = {
   id: number;
   managingCompanyId: number;
@@ -936,6 +952,8 @@ export type IapPayoutImport = {
   rawReportSnapshot: any | null;
   /** Verlinkung zur Hauptbuch-Buchung */
   bookkeepingRevenueId: number | null;
+  contractProfileId: number | null;
+  skippedReason: "bookkeeping_locked" | "zero_amount" | "no_contract_profile" | "unsupported_currency" | null;
   /**
    * Idempotency
    * z.B. "rc_payout_2026-04_apple"
@@ -977,6 +995,8 @@ export type IapPayoutImportInsert = {
   rawReportSnapshot?: any | null;
   /** Verlinkung zur Hauptbuch-Buchung */
   bookkeepingRevenueId?: number | null;
+  contractProfileId?: number | null;
+  skippedReason?: "bookkeeping_locked" | "zero_amount" | "no_contract_profile" | "unsupported_currency" | null;
   /**
    * Idempotency
    * z.B. "rc_payout_2026-04_apple"
@@ -2177,6 +2197,9 @@ export type BookkeepingRevenue = {
   vatLegalRef: string | null;
   /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom: any | null;
+  /** Contract identity and immutable evidence copied when an IAP revenue is posted. */
+  iapContractProfileId: number | null;
+  iapContractSnapshot: IapContractSnapshot | null;
   /**
    * Dates for VAT calculation
    * Leistungsdatum (when service was performed)
@@ -2281,6 +2304,9 @@ export type BookkeepingRevenueInsert = {
   vatLegalRef?: string | null;
   /** { legalRef?, description?, vatRate?, vatAmountOverride? } */
   vatCustom?: any | null;
+  /** Contract identity and immutable evidence copied when an IAP revenue is posted. */
+  iapContractProfileId?: number | null;
+  iapContractSnapshot?: IapContractSnapshot | null;
   /**
    * Dates for VAT calculation
    * Leistungsdatum (when service was performed)
@@ -7015,6 +7041,24 @@ export type WebhookPayload = | WebhookPayloadStripe
     | WebhookPayloadGeneric;
 
 
+
+// ============================================================================
+// ZM RECHNUNGSLOSE EU-B2B-LEISTUNGEN
+// ============================================================================
+// Quelle: src/routes/bookkeeping/vat/eu-service-revenues.ts
+
+
+
+export interface EuServiceZmReport {
+    scope: "invoice_less_eu_b2b_services";
+    note: string;
+    legalSource: string;
+    period: { year: number; frequency: "monthly" | "quarterly"; number: number; start: string; end: string };
+    currency: "EUR";
+    generatedAt: string;
+    recipients: { vatId: string; serviceType: "S"; netCents: number; revenueIds: number[] }[];
+    totalNetCents: number;
+}
 
 // ============================================================================
 // FOREIGN RECEIPT EVIDENCE

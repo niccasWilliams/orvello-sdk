@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, TaxEventListDto, TaxEventPreviewDto, TaxEventSaveResultDto, TaxReportArchiveDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, EuServiceZmReport, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapContractProfile, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, TaxEventListDto, TaxEventPreviewDto, TaxEventSaveResultDto, TaxReportArchiveDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -3029,6 +3029,35 @@ export type BookkeepingCapitalMovementsDeleteQuery = undefined;
 export type BookkeepingCapitalMovementsDeleteBody = undefined;
 export type BookkeepingCapitalMovementsDeleteResponseData = null;
 export type BookkeepingCapitalMovementsDeleteResponse = import("../types").ApiEnvelope<BookkeepingCapitalMovementsDeleteResponseData>;
+
+export type BookkeepingIapContractProfileCreateParams = undefined;
+export type BookkeepingIapContractProfileCreateQuery = undefined;
+export type BookkeepingIapContractProfileCreateBody = {
+  platform: "apple" | "google";
+  partnerName: string;
+  partnerVatId: string;
+  validFrom: string;
+  validTo?: string | null;
+  documentId: number;
+};
+export type BookkeepingIapContractProfileCreateResponseData = IapContractProfile;
+export type BookkeepingIapContractProfileCreateResponse = import("../types").ApiEnvelope<BookkeepingIapContractProfileCreateResponseData>;
+
+export type BookkeepingIapContractProfilesListParams = undefined;
+export type BookkeepingIapContractProfilesListQuery = undefined;
+export type BookkeepingIapContractProfilesListBody = undefined;
+export type BookkeepingIapContractProfilesListResponseData = { items: IapContractProfile[] };
+export type BookkeepingIapContractProfilesListResponse = import("../types").ApiEnvelope<BookkeepingIapContractProfilesListResponseData>;
+
+export type BookkeepingEuServiceRevenuesZmParams = undefined;
+export type BookkeepingEuServiceRevenuesZmQuery = {
+  year: number;
+  period?: "monthly" | "quarterly";
+  periodNumber: number;
+};
+export type BookkeepingEuServiceRevenuesZmBody = undefined;
+export type BookkeepingEuServiceRevenuesZmResponseData = EuServiceZmReport;
+export type BookkeepingEuServiceRevenuesZmResponse = import("../types").ApiEnvelope<BookkeepingEuServiceRevenuesZmResponseData>;
 
 export type BookkeepingIapPayoutsImportParams = undefined;
 export type BookkeepingIapPayoutsImportQuery = undefined;
@@ -6521,6 +6550,61 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "bookkeeping_iap_contract_profile_create": {
+    method: "POST",
+    path: "/bookkeeping/iap-payouts/contract-profiles",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","iap-payouts"],
+      summary: "Belegtes Plattform-Vertragsprofil als neue Version erfassen",
+      description: "Unveraenderliche Version mit Partner-USt-IdNr. und Beleg aus der gewaehlten Firma. Ab validFrom ersetzt sie aeltere Versionen; nach validTo kein Rueckfall. Beleg wird gesperrt. Historische Buchungssnapshots bleiben unveraendert. Keine Online-Pruefung der USt-IdNr.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingIapContractProfileCreateParams;
+      query: BookkeepingIapContractProfileCreateQuery;
+      body: BookkeepingIapContractProfileCreateBody;
+      response: BookkeepingIapContractProfileCreateResponse;
+      responseData: BookkeepingIapContractProfileCreateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_iap_contract_profiles_list": {
+    method: "GET",
+    path: "/bookkeeping/iap-payouts/contract-profiles",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","iap-payouts"],
+      summary: "Plattform-Vertragsversionen der gewaehlten Firma",
+    },
+    types: null as unknown as {
+      params: BookkeepingIapContractProfilesListParams;
+      query: BookkeepingIapContractProfilesListQuery;
+      body: BookkeepingIapContractProfilesListBody;
+      response: BookkeepingIapContractProfilesListResponse;
+      responseData: BookkeepingIapContractProfilesListResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_eu_service_revenues_zm": {
+    method: "GET",
+    path: "/bookkeeping/iap-payouts/zm",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","iap-payouts"],
+      summary: "ZM-Teilbericht fuer rechnungslose EU-B2B-Leistungen einschliesslich IAP",
+      description: "Summen in EUR-Cent je Empfaenger-USt-IdNr. und Monat/Quartal nach Leistungsdatum (§18a Abs.2, 7 Nr.3, 8 UStG). Keine elektronische Abgabe, keine Rechnungen oder Lieferungen. Fehlende Empfaengernachweise oder USt-Umrechnung verhindern den Bericht.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingEuServiceRevenuesZmParams;
+      query: BookkeepingEuServiceRevenuesZmQuery;
+      body: BookkeepingEuServiceRevenuesZmBody;
+      response: BookkeepingEuServiceRevenuesZmResponse;
+      responseData: BookkeepingEuServiceRevenuesZmResponseData;
+    },
+  },
+  // Contract source: explicit
   "bookkeeping_iap_payouts_import": {
     method: "POST",
     path: "/bookkeeping/iap-payouts/import",
@@ -6528,7 +6612,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","iap-payouts"],
       summary: "Apple/Google IAP-Auszahlung importieren",
-      description: "Importiert eine monatliche Apple- oder Google-IAP-Auszahlung. Idempotent über externalRef = rc_payout_<period>_<platform>. Default-Quelle ist die RevenueCat-API (env: REVENUECAT_SECRET_API_KEY, REVENUECAT_PROJECT_ID); alternativ kann der Caller die Werte im Body unter `period` direkt mitliefern (manueller CSV-Import-Fallback). Bucht eine bookkeepingRevenue mit vatTreatment=REVERSE_CHARGE_13B in der Kategorie saas_revenue_apple_iap bzw. saas_revenue_google_iap.",
+      description: "Importiert eine monatliche Apple- oder Google-IAP-Auszahlung. Idempotent über externalRef = rc_payout_<period>_<platform>. Default-Quelle ist die RevenueCat-API (env: REVENUECAT_SECRET_API_KEY, REVENUECAT_PROJECT_ID); alternativ kann der Caller die Werte im Body unter `period` direkt mitliefern (manueller CSV-Import-Fallback). Bucht mit belegtem, zum Periodenende geltendem Vertragsprofil eine bookkeepingRevenue mit vatTreatment=EU_B2B_SERVICE_0 (Kz 21); ohne Profil bleibt ein Beleg mit no_contract_profile. Wiederholungen buchen auch nach Profilanlage nicht automatisch erneut. Bucht in der Kategorie saas_revenue_apple_iap bzw. saas_revenue_google_iap.",
       bodyContentType: "application/json",
       validated: {"params":false,"query":false,"body":true},
     },
