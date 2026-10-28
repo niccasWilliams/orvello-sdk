@@ -109737,9 +109737,7 @@
                     "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                   },
                   "password": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 256
+                    "type": "string"
                   },
                   "name": {
                     "type": "string",
@@ -111629,9 +111627,7 @@
                     "maxLength": 256
                   },
                   "newPassword": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 256
+                    "type": "string"
                   },
                   "revokeOtherSessions": {
                     "default": true,
@@ -111810,9 +111806,7 @@
                     "maxLength": 500
                   },
                   "newPassword": {
-                    "type": "string",
-                    "minLength": 8,
-                    "maxLength": 256
+                    "type": "string"
                   }
                 },
                 "required": [
