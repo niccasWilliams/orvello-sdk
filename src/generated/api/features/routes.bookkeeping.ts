@@ -5381,7 +5381,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Gebuehren-Vorschlaege bestaetigen",
-      description: "Bestaetigt ausgewaehlte Fee-Vorschlaege. Nach Bestaetigung werden sie als regulaere Ausgaben gebucht und fliessen in die UStVA ein.",
+      description: "Bestaetigt ausgewaehlte Fee-Vorschlaege. Nach Bestaetigung werden sie als regulaere Ausgaben gebucht und fliessen in die UStVA ein. Alles oder nichts: ein Vorschlag in einer strikt gesperrten Periode (422) oder fremden Kostenstelle (403) lehnt die ganze Auswahl ab.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {
