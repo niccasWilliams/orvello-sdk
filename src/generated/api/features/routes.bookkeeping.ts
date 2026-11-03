@@ -5362,7 +5362,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Gebuehren-Vorschlaege auflisten",
-      description: "Listet alle vom Sync vorgeschlagenen Fee-Expenses die auf Bestaetigung warten. Diese Vorschlaege wurden automatisch beim Import erstellt und muessen vom User bestaetigt werden bevor sie in die UStVA einfliessen.",
+      description: "Listet die vom Sync vorgeschlagenen Fee-Expenses im eigenen Kostenstellenumfang. Ohne Status die offenen, die auf Bestaetigung warten: Sie wurden automatisch beim Import erstellt und muessen vom User bestaetigt werden, bevor sie in die UStVA einfliessen. status=REJECTED listet auch die abgelehnten, obwohl sie als geloescht markiert sind.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -5400,7 +5400,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Gebuehren-Vorschlaege ablehnen",
-      description: "Lehnt ausgewaehlte Fee-Vorschlaege ab. Abgelehnte Vorschlaege werden als geloescht markiert. Beim naechsten Sync koennen neue Vorschlaege erstellt werden.",
+      description: "Lehnt ausgewaehlte offene Fee-Vorschlaege ab. Abgelehnte Vorschlaege werden als geloescht markiert und vom Payment geloest, beim naechsten Sync koennen neue entstehen. Bestaetigte Gebuehren und andere Ausgaben bleiben unveraendert und zaehlen nicht in rejected. Alles oder nichts: ein Vorschlag in einer strikt gesperrten Periode (422), einer fremden Kostenstelle (403) oder mit Gebuehrenkorrektur (409) lehnt die ganze Auswahl ab.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {

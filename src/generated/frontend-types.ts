@@ -6941,12 +6941,16 @@ export type ApiKeyEnvironment = "live" | "test";
 
 export type ApiKeyStatus = "active" | "pending" | "expired" | "inactive" | "revoked";
 
+export type ApiKeyPepperRenewal = { deadline: string };
+
 export type ApiKeyView = Omit<UnsensitiveApiKey, "role" | "environment" | "scopes" | "allowedIps"> & {
         role: ApiKeyRole;
         environment: ApiKeyEnvironment;
         scopes: OAuth2ScopeValue[];
         allowedIps: string[] | null;
         status: ApiKeyStatus;
+        /** Nur fuer den Aussteller eines nutzbaren Schluessels auf einer Pepper-Version mit Frist, sonst null. */
+        pepperRenewal: ApiKeyPepperRenewal | null;
     };
 
 export type ApiKeyDenyCode = | "INSUFFICIENT_ROLE"      // caller's role too low
