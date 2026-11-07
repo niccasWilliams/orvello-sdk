@@ -103863,6 +103863,599 @@
         "x-transport": "https"
       }
     },
+    "/internal/fakturion/v1/results": {
+      "post": {
+        "operationId": "internal_fakturion_results_record",
+        "tags": [
+          "fakturion"
+        ],
+        "summary": "Endergebnis eines Fakturion-Auftrags idempotent ablegen (nur Fakturion mit AMP-Dienstausweis).",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultId": {
+                      "type": "string"
+                    },
+                    "replayed": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "resultId",
+                    "replayed"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultId": {
+                      "type": "string"
+                    },
+                    "replayed": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "resultId",
+                    "replayed"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "contractVersion": {
+                        "type": "string",
+                        "const": "bills-fakturion/v1"
+                      },
+                      "orderId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "idempotencyKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "billsTenantId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "sandbox": {
+                        "type": "boolean"
+                      },
+                      "billsInvoiceId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "invoiceRevision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "const": "generate_einvoice"
+                      },
+                      "resultId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "completedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "const": "completed"
+                      },
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "xrechnung_ubl",
+                          "xrechnung_cii",
+                          "zugferd"
+                        ]
+                      },
+                      "invoiceNumber": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "artifacts": {
+                        "type": "object",
+                        "properties": {
+                          "xml": {
+                            "type": "object",
+                            "properties": {
+                              "artifactId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                              },
+                              "sha256": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              },
+                              "sizeBytes": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "mediaType": {
+                                "type": "string",
+                                "const": "application/xml"
+                              }
+                            },
+                            "required": [
+                              "artifactId",
+                              "sha256",
+                              "sizeBytes",
+                              "mediaType"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "pdf": {
+                            "type": "object",
+                            "properties": {
+                              "artifactId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                              },
+                              "sha256": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              },
+                              "sizeBytes": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "mediaType": {
+                                "type": "string",
+                                "const": "application/pdf"
+                              }
+                            },
+                            "required": [
+                              "artifactId",
+                              "sha256",
+                              "sizeBytes",
+                              "mediaType"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "xml"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "validation": {
+                        "type": "object",
+                        "properties": {
+                          "validator": {
+                            "type": "string",
+                            "const": "kosit"
+                          },
+                          "ruleset": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "issues": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 200
+                                },
+                                "severity": {
+                                  "type": "string",
+                                  "enum": [
+                                    "error",
+                                    "warning",
+                                    "info"
+                                  ]
+                                },
+                                "message": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "maxLength": 500
+                                }
+                              },
+                              "required": [
+                                "code",
+                                "severity",
+                                "message"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "valid": {
+                            "type": "boolean",
+                            "const": true
+                          }
+                        },
+                        "required": [
+                          "validator",
+                          "ruleset",
+                          "issues",
+                          "valid"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "contractVersion",
+                      "orderId",
+                      "idempotencyKey",
+                      "billsTenantId",
+                      "sandbox",
+                      "billsInvoiceId",
+                      "invoiceRevision",
+                      "operation",
+                      "resultId",
+                      "completedAt",
+                      "status",
+                      "format",
+                      "invoiceNumber",
+                      "artifacts",
+                      "validation"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "contractVersion": {
+                        "type": "string",
+                        "const": "bills-fakturion/v1"
+                      },
+                      "orderId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "idempotencyKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "billsTenantId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "sandbox": {
+                        "type": "boolean"
+                      },
+                      "billsInvoiceId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "invoiceRevision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "const": "generate_einvoice"
+                      },
+                      "resultId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "completedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "const": "rejected"
+                      },
+                      "code": {
+                        "type": "string",
+                        "const": "invalid_invoice"
+                      },
+                      "retryable": {
+                        "type": "boolean",
+                        "const": false
+                      },
+                      "validation": {
+                        "type": "object",
+                        "properties": {
+                          "validator": {
+                            "type": "string",
+                            "const": "kosit"
+                          },
+                          "ruleset": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "issues": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 200
+                                },
+                                "severity": {
+                                  "type": "string",
+                                  "enum": [
+                                    "error",
+                                    "warning",
+                                    "info"
+                                  ]
+                                },
+                                "message": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "maxLength": 500
+                                }
+                              },
+                              "required": [
+                                "code",
+                                "severity",
+                                "message"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "valid": {
+                            "type": "boolean",
+                            "const": false
+                          }
+                        },
+                        "required": [
+                          "validator",
+                          "ruleset",
+                          "issues",
+                          "valid"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "contractVersion",
+                      "orderId",
+                      "idempotencyKey",
+                      "billsTenantId",
+                      "sandbox",
+                      "billsInvoiceId",
+                      "invoiceRevision",
+                      "operation",
+                      "resultId",
+                      "completedAt",
+                      "status",
+                      "code",
+                      "retryable",
+                      "validation"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "contractVersion": {
+                        "type": "string",
+                        "const": "bills-fakturion/v1"
+                      },
+                      "orderId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "idempotencyKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "billsTenantId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "sandbox": {
+                        "type": "boolean"
+                      },
+                      "billsInvoiceId": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "invoiceRevision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "const": "generate_einvoice"
+                      },
+                      "resultId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+                      },
+                      "completedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "const": "failed"
+                      },
+                      "code": {
+                        "type": "string",
+                        "enum": [
+                          "dependency_unavailable",
+                          "processing_failed"
+                        ]
+                      },
+                      "retryable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "contractVersion",
+                      "orderId",
+                      "idempotencyKey",
+                      "billsTenantId",
+                      "sandbox",
+                      "billsInvoiceId",
+                      "invoiceRevision",
+                      "operation",
+                      "resultId",
+                      "completedAt",
+                      "status",
+                      "code",
+                      "retryable"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ampServiceIdentity": []
+          }
+        ],
+        "x-auth-mode": "amp-service-identity"
+      }
+    },
     "/merchant-invoicing/external/token": {
       "post": {
         "operationId": "merchant_invoicing_token_external",
@@ -112389,6 +112982,12 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "BACKEND_TO_BACKEND_API_KEY"
+      },
+      "ampServiceIdentity": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Von AMP ausgestellter Dienstausweis, geprueft gegen {AMP}/service-identity/jwks.json"
       }
     }
   }

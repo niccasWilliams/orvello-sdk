@@ -309,6 +309,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "exports_datev_kursjournal": ["GET", "/exports/bookkeeping/datev/kursjournal", "b", "frontend_permission_http", 2],
   "exports_datev_metadata": ["GET", "/exports/bookkeeping/datev/metadata", "b", "frontend_permission_http", 2],
   "exports_datev_preview": ["GET", "/exports/bookkeeping/datev/preview", "b", "frontend_permission_http", 2],
+  "internal_fakturion_results_record": ["POST", "/internal/fakturion/v1/results", "b", "amp_service_identity", 4],
   "internal_users_delete": ["DELETE", "/internal/users/:externalUserId", "k", "x_api_key_https", 1],
   "internal_users_provision": ["POST", "/internal/users/provision", "k", "x_api_key_https", 4],
   "internal_users_sync": ["POST", "/internal/users/sync", "k", "x_api_key_https", 4],

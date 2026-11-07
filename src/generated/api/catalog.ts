@@ -38,6 +38,7 @@ export const apiMountPrefixes = {
   "/documents",
   "/documents/private-import/external",
   "/exports",
+  "/internal/fakturion/v1",
   "/invoices",
   "/managing-companies",
   "/merchant-invoicing",
@@ -167,6 +168,10 @@ export const apiGroups = {
     "module": "./features/routes.exports"
   },
   {
+    "key": "fakturion",
+    "module": "./features/routes.fakturion"
+  },
+  {
     "key": "invoices",
     "module": "./features/routes.invoices"
   },
@@ -271,6 +276,10 @@ export const apiGroups = {
   {
     "key": "exports",
     "module": "./features/routes.exports"
+  },
+  {
+    "key": "fakturion",
+    "module": "./features/routes.fakturion"
   },
   {
     "key": "internal",

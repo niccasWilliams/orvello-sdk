@@ -906,6 +906,25 @@ export type InvoiceIssuerSnapshot = {
     companyVatId: string | null;
 };
 
+export type FakturionResultRow = {
+  id: number;
+  resultId: string;
+  orderId: string;
+  managingCompanyId: number;
+  sandbox: boolean;
+  invoiceId: number;
+  invoiceRevision: string;
+  idempotencyKey: string;
+  status: "completed" | "rejected" | "failed";
+  payloadHash: string;
+  /** Der gepruefte Ergebniskoerper (BillsFakturionResult), byte-unabhaengig per payloadHash gebunden. */
+  payload: any | null;
+  caller: string;
+  tokenId: string;
+  completedAt: Date;
+  receivedAt: Date;
+};
+
 export type IapContractProfile = {
   id: number;
   managingCompanyId: number;

@@ -20,6 +20,7 @@ export * from "./features/routes.dunning_external";
 export * from "./features/routes.enterprise";
 export * from "./base/routes.entitlements";
 export * from "./features/routes.exports";
+export * from "./features/routes.fakturion";
 export * from "./base/routes.internal";
 export * from "./features/routes.invoices";
 export * from "./features/routes.invoices_external";
@@ -59,6 +60,7 @@ import { apiRoutes_dunning_external } from "./features/routes.dunning_external";
 import { apiRoutes_enterprise } from "./features/routes.enterprise";
 import { apiRoutes_entitlements } from "./base/routes.entitlements";
 import { apiRoutes_exports } from "./features/routes.exports";
+import { apiRoutes_fakturion } from "./features/routes.fakturion";
 import { apiRoutes_internal } from "./base/routes.internal";
 import { apiRoutes_invoices } from "./features/routes.invoices";
 import { apiRoutes_invoices_external } from "./features/routes.invoices_external";
@@ -98,6 +100,7 @@ export type ApiRoutes =
   & typeof apiRoutes_enterprise
   & typeof apiRoutes_entitlements
   & typeof apiRoutes_exports
+  & typeof apiRoutes_fakturion
   & typeof apiRoutes_internal
   & typeof apiRoutes_invoices
   & typeof apiRoutes_invoices_external
@@ -138,6 +141,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_enterprise,
   ...apiRoutes_entitlements,
   ...apiRoutes_exports,
+  ...apiRoutes_fakturion,
   ...apiRoutes_internal,
   ...apiRoutes_invoices,
   ...apiRoutes_invoices_external,
