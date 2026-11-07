@@ -1,6 +1,4 @@
-## 0.7.3 - 2026-10-11
-
-- Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
+# Changelog
 
 ## 0.7.32 - 2026-11-07
 
@@ -176,18 +174,22 @@
 - Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
 - neu: TaxYearsGetParams, TaxYearsGetQuery, TaxYearsGetBody, TaxYearsGetResponseData, TaxYearsGetResponse, TaxYearsConfigureParams, TaxYearsConfigureQuery, TaxYearsConfigureBody (+18)
 
-## 0.7.1 - 2026-10-06
+## 0.7.3 - 2026-10-11
 
-- `headers` aus der Konfiguration gehen jetzt an jeden Weg zum Dienst: Token-Tausch,
-  `checkHealth`, `diagnose`, `preflight` und den Geschaeftsaufruf. Bisher bekam nur der
-  Geschaeftsaufruf sie. Hinter Cloudflare Access endete damit schon der Token-Tausch an der
-  Kante (TSK-000297). Ein fremder Host (vorsignierter Speicher-Link) bekommt sie weiterhin nicht.
+- Routen-Index (`src/route-index.generated.ts`) mit dem Vertrag von 0.7.2 abgeglichen (457 Operationen). 0.7.2 trug noch den alten Index mit 424 und wurde deshalb nie veroeffentlicht.
 
 ## 0.7.2 - 2026-10-11
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
 - Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
 - neu: InvoicesDryRunExternalParams, InvoicesDryRunExternalQuery, InvoicesDryRunExternalBody, InvoicesDryRunExternalResponseData, InvoicesDryRunExternalResponse, DocumentLibrarySettingsParams, DocumentLibrarySettingsQuery, DocumentLibrarySettingsBody (+164)
+
+## 0.7.1 - 2026-10-06
+
+- `headers` aus der Konfiguration gehen jetzt an jeden Weg zum Dienst: Token-Tausch,
+  `checkHealth`, `diagnose`, `preflight` und den Geschaeftsaufruf. Bisher bekam nur der
+  Geschaeftsaufruf sie. Hinter Cloudflare Access endete damit schon der Token-Tausch an der
+  Kante (TSK-000297). Ein fremder Host (vorsignierter Speicher-Link) bekommt sie weiterhin nicht.
 
 ## 0.5.0
 
@@ -203,8 +205,6 @@
 ## 0.3.0
 
 - Add typed invoice bank-payment evidence and `invoices.getPaymentEvidence()`. Keeps decimal amounts, negative proof, tenant authorization and upstream failures intact.
-
-# Changelog
 
 ## 0.2.4 - 2026-09-30
 
