@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.33 - 2026-11-10
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: InternalFakturionDocumentsSourcePdfParams, InternalFakturionDocumentsSourcePdfQuery, InternalFakturionDocumentsSourcePdfBody, InternalFakturionDocumentsSourcePdfResponseData, InternalFakturionDocumentsSourcePdfResponse, MerchantInvoicingEinvoiceRequestParams, MerchantInvoicingEinvoiceRequestQuery, MerchantInvoicingEinvoiceRequestBody (+7)
+
 ## 0.7.32 - 2026-11-07
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

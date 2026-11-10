@@ -89,6 +89,19 @@ export type InternalFakturionResultsRecordResponseData = {
 };
 export type InternalFakturionResultsRecordResponse = InternalFakturionResultsRecordResponseData;
 
+export type InternalFakturionDocumentsSourcePdfParams = {
+  billsDocumentId: number;
+};
+export type InternalFakturionDocumentsSourcePdfQuery = {
+  billsTenantId: number;
+  sha256: string;
+};
+export type InternalFakturionDocumentsSourcePdfBody = undefined;
+export type InternalFakturionDocumentsSourcePdfResponseData = {
+  error: string;
+};
+export type InternalFakturionDocumentsSourcePdfResponse = InternalFakturionDocumentsSourcePdfResponseData;
+
 export const apiRoutes_fakturion = {
   // Contract source: explicit
   "internal_fakturion_results_record": {
@@ -107,6 +120,24 @@ export const apiRoutes_fakturion = {
       body: InternalFakturionResultsRecordBody;
       response: InternalFakturionResultsRecordResponse;
       responseData: InternalFakturionResultsRecordResponseData;
+    },
+  },
+  // Contract source: explicit
+  "internal_fakturion_documents_source_pdf": {
+    method: "GET",
+    path: "/internal/fakturion/v1/documents/:billsDocumentId",
+    auth: {"type":"amp_service_identity"},
+    meta: {
+      tags: ["fakturion"],
+      summary: "Rechnungs-PDF eines ZUGFeRD-Auftrags (sourcePdf) fuer Fakturion, geprueft gegen Mandant und sha256.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InternalFakturionDocumentsSourcePdfParams;
+      query: InternalFakturionDocumentsSourcePdfQuery;
+      body: InternalFakturionDocumentsSourcePdfBody;
+      response: InternalFakturionDocumentsSourcePdfResponse;
+      responseData: InternalFakturionDocumentsSourcePdfResponseData;
     },
   },
 } as const;

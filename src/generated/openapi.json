@@ -104456,6 +104456,141 @@
         "x-auth-mode": "amp-service-identity"
       }
     },
+    "/internal/fakturion/v1/documents/:billsDocumentId": {
+      "get": {
+        "operationId": "internal_fakturion_documents_source_pdf",
+        "tags": [
+          "fakturion"
+        ],
+        "summary": "Rechnungs-PDF eines ZUGFeRD-Auftrags (sourcePdf) fuer Fakturion, geprueft gegen Mandant und sha256.",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "billsDocumentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "billsTenantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "sha256",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ampServiceIdentity": []
+          }
+        ],
+        "x-auth-mode": "amp-service-identity"
+      }
+    },
     "/merchant-invoicing/external/token": {
       "post": {
         "operationId": "merchant_invoicing_token_external",
@@ -104841,6 +104976,470 @@
           }
         ],
         "x-transport": "http"
+      }
+    },
+    "/merchant-invoicing/invoices/:invoiceId/einvoice": {
+      "post": {
+        "operationId": "merchant_invoicing_einvoice_request",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "E-Rechnung (XRechnung) zu einer eigenen ausgestellten Rechnung anfordern",
+        "description": "Baut aus der ausgestellten Rechnung des eigenen Mandanten einen Auftrag und gibt ihn serverseitig an den E-Rechnungsdienst. Idempotent: dieselbe Rechnung im selben Format liefert dieselbe Annahme (200, replayed). Fremde Rechnung 404, Entwurf 422. Das Ergebnis liefert GET auf denselben Pfad.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "format": {
+                              "type": "string",
+                              "enum": [
+                                "xrechnung_ubl",
+                                "xrechnung_cii",
+                                "zugferd"
+                              ]
+                            },
+                            "orderId": {
+                              "type": "string"
+                            },
+                            "invoiceRevision": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "const": "accepted"
+                            },
+                            "acceptedAt": {
+                              "type": "string"
+                            },
+                            "replayed": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "invoiceId",
+                            "format",
+                            "orderId",
+                            "invoiceRevision",
+                            "status",
+                            "acceptedAt",
+                            "replayed"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "format": {
+                              "type": "string",
+                              "enum": [
+                                "xrechnung_ubl",
+                                "xrechnung_cii",
+                                "zugferd"
+                              ]
+                            },
+                            "orderId": {
+                              "type": "string"
+                            },
+                            "invoiceRevision": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "const": "accepted"
+                            },
+                            "acceptedAt": {
+                              "type": "string"
+                            },
+                            "replayed": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "invoiceId",
+                            "format",
+                            "orderId",
+                            "invoiceRevision",
+                            "status",
+                            "acceptedAt",
+                            "replayed"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "xrechnung_ubl",
+                      "xrechnung_cii",
+                      "zugferd"
+                    ]
+                  }
+                },
+                "required": [
+                  "format"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "editor"
+        },
+        "x-scopes": [
+          "invoices:publish"
+        ]
+      },
+      "get": {
+        "operationId": "merchant_invoicing_einvoice_status",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "Ergebnisse der E-Rechnung zu einer eigenen Rechnung lesen",
+        "description": "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceId": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "sandbox": {
+                              "type": "boolean"
+                            },
+                            "results": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "orderId": {
+                                    "type": "string"
+                                  },
+                                  "resultId": {
+                                    "type": "string"
+                                  },
+                                  "invoiceRevision": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "enum": [
+                                      "completed",
+                                      "rejected",
+                                      "failed"
+                                    ]
+                                  },
+                                  "format": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "code": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "retryable": {
+                                    "type": [
+                                      "boolean",
+                                      "null"
+                                    ]
+                                  },
+                                  "validation": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "valid": {
+                                            "type": "boolean"
+                                          },
+                                          "ruleset": {
+                                            "type": "string"
+                                          },
+                                          "issues": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "code": {
+                                                  "type": "string"
+                                                },
+                                                "severity": {
+                                                  "type": "string"
+                                                },
+                                                "message": {
+                                                  "type": "string"
+                                                },
+                                                "location": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "required": [
+                                                "code",
+                                                "severity",
+                                                "message"
+                                              ],
+                                              "additionalProperties": false
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "valid",
+                                          "ruleset",
+                                          "issues"
+                                        ],
+                                        "additionalProperties": false
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "completedAt": {
+                                    "type": "string"
+                                  },
+                                  "receivedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "orderId",
+                                  "resultId",
+                                  "invoiceRevision",
+                                  "status",
+                                  "format",
+                                  "code",
+                                  "retryable",
+                                  "validation",
+                                  "completedAt",
+                                  "receivedAt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "invoiceId",
+                            "sandbox",
+                            "results"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "viewer"
+        },
+        "x-scopes": [
+          "invoices:read"
+        ]
       }
     },
     "/api/amp-mail/brands/:slug/logo": {
