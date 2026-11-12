@@ -25,6 +25,12 @@ import type {
 } from "./generated/api/features/routes.invoices_external.js";
 
 import type {
+  MerchantInvoicingEinvoiceRequestBody,
+  MerchantInvoicingEinvoiceRequestResponseData,
+  MerchantInvoicingEinvoiceStatusResponseData,
+} from "./generated/api/features/routes.merchant_invoicing.js";
+
+import type {
   CustomerCompaniesSearchExternalQuery,
   CustomerCompaniesSearchExternalResponseData,
   CustomerCompaniesGetByIdExternalResponseData,
@@ -1072,6 +1078,31 @@ export class OrvelloClient {
         method: "POST",
         body: JSON.stringify(body),
         ...options,
+      }),
+
+    /**
+     * E-Rechnung (XRechnung UBL/CII, ZUGFeRD) zu einer eigenen ausgestellten Rechnung anfordern.
+     *
+     * Laeuft ausschliesslich ueber orvello; die Erzeugung und KoSIT-Pruefung macht
+     * orvello serverseitig. Idempotent: dieselbe Rechnung im selben Format liefert
+     * dieselbe Annahme mit `replayed: true` (HTTP 200 statt 202). Fremde Rechnung 404,
+     * Entwurf 422. Das Ergebnis liest {@link getEInvoiceStatus}.
+     */
+    requestEInvoice: (id: number, body: MerchantInvoicingEinvoiceRequestBody, options?: RequestOptions) =>
+      this.request<MerchantInvoicingEinvoiceRequestResponseData>(`/merchant-invoicing/invoices/${id}/einvoice`, {
+        ...options,
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+
+    /**
+     * Endergebnisse der E-Rechnung zu einer eigenen Rechnung, neuestes zuerst.
+     * Eine leere `results`-Liste heisst: noch kein Ergebnis, spaeter erneut lesen.
+     */
+    getEInvoiceStatus: (id: number, options?: RequestOptions) =>
+      this.request<MerchantInvoicingEinvoiceStatusResponseData>(`/merchant-invoicing/invoices/${id}/einvoice`, {
+        ...options,
+        method: "GET",
       }),
 
     downloadPdfFromUrl: async (pdfUrl: string, options?: RequestOptions): Promise<Blob> => {

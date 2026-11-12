@@ -300,6 +300,23 @@ const creditNote = await orvello.invoices.issueCreditNote(result.invoice.id, {
 console.log("Credit note issued:", creditNote.invoice.invoiceNumber);
 ```
 
+#### Request an E-Invoice (XRechnung / ZUGFeRD)
+```typescript
+// Issued invoices only (drafts return 422, foreign invoices 404).
+// Idempotent: the same invoice and format return the same acceptance with replayed: true.
+const accepted = await orvello.invoices.requestEInvoice(result.invoice.id, { format: "xrechnung_ubl" });
+
+// Generation and KoSIT validation run server-side; read the outcome later.
+const { results } = await orvello.invoices.getEInvoiceStatus(result.invoice.id);
+if (results.length === 0) {
+  // not finished yet, read again later
+} else if (results[0].status === "completed") {
+  console.log("Valid:", results[0].validation?.valid);
+}
+```
+Needs the scopes `invoices:publish` (request) and `invoices:read` (status). Everything goes
+through orvello; no further endpoint or credential is involved. Available from SDK 0.7.34.
+
 ---
 
 ### 2. Bookkeeping & Expenses with Receipt Upload

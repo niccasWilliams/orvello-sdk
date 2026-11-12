@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.34 - 2026-11-12
+
+- neu: `client.invoices.requestEInvoice(id, { format })` fordert zu einer eigenen ausgestellten Rechnung eine E-Rechnung an (`POST /merchant-invoicing/invoices/:invoiceId/einvoice`, operationId `merchant_invoicing_einvoice_request`, Scope `invoices:publish`). Antwort `202` neu oder `200` mit `replayed: true`.
+- neu: `client.invoices.getEInvoiceStatus(id)` liest die Endergebnisse samt KoSIT-Pruefung (`GET` desselben Pfads, `merchant_invoicing_einvoice_status`, Scope `invoices:read`). Leere `results` heisst: noch kein Ergebnis.
+- Beide Aufrufe gehen nur an orvello; Erzeugung und Pruefung laufen serverseitig. Keine weitere Adresse und kein weiteres Credential noetig.
+
 ## 0.7.33 - 2026-11-10
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
