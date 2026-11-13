@@ -225,7 +225,8 @@ export type InvoicesSearchExternalQuery = {
   minTotal?: string;
   maxTotal?: string;
   currency?: string;
-  receivable?: "open" | "overdue" | "settled";
+  receivable?: "open" | "overdue" | "upcoming" | "settled";
+  withinDays?: number;
   asOf?: string;
   sortBy?: "createdAt" | "invoiceDate" | "dueDate" | "totalAmount";
   sortDir?: "asc" | "desc";

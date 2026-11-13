@@ -228,6 +228,7 @@ export type InvoiceDunningSuggestionsResponseData = {
   items: Array<{
   invoiceId: number;
   invoiceNumber: string;
+  customerDisplayName: string | null;
   status: string;
   dueDate: string;
   daysOverdue: number;
@@ -590,7 +591,8 @@ export type InvoicesSearchQuery = {
   minTotal?: string;
   maxTotal?: string;
   currency?: string;
-  receivable?: "open" | "overdue" | "settled";
+  receivable?: "open" | "overdue" | "upcoming" | "settled";
+  withinDays?: number;
   asOf?: string;
   sortBy?: "createdAt" | "invoiceDate" | "dueDate" | "totalAmount";
   sortDir?: "asc" | "desc";
@@ -613,7 +615,8 @@ export type InvoicesSummaryQuery = {
   minTotal?: string;
   maxTotal?: string;
   currency?: string;
-  receivable?: "open" | "overdue" | "settled";
+  receivable?: "open" | "overdue" | "upcoming" | "settled";
+  withinDays?: number;
   asOf?: string;
 };
 export type InvoicesSummaryBody = undefined;
@@ -1459,7 +1462,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Rechnungen suchen/listen",
-      description: "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden. Jede Zeile trägt customerDisplayName (Kundenfirma, sonst der Kundenname der Rechnung); mit dem Recht Buchhaltung zusätzlich openAmount (Restforderung), dunningLevel (letzte Mahnstufe) und suggestedDunningLevel (fällige nächste Mahnstufe wie in den Mahnvorschlägen, sonst null). receivable=open|overdue|settled filtert nach Forderungsstand und trifft dieselbe Menge wie open und overdue der Kennzahlen; asOf (ISO) ist der Stichtag dafür, Standard ist jetzt. Kennzahlen über die ganze gefilterte Menge liefert GET /invoices/summary mit denselben Filtern.",
+      description: "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden. Jede Zeile trägt customerDisplayName (Kundenfirma, sonst der Kundenname der Rechnung); mit dem Recht Buchhaltung zusätzlich openAmount (Restforderung), dunningLevel (letzte Mahnstufe) und suggestedDunningLevel (fällige nächste Mahnstufe wie in den Mahnvorschlägen, sonst null). receivable=open|overdue|upcoming|settled filtert nach Forderungsstand und trifft dieselbe Menge wie open und overdue der Kennzahlen; asOf (ISO) ist der Stichtag dafür, Standard ist jetzt. receivable=upcoming zeigt offene Forderungen, die nach dem Stichtag und binnen withinDays Tagen (Standard 7) fällig werden, deckungsgleich mit \"in 7 Tagen fällig\" der Übersicht. Kennzahlen über die ganze gefilterte Menge liefert GET /invoices/summary mit denselben Filtern.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {

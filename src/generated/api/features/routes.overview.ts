@@ -158,11 +158,21 @@ export type OverviewHomeResponseData = {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
   partialPayments: {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
   providerPayoutCount: number;
   autoMatchableCount: number | null;
@@ -297,6 +307,15 @@ export type OverviewHomeResponseData = {
   actorUserId: number | null;
   createdAt: string;
 }>;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  onboarding: {
+  data: {
+  required: boolean;
 } | null;
   reason: {
   code: string;
@@ -503,6 +522,67 @@ export type OverviewBookkeepingResponseData = {
   message: string;
 } | null;
 };
+  reconciliation: {
+  data: {
+  unmatchedPayments: {
+  count: number;
+  totalAmount: string;
+  currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
+};
+  partialPayments: {
+  count: number;
+  totalAmount: string;
+  currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
+};
+  providerPayoutCount: number;
+  autoMatchableCount: number | null;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  vat: {
+  data: {
+  regime: string | null;
+  regimeValidFrom: string | null;
+  accountingMethod: string;
+  revenue: {
+  currentYear: {
+  year: number;
+  amount: number;
+  percent: number;
+  threshold: number;
+};
+  previousYear: {
+  year: number;
+  amount: number;
+  percent: number;
+  threshold: number;
+};
+};
+  userDecisionRequired: boolean;
+  ustva: {
+  filingPreference: string;
+  recommended: "monthly" | "quarterly" | "annual" | "none";
+  reason: string;
+};
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
 };
 export type OverviewBookkeepingResponse = import("../types").ApiEnvelope<OverviewBookkeepingResponseData>;
 
@@ -695,6 +775,10 @@ export type OverviewTasksResponseData = {
 }>;
   oldestDays: number | null;
   hints: Array<string>;
+  breakdown: {
+  expenses: number;
+  revenues: number;
+} | null;
   target: {
   kind: "invoices";
   filter: {
@@ -774,7 +858,7 @@ export const apiRoutes_overview = {
     meta: {
       tags: ["overview"],
       summary: "Startseite der Buchhaltung in einem Aufruf",
-      description: "Ergebnis und Monatsverlauf des Geschäftsjahres mit Vorjahresvergleich, Forderungen (Kennzahlen wie GET /invoices/summary, dazu je höchstens 10 überfällige und bald fällige Rechnungen mit Kunde, Restforderung und Mahnstufe), Zahlungsabgleich, Buchungssperre, Abschluss-Bereitschaft, Steuerhinweise, Umsatzsteuerlage und die letzten Buchungsaktivitäten. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+      description: "Ergebnis und Monatsverlauf des Geschäftsjahres mit Vorjahresvergleich, Forderungen (Kennzahlen wie GET /invoices/summary, dazu je höchstens 10 überfällige und bald fällige Rechnungen mit Kunde, Restforderung und Mahnstufe), Zahlungsabgleich, Buchungssperre, Abschluss-Bereitschaft, Steuerhinweise, Umsatzsteuerlage, die letzten Buchungsaktivitäten und ob die Einrichtung noch läuft (onboarding.required). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -793,7 +877,7 @@ export const apiRoutes_overview = {
     meta: {
       tags: ["overview"],
       summary: "Buchhaltungs-Übersicht in einem Aufruf",
-      description: "Ergebnis mit den größten Einnahme- und Ausgabekategorien, Monatsverlauf, größte Lieferanten, Kennzahlen des Anlagenspiegels, Buchungssperre, Abschluss-Bereitschaft und die Zahl offener Gebührenvorschläge. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+      description: "Ergebnis mit den größten Einnahme- und Ausgabekategorien, Monatsverlauf, größte Lieferanten, Kennzahlen des Anlagenspiegels, Buchungssperre, Abschluss-Bereitschaft, die Zahl offener Gebührenvorschläge, die Umsatzsteuerlage (vat, wie in GET /overview/home) und der Zahlungsabgleich der Firma (reconciliation; closing.readiness.unallocatedPaymentsCount gilt dagegen nur für den Sperrzeitraum). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {

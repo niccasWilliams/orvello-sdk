@@ -37611,6 +37611,12 @@
                                   "invoiceNumber": {
                                     "type": "string"
                                   },
+                                  "customerDisplayName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
                                   "status": {
                                     "type": "string"
                                   },
@@ -37673,6 +37679,7 @@
                                 "required": [
                                   "invoiceId",
                                   "invoiceNumber",
+                                  "customerDisplayName",
                                   "status",
                                   "dueDate",
                                   "daysOverdue",
@@ -39556,6 +39563,12 @@
                                   "invoiceNumber": {
                                     "type": "string"
                                   },
+                                  "customerDisplayName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
                                   "status": {
                                     "type": "string"
                                   },
@@ -39618,6 +39631,7 @@
                                 "required": [
                                   "invoiceId",
                                   "invoiceNumber",
+                                  "customerDisplayName",
                                   "status",
                                   "dueDate",
                                   "daysOverdue",
@@ -42735,8 +42749,19 @@
               "enum": [
                 "open",
                 "overdue",
+                "upcoming",
                 "settled"
               ]
+            }
+          },
+          {
+            "name": "withinDays",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365
             }
           },
           {
@@ -45667,7 +45692,7 @@
           "invoices"
         ],
         "summary": "Rechnungen suchen/listen",
-        "description": "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden. Jede Zeile trägt customerDisplayName (Kundenfirma, sonst der Kundenname der Rechnung); mit dem Recht Buchhaltung zusätzlich openAmount (Restforderung), dunningLevel (letzte Mahnstufe) und suggestedDunningLevel (fällige nächste Mahnstufe wie in den Mahnvorschlägen, sonst null). receivable=open|overdue|settled filtert nach Forderungsstand und trifft dieselbe Menge wie open und overdue der Kennzahlen; asOf (ISO) ist der Stichtag dafür, Standard ist jetzt. Kennzahlen über die ganze gefilterte Menge liefert GET /invoices/summary mit denselben Filtern.",
+        "description": "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden. Jede Zeile trägt customerDisplayName (Kundenfirma, sonst der Kundenname der Rechnung); mit dem Recht Buchhaltung zusätzlich openAmount (Restforderung), dunningLevel (letzte Mahnstufe) und suggestedDunningLevel (fällige nächste Mahnstufe wie in den Mahnvorschlägen, sonst null). receivable=open|overdue|upcoming|settled filtert nach Forderungsstand und trifft dieselbe Menge wie open und overdue der Kennzahlen; asOf (ISO) ist der Stichtag dafür, Standard ist jetzt. receivable=upcoming zeigt offene Forderungen, die nach dem Stichtag und binnen withinDays Tagen (Standard 7) fällig werden, deckungsgleich mit \"in 7 Tagen fällig\" der Übersicht. Kennzahlen über die ganze gefilterte Menge liefert GET /invoices/summary mit denselben Filtern.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -45849,8 +45874,19 @@
               "enum": [
                 "open",
                 "overdue",
+                "upcoming",
                 "settled"
               ]
+            }
+          },
+          {
+            "name": "withinDays",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365
             }
           },
           {
@@ -46304,8 +46340,19 @@
               "enum": [
                 "open",
                 "overdue",
+                "upcoming",
                 "settled"
               ]
+            }
+          },
+          {
+            "name": "withinDays",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365
             }
           },
           {
@@ -49224,7 +49271,7 @@
           "revenues"
         ],
         "summary": "Einnahmen suchen",
-        "description": "Paginierte Suche über alle Einnahmen mit Filteroptionen (Zeitraum, Status, Suchbegriff). Optional kann nach `invoiceId` oder `assetId` gefiltert werden, um z.B. Veräußerungserlöse einer Anlage direkt zu finden.",
+        "description": "Paginierte Suche über alle Einnahmen mit Filteroptionen (Zeitraum, Status, Suchbegriff, hasReceipt=false für Einnahmen ohne Nachweis). Je Zeile Rechnungsnummer, Kunde, Kostenstelle und Zuordnungsstand; summary.withoutReceiptCount zählt die Einnahmen ohne Nachweis in der gefilterten Menge. sortBy auch category und paymentStatus. Optional kann nach `invoiceId` oder `assetId` gefiltert werden, um z.B. Veräußerungserlöse einer Anlage direkt zu finden.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -49377,6 +49424,14 @@
             }
           },
           {
+            "name": "hasReceipt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -49405,7 +49460,9 @@
               "enum": [
                 "createdAt",
                 "revenueDate",
-                "amount"
+                "amount",
+                "category",
+                "paymentStatus"
               ]
             }
           },
@@ -49687,7 +49744,7 @@
           "revenues"
         ],
         "summary": "Einnahme nach ID laden",
-        "description": "Lädt eine einzelne Einnahme anhand ihrer ID mit allen Details (Betrag, Datum, Status, zugehörige Rechnung oder verknüpfte Anlage) plus aufgelöste Zahlungszuordnungen (`paymentAllocations`) mit Zahlungs- und Kontodetails.",
+        "description": "Lädt eine einzelne Einnahme anhand ihrer ID mit allen Details (Betrag, Datum, Status, zugehörige Rechnung oder verknüpfte Anlage) plus aufgelöste Zahlungszuordnungen (`paymentAllocations`) mit Zahlungs- und Kontodetails, dazu Rechnungsnummer, Kundenname, Kostenstellenname, Zuordnungsstand und die Metadaten des Belegs (`receipt`, ohne Download-Adresse: die ist signiert und kommt aus documents_download_url).",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -51146,7 +51203,7 @@
           "expenses"
         ],
         "summary": "Ausgaben suchen",
-        "description": "Paginierte Suche über alle Ausgaben mit Filteroptionen (Zeitraum, Status, Kategorie, Suchbegriff). Gibt eine paginierte Liste von BookkeepingExpense-Objekten zurück.",
+        "description": "Paginierte Suche über alle Ausgaben mit Filteroptionen (Zeitraum, Status, Kategorie, Suchbegriff, hasReceipt=false für Ausgaben ohne Nachweis). summary.withoutReceiptCount zählt die Ausgaben ohne Nachweis in der gefilterten Menge. sortBy auch vendor, category und paymentStatus. Gibt eine paginierte Liste von BookkeepingExpense-Objekten zurück.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -51297,6 +51354,14 @@
             }
           },
           {
+            "name": "hasReceipt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "minAmount",
             "in": "query",
             "required": false,
@@ -51341,7 +51406,10 @@
               "enum": [
                 "createdAt",
                 "expenseDate",
-                "amount"
+                "amount",
+                "vendor",
+                "category",
+                "paymentStatus"
               ]
             }
           },
@@ -51768,7 +51836,7 @@
           "expenses"
         ],
         "summary": "Ausgabe nach ID laden",
-        "description": "Lädt eine einzelne Ausgabe anhand ihrer ID mit allen Details (Betrag, Datum, Kategorie, Status, Beleg-Anhang) plus `assetInfo`, damit das Frontend sofort erkennen kann, ob die Ausgabe bereits als Anlage erfasst wurde und ob sie fachlich als Sofortaufwand oder über AfA läuft.",
+        "description": "Lädt eine einzelne Ausgabe anhand ihrer ID mit allen Details (Betrag, Datum, Kategorie, Status, Beleg-Anhang) plus `assetInfo`, damit das Frontend sofort erkennen kann, ob die Ausgabe bereits als Anlage erfasst wurde und ob sie fachlich als Sofortaufwand oder über AfA läuft. `receipt` nennt die Metadaten des Belegs (null ohne Dokument); die Download-Adresse ist signiert und kommt aus documents_download_url.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -63886,6 +63954,132 @@
         ]
       }
     },
+    "/bookkeeping/payments/accounts/options": {
+      "get": {
+        "operationId": "payments_account_options",
+        "tags": [
+          "bookkeeping",
+          "payments"
+        ],
+        "summary": "Zahlungskonten für Auswahlfelder",
+        "description": "Alle Zahlungskonten der aktiven Firma als kompakte Liste (id, Name, Art, Währung, Durchlaufkonto, archiviert, Standardkonto), ohne Salden und Zähler und ohne Blättern. Aktive Konten zuerst, dann nach Name. Für Auswahlfelder; die Kontenübersicht mit Salden bleibt GET /accounts.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "bank",
+                                      "cash",
+                                      "paypal",
+                                      "sumup",
+                                      "stripe"
+                                    ]
+                                  },
+                                  "currency": {
+                                    "type": "string"
+                                  },
+                                  "isTransit": {
+                                    "type": "boolean"
+                                  },
+                                  "isArchived": {
+                                    "type": "boolean"
+                                  },
+                                  "isDefault": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type",
+                                  "currency",
+                                  "isTransit",
+                                  "isArchived",
+                                  "isDefault"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/bookkeeping/payments/accounts": {
       "get": {
         "operationId": "payments_list_accounts",
@@ -67409,7 +67603,7 @@
           "audit"
         ],
         "summary": "Buchungs-Audit-Protokoll",
-        "description": "Gibt eine paginierte Liste aller Buchungs-Audit-Einträge zurück: Sperränderungen, Zahlungsoperationen, Rechnungsänderungen, USt-Änderungen etc. Vollständiges Prüfprotokoll für das Unternehmen.",
+        "description": "Gibt eine paginierte Liste aller Buchungs-Audit-Einträge zurück: Sperränderungen, Zahlungsoperationen, Rechnungsänderungen, USt-Änderungen etc. Vollständiges Prüfprotokoll für das Unternehmen. Je Zeile actorName (Name des Handelnden), entityLabel (Rechnungsnummer, Lieferant oder Beschreibung mit Betrag, Kontoname; null ohne Bezeichnung) und paymentAccountId (bei Zahlungen und Zahlungskonten, für den Link). action ist der stabile Schlüssel für die Übersetzung; message bleibt der gespeicherte Text.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -72122,12 +72316,38 @@
                                     },
                                     "currency": {
                                       "type": "string"
+                                    },
+                                    "byCurrency": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "currency": {
+                                            "type": "string"
+                                          },
+                                          "count": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "totalAmount": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "currency",
+                                          "count",
+                                          "totalAmount"
+                                        ],
+                                        "additionalProperties": false
+                                      }
                                     }
                                   },
                                   "required": [
                                     "count",
                                     "totalAmount",
-                                    "currency"
+                                    "currency",
+                                    "byCurrency"
                                   ],
                                   "additionalProperties": false
                                 },
@@ -72142,12 +72362,38 @@
                                     },
                                     "currency": {
                                       "type": "string"
+                                    },
+                                    "byCurrency": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "currency": {
+                                            "type": "string"
+                                          },
+                                          "count": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "totalAmount": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "currency",
+                                          "count",
+                                          "totalAmount"
+                                        ],
+                                        "additionalProperties": false
+                                      }
                                     }
                                   },
                                   "required": [
                                     "count",
                                     "totalAmount",
-                                    "currency"
+                                    "currency",
+                                    "byCurrency"
                                   ],
                                   "additionalProperties": false
                                 }
@@ -72172,12 +72418,38 @@
                                     },
                                     "currency": {
                                       "type": "string"
+                                    },
+                                    "byCurrency": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "currency": {
+                                            "type": "string"
+                                          },
+                                          "count": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "totalAmount": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "currency",
+                                          "count",
+                                          "totalAmount"
+                                        ],
+                                        "additionalProperties": false
+                                      }
                                     }
                                   },
                                   "required": [
                                     "count",
                                     "totalAmount",
-                                    "currency"
+                                    "currency",
+                                    "byCurrency"
                                   ],
                                   "additionalProperties": false
                                 },
@@ -72192,12 +72464,38 @@
                                     },
                                     "currency": {
                                       "type": "string"
+                                    },
+                                    "byCurrency": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "currency": {
+                                            "type": "string"
+                                          },
+                                          "count": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "totalAmount": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "currency",
+                                          "count",
+                                          "totalAmount"
+                                        ],
+                                        "additionalProperties": false
+                                      }
                                     }
                                   },
                                   "required": [
                                     "count",
                                     "totalAmount",
-                                    "currency"
+                                    "currency",
+                                    "byCurrency"
                                   ],
                                   "additionalProperties": false
                                 }
@@ -74646,13 +74944,20 @@
                             },
                             "einlagenGeld": {
                               "type": "number"
+                            },
+                            "currency": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             }
                           },
                           "required": [
                             "entnahmenGesamt",
                             "entnahmenGeld",
                             "einlagenGesamt",
-                            "einlagenGeld"
+                            "einlagenGeld",
+                            "currency"
                           ],
                           "additionalProperties": false
                         },
@@ -76257,6 +76562,155 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/suppliers/suggest": {
+      "get": {
+        "operationId": "suppliers_suggest",
+        "tags": [
+          "bookkeeping",
+          "suppliers"
+        ],
+        "summary": "Lieferantenvorschlaege fuer das Ausgabenformular",
+        "description": "Lieferantennamen aus den Belegen der Firma, je Schreibweise gruppiert, zuletzt benutzte zuerst: Name, zugeordneter Lieferant (supplierId), letztes Belegdatum, Anzahl, haeufigste Kategorie und haeufigster Steuersatz. q filtert nach einem Teil des Namens, limit hoechstens 50 (Standard 10).",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "supplierId": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "lastUsedAt": {
+                                    "type": "string"
+                                  },
+                                  "useCount": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "usualCategory": {
+                                    "type": "string"
+                                  },
+                                  "usualTaxRate": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "supplierId",
+                                  "lastUsedAt",
+                                  "useCount",
+                                  "usualCategory",
+                                  "usualTaxRate"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []
@@ -83662,7 +84116,7 @@
           "overview"
         ],
         "summary": "Startseite der Buchhaltung in einem Aufruf",
-        "description": "Ergebnis und Monatsverlauf des Geschäftsjahres mit Vorjahresvergleich, Forderungen (Kennzahlen wie GET /invoices/summary, dazu je höchstens 10 überfällige und bald fällige Rechnungen mit Kunde, Restforderung und Mahnstufe), Zahlungsabgleich, Buchungssperre, Abschluss-Bereitschaft, Steuerhinweise, Umsatzsteuerlage und die letzten Buchungsaktivitäten. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+        "description": "Ergebnis und Monatsverlauf des Geschäftsjahres mit Vorjahresvergleich, Forderungen (Kennzahlen wie GET /invoices/summary, dazu je höchstens 10 überfällige und bald fällige Rechnungen mit Kunde, Restforderung und Mahnstufe), Zahlungsabgleich, Buchungssperre, Abschluss-Bereitschaft, Steuerhinweise, Umsatzsteuerlage, die letzten Buchungsaktivitäten und ob die Einrichtung noch läuft (onboarding.required). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -84505,12 +84959,38 @@
                                             },
                                             "currency": {
                                               "type": "string"
+                                            },
+                                            "byCurrency": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "currency": {
+                                                    "type": "string"
+                                                  },
+                                                  "count": {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  "totalAmount": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "currency",
+                                                  "count",
+                                                  "totalAmount"
+                                                ],
+                                                "additionalProperties": false
+                                              }
                                             }
                                           },
                                           "required": [
                                             "count",
                                             "totalAmount",
-                                            "currency"
+                                            "currency",
+                                            "byCurrency"
                                           ],
                                           "additionalProperties": false
                                         },
@@ -84525,12 +85005,38 @@
                                             },
                                             "currency": {
                                               "type": "string"
+                                            },
+                                            "byCurrency": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "currency": {
+                                                    "type": "string"
+                                                  },
+                                                  "count": {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  "totalAmount": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "currency",
+                                                  "count",
+                                                  "totalAmount"
+                                                ],
+                                                "additionalProperties": false
+                                              }
                                             }
                                           },
                                           "required": [
                                             "count",
                                             "totalAmount",
-                                            "currency"
+                                            "currency",
+                                            "byCurrency"
                                           ],
                                           "additionalProperties": false
                                         },
@@ -85361,6 +85867,58 @@
                                 "reason"
                               ],
                               "additionalProperties": false
+                            },
+                            "onboarding": {
+                              "type": "object",
+                              "properties": {
+                                "data": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "required": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "required": [
+                                        "required"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "reason": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "code": {
+                                          "type": "string"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "data",
+                                "reason"
+                              ],
+                              "additionalProperties": false
                             }
                           },
                           "required": [
@@ -85376,7 +85934,8 @@
                             "closing",
                             "taxAlerts",
                             "vat",
-                            "recentActivity"
+                            "recentActivity",
+                            "onboarding"
                           ],
                           "additionalProperties": false
                         },
@@ -85423,7 +85982,7 @@
           "overview"
         ],
         "summary": "Buchhaltungs-Übersicht in einem Aufruf",
-        "description": "Ergebnis mit den größten Einnahme- und Ausgabekategorien, Monatsverlauf, größte Lieferanten, Kennzahlen des Anlagenspiegels, Buchungssperre, Abschluss-Bereitschaft und die Zahl offener Gebührenvorschläge. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+        "description": "Ergebnis mit den größten Einnahme- und Ausgabekategorien, Monatsverlauf, größte Lieferanten, Kennzahlen des Anlagenspiegels, Buchungssperre, Abschluss-Bereitschaft, die Zahl offener Gebührenvorschläge, die Umsatzsteuerlage (vat, wie in GET /overview/home) und der Zahlungsabgleich der Firma (reconciliation; closing.readiness.unallocatedPaymentsCount gilt dagegen nur für den Sperrzeitraum). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -86514,6 +87073,319 @@
                                 "reason"
                               ],
                               "additionalProperties": false
+                            },
+                            "reconciliation": {
+                              "type": "object",
+                              "properties": {
+                                "data": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "unmatchedPayments": {
+                                          "type": "object",
+                                          "properties": {
+                                            "count": {
+                                              "type": "number"
+                                            },
+                                            "totalAmount": {
+                                              "type": "string"
+                                            },
+                                            "currency": {
+                                              "type": "string"
+                                            },
+                                            "byCurrency": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "currency": {
+                                                    "type": "string"
+                                                  },
+                                                  "count": {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  "totalAmount": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "currency",
+                                                  "count",
+                                                  "totalAmount"
+                                                ],
+                                                "additionalProperties": false
+                                              }
+                                            }
+                                          },
+                                          "required": [
+                                            "count",
+                                            "totalAmount",
+                                            "currency",
+                                            "byCurrency"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "partialPayments": {
+                                          "type": "object",
+                                          "properties": {
+                                            "count": {
+                                              "type": "number"
+                                            },
+                                            "totalAmount": {
+                                              "type": "string"
+                                            },
+                                            "currency": {
+                                              "type": "string"
+                                            },
+                                            "byCurrency": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "currency": {
+                                                    "type": "string"
+                                                  },
+                                                  "count": {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  "totalAmount": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "currency",
+                                                  "count",
+                                                  "totalAmount"
+                                                ],
+                                                "additionalProperties": false
+                                              }
+                                            }
+                                          },
+                                          "required": [
+                                            "count",
+                                            "totalAmount",
+                                            "currency",
+                                            "byCurrency"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "providerPayoutCount": {
+                                          "type": "number"
+                                        },
+                                        "autoMatchableCount": {
+                                          "type": [
+                                            "number",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "unmatchedPayments",
+                                        "partialPayments",
+                                        "providerPayoutCount",
+                                        "autoMatchableCount"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "reason": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "code": {
+                                          "type": "string"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "data",
+                                "reason"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "vat": {
+                              "type": "object",
+                              "properties": {
+                                "data": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "regime": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "regimeValidFrom": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "accountingMethod": {
+                                          "type": "string"
+                                        },
+                                        "revenue": {
+                                          "type": "object",
+                                          "properties": {
+                                            "currentYear": {
+                                              "type": "object",
+                                              "properties": {
+                                                "year": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991
+                                                },
+                                                "amount": {
+                                                  "type": "number"
+                                                },
+                                                "percent": {
+                                                  "type": "number"
+                                                },
+                                                "threshold": {
+                                                  "type": "number"
+                                                }
+                                              },
+                                              "required": [
+                                                "year",
+                                                "amount",
+                                                "percent",
+                                                "threshold"
+                                              ],
+                                              "additionalProperties": false
+                                            },
+                                            "previousYear": {
+                                              "type": "object",
+                                              "properties": {
+                                                "year": {
+                                                  "type": "integer",
+                                                  "minimum": -9007199254740991,
+                                                  "maximum": 9007199254740991
+                                                },
+                                                "amount": {
+                                                  "type": "number"
+                                                },
+                                                "percent": {
+                                                  "type": "number"
+                                                },
+                                                "threshold": {
+                                                  "type": "number"
+                                                }
+                                              },
+                                              "required": [
+                                                "year",
+                                                "amount",
+                                                "percent",
+                                                "threshold"
+                                              ],
+                                              "additionalProperties": false
+                                            }
+                                          },
+                                          "required": [
+                                            "currentYear",
+                                            "previousYear"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "userDecisionRequired": {
+                                          "type": "boolean"
+                                        },
+                                        "ustva": {
+                                          "type": "object",
+                                          "properties": {
+                                            "filingPreference": {
+                                              "type": "string"
+                                            },
+                                            "recommended": {
+                                              "type": "string",
+                                              "enum": [
+                                                "monthly",
+                                                "quarterly",
+                                                "annual",
+                                                "none"
+                                              ]
+                                            },
+                                            "reason": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "filingPreference",
+                                            "recommended",
+                                            "reason"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      },
+                                      "required": [
+                                        "regime",
+                                        "regimeValidFrom",
+                                        "accountingMethod",
+                                        "revenue",
+                                        "userDecisionRequired",
+                                        "ustva"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "reason": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "code": {
+                                          "type": "string"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "data",
+                                "reason"
+                              ],
+                              "additionalProperties": false
                             }
                           },
                           "required": [
@@ -86527,7 +87399,9 @@
                             "assets",
                             "lock",
                             "closing",
-                            "feeProposals"
+                            "feeProposals",
+                            "reconciliation",
+                            "vat"
                           ],
                           "additionalProperties": false
                         },
@@ -87717,6 +88591,33 @@
                                       "type": "string"
                                     }
                                   },
+                                  "breakdown": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "expenses": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "revenues": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          }
+                                        },
+                                        "required": [
+                                          "expenses",
+                                          "revenues"
+                                        ],
+                                        "additionalProperties": false
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
                                   "target": {
                                     "oneOf": [
                                       {
@@ -88033,6 +88934,7 @@
                                   "amounts",
                                   "oldestDays",
                                   "hints",
+                                  "breakdown",
                                   "target"
                                 ],
                                 "additionalProperties": false

@@ -16,13 +16,14 @@ export type BookkeepingRevenuesSearchQuery = {
   maxAmount?: string;
   invoiceId?: number;
   assetId?: number;
+  hasReceipt?: boolean;
   page?: number;
   pageSize?: number;
-  sortBy?: "createdAt" | "revenueDate" | "amount";
+  sortBy?: "createdAt" | "revenueDate" | "amount" | "category" | "paymentStatus";
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingRevenuesSearchBody = undefined;
-export type BookkeepingRevenuesSearchResponseData = PaginatedResult<BookkeepingRevenue & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
+export type BookkeepingRevenuesSearchResponseData = PaginatedResult<BookkeepingRevenue & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null; allocationSummary: { allocatedAmount: string; openAmount: string; allocationCount: number } }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number; withoutReceiptCount: number } };
 export type BookkeepingRevenuesSearchResponse = import("../types").ApiEnvelope<BookkeepingRevenuesSearchResponseData>;
 
 export type BookkeepingRevenuesGetByIdParams = {
@@ -30,7 +31,7 @@ export type BookkeepingRevenuesGetByIdParams = {
 };
 export type BookkeepingRevenuesGetByIdQuery = undefined;
 export type BookkeepingRevenuesGetByIdBody = undefined;
-export type BookkeepingRevenuesGetByIdResponseData = BookkeepingRevenue & { paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingRevenuesGetByIdResponseData = BookkeepingRevenue & { paymentAllocations: ResolvedPaymentAllocation[] } & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null; allocationSummary: { allocatedAmount: string; openAmount: string; allocationCount: number } } & { receipt: { documentId: number; fileName: string; mediaType: string; sizeBytes: number } | null };
 export type BookkeepingRevenuesGetByIdResponse = import("../types").ApiEnvelope<BookkeepingRevenuesGetByIdResponseData>;
 
 export type BookkeepingRevenuesAnalyzeReceiptParams = undefined;
@@ -225,15 +226,16 @@ export type BookkeepingExpensesSearchQuery = {
   isConfirmed?: boolean;
   paymentStatus?: "unmatched" | "cash_confirmed" | "partially_matched" | "fully_matched";
   isDeductible?: boolean;
+  hasReceipt?: boolean;
   minAmount?: string;
   maxAmount?: string;
   page?: number;
   pageSize?: number;
-  sortBy?: "createdAt" | "expenseDate" | "amount";
+  sortBy?: "createdAt" | "expenseDate" | "amount" | "vendor" | "category" | "paymentStatus";
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingExpensesSearchBody = undefined;
-export type BookkeepingExpensesSearchResponseData = PaginatedResult<BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
+export type BookkeepingExpensesSearchResponseData = PaginatedResult<BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number; withoutReceiptCount: number } };
 export type BookkeepingExpensesSearchResponse = import("../types").ApiEnvelope<BookkeepingExpensesSearchResponseData>;
 
 export type BookkeepingExpensesGetByIdParams = {
@@ -241,7 +243,7 @@ export type BookkeepingExpensesGetByIdParams = {
 };
 export type BookkeepingExpensesGetByIdQuery = undefined;
 export type BookkeepingExpensesGetByIdBody = undefined;
-export type BookkeepingExpensesGetByIdResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
+export type BookkeepingExpensesGetByIdResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null } & { receipt: { documentId: number; fileName: string; mediaType: string; sizeBytes: number } | null };
 export type BookkeepingExpensesGetByIdResponse = import("../types").ApiEnvelope<BookkeepingExpensesGetByIdResponseData>;
 
 export type BookkeepingExpensesAnalyzeReceiptParams = undefined;
@@ -1785,6 +1787,24 @@ export type PaymentsGetAccountByIdBody = undefined;
 export type PaymentsGetAccountByIdResponseData = PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' };
 export type PaymentsGetAccountByIdResponse = import("../types").ApiEnvelope<PaymentsGetAccountByIdResponseData>;
 
+export type PaymentsAccountOptionsParams = undefined;
+export type PaymentsAccountOptionsQuery = {
+
+};
+export type PaymentsAccountOptionsBody = undefined;
+export type PaymentsAccountOptionsResponseData = {
+  items: Array<{
+  id: number;
+  name: string;
+  type: "bank" | "cash" | "paypal" | "sumup" | "stripe";
+  currency: string;
+  isTransit: boolean;
+  isArchived: boolean;
+  isDefault: boolean;
+}>;
+};
+export type PaymentsAccountOptionsResponse = import("../types").ApiEnvelope<PaymentsAccountOptionsResponseData>;
+
 export type PaymentsListAccountsParams = undefined;
 export type PaymentsListAccountsQuery = {
   search?: string;
@@ -2251,7 +2271,7 @@ export type BookkeepingAuditLogsQuery = {
   endDate?: string;
 };
 export type BookkeepingAuditLogsBody = undefined;
-export type BookkeepingAuditLogsResponseData = PaginatedResult<BookkeepingAuditLog>;
+export type BookkeepingAuditLogsResponseData = PaginatedResult<BookkeepingAuditLog & { actorName: string | null; entityLabel: string | null; paymentAccountId: number | null }>;
 export type BookkeepingAuditLogsResponse = import("../types").ApiEnvelope<BookkeepingAuditLogsResponseData>;
 
 export type BookkeepingLocksGetStateParams = undefined;
@@ -2784,11 +2804,21 @@ export type ReconciliationDashboardResponseData = {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
   partial: {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
 };
   invoices: {
@@ -2796,11 +2826,21 @@ export type ReconciliationDashboardResponseData = {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
   partial: {
   count: number;
   totalAmount: string;
   currency: string;
+  byCurrency: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+}>;
 };
 };
   expenses: {
@@ -3122,7 +3162,7 @@ export type BookkeepingCapitalMovementsSearchQuery = {
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingCapitalMovementsSearchBody = undefined;
-export type BookkeepingCapitalMovementsSearchResponseData = PaginatedResult<CapitalMovement> & { summary?: { count: number; sumWithdrawals: string; sumDeposits: string; currency: string | null; countStornoPair: number; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
+export type BookkeepingCapitalMovementsSearchResponseData = PaginatedResult<CapitalMovement> & { summary?: { count: number; sumWithdrawals: string; sumDeposits: string; currency: string | null; countStornoPair: number; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number; countByType: { deposit: number; withdrawal: number }; byCurrency: Array<{ currency: string; sumDeposits: string; sumWithdrawals: string; balance: string }> } };
 export type BookkeepingCapitalMovementsSearchResponse = import("../types").ApiEnvelope<BookkeepingCapitalMovementsSearchResponseData>;
 
 export type BookkeepingCapitalMovementsKapitalkontoParams = undefined;
@@ -3135,6 +3175,7 @@ export type BookkeepingCapitalMovementsKapitalkontoResponseData = {
   entnahmenGeld: number;
   einlagenGesamt: number;
   einlagenGeld: number;
+  currency: string | null;
 };
 export type BookkeepingCapitalMovementsKapitalkontoResponse = import("../types").ApiEnvelope<BookkeepingCapitalMovementsKapitalkontoResponseData>;
 
@@ -3305,6 +3346,24 @@ export type SuppliersListBody = undefined;
 export type SuppliersListResponseData = SupplierOverviewDto;
 export type SuppliersListResponse = import("../types").ApiEnvelope<SuppliersListResponseData>;
 
+export type SuppliersSuggestParams = undefined;
+export type SuppliersSuggestQuery = {
+  q?: string;
+  limit?: number;
+};
+export type SuppliersSuggestBody = undefined;
+export type SuppliersSuggestResponseData = {
+  items: Array<{
+  name: string;
+  supplierId: number | null;
+  lastUsedAt: string;
+  useCount: number;
+  usualCategory: string;
+  usualTaxRate: string | null;
+}>;
+};
+export type SuppliersSuggestResponse = import("../types").ApiEnvelope<SuppliersSuggestResponseData>;
+
 export type SuppliersCreateParams = undefined;
 export type SuppliersCreateQuery = undefined;
 export type SuppliersCreateBody = {
@@ -3405,7 +3464,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahmen suchen",
-      description: "Paginierte Suche über alle Einnahmen mit Filteroptionen (Zeitraum, Status, Suchbegriff). Optional kann nach `invoiceId` oder `assetId` gefiltert werden, um z.B. Veräußerungserlöse einer Anlage direkt zu finden.",
+      description: "Paginierte Suche über alle Einnahmen mit Filteroptionen (Zeitraum, Status, Suchbegriff, hasReceipt=false für Einnahmen ohne Nachweis). Je Zeile Rechnungsnummer, Kunde, Kostenstelle und Zuordnungsstand; summary.withoutReceiptCount zählt die Einnahmen ohne Nachweis in der gefilterten Menge. sortBy auch category und paymentStatus. Optional kann nach `invoiceId` oder `assetId` gefiltert werden, um z.B. Veräußerungserlöse einer Anlage direkt zu finden.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -3424,7 +3483,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahme nach ID laden",
-      description: "Lädt eine einzelne Einnahme anhand ihrer ID mit allen Details (Betrag, Datum, Status, zugehörige Rechnung oder verknüpfte Anlage) plus aufgelöste Zahlungszuordnungen (`paymentAllocations`) mit Zahlungs- und Kontodetails.",
+      description: "Lädt eine einzelne Einnahme anhand ihrer ID mit allen Details (Betrag, Datum, Status, zugehörige Rechnung oder verknüpfte Anlage) plus aufgelöste Zahlungszuordnungen (`paymentAllocations`) mit Zahlungs- und Kontodetails, dazu Rechnungsnummer, Kundenname, Kostenstellenname, Zuordnungsstand und die Metadaten des Belegs (`receipt`, ohne Download-Adresse: die ist signiert und kommt aus documents_download_url).",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
@@ -3656,7 +3715,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","expenses"],
       summary: "Ausgaben suchen",
-      description: "Paginierte Suche über alle Ausgaben mit Filteroptionen (Zeitraum, Status, Kategorie, Suchbegriff). Gibt eine paginierte Liste von BookkeepingExpense-Objekten zurück.",
+      description: "Paginierte Suche über alle Ausgaben mit Filteroptionen (Zeitraum, Status, Kategorie, Suchbegriff, hasReceipt=false für Ausgaben ohne Nachweis). summary.withoutReceiptCount zählt die Ausgaben ohne Nachweis in der gefilterten Menge. sortBy auch vendor, category und paymentStatus. Gibt eine paginierte Liste von BookkeepingExpense-Objekten zurück.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -3675,7 +3734,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","expenses"],
       summary: "Ausgabe nach ID laden",
-      description: "Lädt eine einzelne Ausgabe anhand ihrer ID mit allen Details (Betrag, Datum, Kategorie, Status, Beleg-Anhang) plus `assetInfo`, damit das Frontend sofort erkennen kann, ob die Ausgabe bereits als Anlage erfasst wurde und ob sie fachlich als Sofortaufwand oder über AfA läuft.",
+      description: "Lädt eine einzelne Ausgabe anhand ihrer ID mit allen Details (Betrag, Datum, Kategorie, Status, Beleg-Anhang) plus `assetInfo`, damit das Frontend sofort erkennen kann, ob die Ausgabe bereits als Anlage erfasst wurde und ob sie fachlich als Sofortaufwand oder über AfA läuft. `receipt` nennt die Metadaten des Belegs (null ohne Dokument); die Download-Adresse ist signiert und kommt aus documents_download_url.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
@@ -5224,6 +5283,25 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "payments_account_options": {
+    method: "GET",
+    path: "/bookkeeping/payments/accounts/options",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","payments"],
+      summary: "Zahlungskonten für Auswahlfelder",
+      description: "Alle Zahlungskonten der aktiven Firma als kompakte Liste (id, Name, Art, Währung, Durchlaufkonto, archiviert, Standardkonto), ohne Salden und Zähler und ohne Blättern. Aktive Konten zuerst, dann nach Name. Für Auswahlfelder; die Kontenübersicht mit Salden bleibt GET /accounts.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: PaymentsAccountOptionsParams;
+      query: PaymentsAccountOptionsQuery;
+      body: PaymentsAccountOptionsBody;
+      response: PaymentsAccountOptionsResponse;
+      responseData: PaymentsAccountOptionsResponseData;
+    },
+  },
+  // Contract source: explicit
   "payments_list_accounts": {
     method: "GET",
     path: "/bookkeeping/payments/accounts",
@@ -5764,7 +5842,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","audit"],
       summary: "Buchungs-Audit-Protokoll",
-      description: "Gibt eine paginierte Liste aller Buchungs-Audit-Einträge zurück: Sperränderungen, Zahlungsoperationen, Rechnungsänderungen, USt-Änderungen etc. Vollständiges Prüfprotokoll für das Unternehmen.",
+      description: "Gibt eine paginierte Liste aller Buchungs-Audit-Einträge zurück: Sperränderungen, Zahlungsoperationen, Rechnungsänderungen, USt-Änderungen etc. Vollständiges Prüfprotokoll für das Unternehmen. Je Zeile actorName (Name des Handelnden), entityLabel (Rechnungsnummer, Lieferant oder Beschreibung mit Betrag, Kontoname; null ohne Bezeichnung) und paymentAccountId (bei Zahlungen und Zahlungskonten, für den Link). action ist der stabile Schlüssel für die Übersetzung; message bleibt der gespeicherte Text.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -6888,6 +6966,25 @@ export const apiRoutes_bookkeeping = {
       body: SuppliersListBody;
       response: SuppliersListResponse;
       responseData: SuppliersListResponseData;
+    },
+  },
+  // Contract source: explicit
+  "suppliers_suggest": {
+    method: "GET",
+    path: "/bookkeeping/suppliers/suggest",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","suppliers"],
+      summary: "Lieferantenvorschlaege fuer das Ausgabenformular",
+      description: "Lieferantennamen aus den Belegen der Firma, je Schreibweise gruppiert, zuletzt benutzte zuerst: Name, zugeordneter Lieferant (supplierId), letztes Belegdatum, Anzahl, haeufigste Kategorie und haeufigster Steuersatz. q filtert nach einem Teil des Namens, limit hoechstens 50 (Standard 10).",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: SuppliersSuggestParams;
+      query: SuppliersSuggestQuery;
+      body: SuppliersSuggestBody;
+      response: SuppliersSuggestResponse;
+      responseData: SuppliersSuggestResponseData;
     },
   },
   // Contract source: explicit

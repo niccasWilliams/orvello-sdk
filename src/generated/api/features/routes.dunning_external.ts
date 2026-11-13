@@ -13,6 +13,7 @@ export type DunningSuggestionsExternalResponseData = {
   items: Array<{
   invoiceId: number;
   invoiceNumber: string;
+  customerDisplayName: string | null;
   status: string;
   dueDate: string;
   daysOverdue: number;
