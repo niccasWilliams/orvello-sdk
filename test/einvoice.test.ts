@@ -81,3 +81,114 @@ describe("e-invoice via Bills", () => {
     }
   });
 });
+
+describe("e-invoicing product via Bills (/e-invoicing)", () => {
+  const ID = "0b9e2f4a-1c3d-4e5f-8a7b-6c5d4e3f2a1b";
+  type Client = ReturnType<typeof createOrvelloClient>;
+  const pdf = () => ({ data: new Uint8Array([0x25, 0x50, 0x44, 0x46]), filename: "beleg.pdf", mediaType: "application/pdf" });
+
+  const cases: Array<{ operationId: string; method: string; path: string; call: (c: Client) => Promise<unknown>; body?: unknown }> = [
+    { operationId: "e_invoicing_validate", method: "POST", path: "/e-invoicing/validate",
+      call: (c) => c.eInvoicing.validate({ mode: "xml", xml: "<Invoice/>" }),
+      body: { mode: "xml", xml: "<Invoice/>" } },
+    { operationId: "e_invoicing_extractions_upload", method: "POST", path: "/e-invoicing/extractions",
+      call: (c) => c.eInvoicing.extractions.upload(pdf(), { direction: "inbound" }) },
+    { operationId: "e_invoicing_extractions_upload_batch", method: "POST", path: "/e-invoicing/extractions/batch",
+      call: (c) => c.eInvoicing.extractions.uploadBatch([pdf(), pdf()]) },
+    { operationId: "e_invoicing_extractions_list", method: "GET", path: "/e-invoicing/extractions?status=review&limit=5",
+      call: (c) => c.eInvoicing.extractions.list({ status: "review", limit: 5 }) },
+    { operationId: "e_invoicing_extractions_get", method: "GET", path: `/e-invoicing/extractions/${ID}`,
+      call: (c) => c.eInvoicing.extractions.get(ID) },
+    { operationId: "e_invoicing_extractions_save_draft", method: "PATCH", path: `/e-invoicing/extractions/${ID}/draft`,
+      call: (c) => c.eInvoicing.extractions.saveDraft(ID, { notes: "n" }), body: { notes: "n" } },
+    { operationId: "e_invoicing_extractions_approve", method: "POST", path: `/e-invoicing/extractions/${ID}/approve`,
+      call: (c) => c.eInvoicing.extractions.approve(ID), body: {} },
+    { operationId: "e_invoicing_extractions_convert", method: "POST", path: `/e-invoicing/extractions/${ID}/convert`,
+      call: (c) => c.eInvoicing.extractions.convert(ID, { format: "zugferd" }), body: { format: "zugferd" } },
+    { operationId: "e_invoicing_extractions_reject", method: "POST", path: `/e-invoicing/extractions/${ID}/reject`,
+      call: (c) => c.eInvoicing.extractions.reject(ID, { reason: "doppelt" }), body: { reason: "doppelt" } },
+    { operationId: "e_invoicing_extractions_retry", method: "POST", path: `/e-invoicing/extractions/${ID}/retry`,
+      call: (c) => c.eInvoicing.extractions.retry(ID) },
+    { operationId: "e_invoicing_extractions_cancel", method: "DELETE", path: `/e-invoicing/extractions/${ID}`,
+      call: (c) => c.eInvoicing.extractions.cancel(ID) },
+    { operationId: "e_invoicing_extraction_usage_current", method: "GET", path: "/e-invoicing/usage/extractions?yearMonth=2026-11",
+      call: (c) => c.eInvoicing.usage.current({ yearMonth: "2026-11" }) },
+    { operationId: "e_invoicing_extraction_usage_history", method: "GET", path: "/e-invoicing/usage/extractions/history?months=3",
+      call: (c) => c.eInvoicing.usage.history({ months: 3 }) },
+    { operationId: "e_invoicing_extraction_usage_job", method: "GET", path: `/e-invoicing/usage/extractions/${ID}`,
+      call: (c) => c.eInvoicing.usage.job(ID) },
+    { operationId: "e_invoicing_extraction_usage_set_budget", method: "PATCH", path: "/e-invoicing/usage/extractions/budget",
+      call: (c) => c.eInvoicing.usage.setBudget({ monthlyBudgetCents: null }), body: { monthlyBudgetCents: null } },
+  ];
+
+  it("covers every e_invoicing operation of the contract exactly once", async () => {
+    const { ROUTE_INDEX } = await import("../src/route-index.generated");
+    const contractOps = Object.keys(ROUTE_INDEX).filter((op) => op.startsWith("e_invoicing_")).sort();
+    expect(cases.map((c) => c.operationId).sort()).toEqual(contractOps);
+    expect(contractOps).toHaveLength(15);
+  });
+
+  it.each(cases)("$operationId calls only the Bills address with the bearer credential", async ({ operationId, method, path, call, body }) => {
+    const fetcher = vi.fn(async () => jsonResponse({ success: true, data: {} }));
+    const client = createOrvelloClient({ baseUrl: BILLS, auth: { apiKey: "test-key" }, fetch: fetcher });
+
+    await call(client);
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
+    const target = new URL(url);
+    expect(target.origin).toBe(BILLS);
+    expect(`${target.pathname}${target.search}`).toBe(path);
+    expect(init.method).toBe(method);
+    const headers = new Headers(init.headers);
+    expect(headers.get("Authorization")).toBe("Bearer test-key");
+    expect(headers.get("x-api-key")).toBeNull();
+    expect(resolveOperation(method, target.pathname)?.operationId).toBe(operationId);
+    if (body !== undefined) expect(JSON.parse(init.body as string)).toEqual(body);
+  });
+
+  it("uploads a single document as multipart in field file, without a hand-set Content-Type", async () => {
+    const fetcher = vi.fn(async () => jsonResponse({ success: true, data: { id: ID, status: "pending" } }, 201));
+    const client = createOrvelloClient({ baseUrl: BILLS, auth: "t", fetch: fetcher });
+
+    await expect(client.eInvoicing.extractions.upload(pdf(), { direction: "outbound" })).resolves.toMatchObject({ id: ID });
+
+    const [, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];
+    expect(new Headers(init.headers).get("Content-Type")).toBeNull();
+    const form = init.body as FormData;
+    expect(form).toBeInstanceOf(FormData);
+    const file = form.get("file") as File;
+    expect(file.name).toBe("beleg.pdf");
+    expect(file.type).toBe("application/pdf");
+    expect(new Uint8Array(await file.arrayBuffer())).toEqual(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
+    expect(form.get("direction")).toBe("outbound");
+
+    const wire = new Request(BILLS, { method: "POST", body: form });
+    expect(wire.headers.get("content-type")).toMatch(/^multipart\/form-data; boundary=/);
+  });
+
+  it("uploads a batch with one part per document and keeps Blob inputs", async () => {
+    const fetcher = vi.fn(async () => jsonResponse({ success: true, data: { submitted: 2, jobs: [], errors: [] } }));
+    const client = createOrvelloClient({ baseUrl: BILLS, auth: "t", fetch: fetcher });
+
+    await client.eInvoicing.extractions.uploadBatch([
+      pdf(),
+      { data: new Blob(["<Invoice/>"], { type: "application/xml" }), filename: "rechnung.xml" },
+    ]);
+
+    const form = (fetcher.mock.calls[0] as unknown as [string, RequestInit])[1].body as FormData;
+    const files = form.getAll("files") as File[];
+    expect(files.map((f) => [f.name, f.type])).toEqual([["beleg.pdf", "application/pdf"], ["rechnung.xml", "application/xml"]]);
+  });
+
+  it("does not repeat a paid upload on a server error unless asked to", async () => {
+    const fetcher = vi.fn(async () => jsonResponse({ success: false, message: "down" }, 503));
+    const client = createOrvelloClient({ baseUrl: BILLS, auth: "t", fetch: fetcher, maxRetries: 3, retryBaseDelayMs: 1 });
+
+    await expect(client.eInvoicing.extractions.upload(pdf())).rejects.toMatchObject({ status: 503 });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    await expect(client.eInvoicing.extractions.upload(pdf(), undefined, { maxRetries: 1 })).rejects.toMatchObject({ status: 503 });
+    expect(fetcher).toHaveBeenCalledTimes(3);
+  });
+});

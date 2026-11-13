@@ -31,6 +31,34 @@ import type {
 } from "./generated/api/features/routes.merchant_invoicing.js";
 
 import type {
+  EInvoicingValidateBody,
+  EInvoicingValidateResponseData,
+  EInvoicingExtractionsUploadBody,
+  EInvoicingExtractionsUploadResponseData,
+  EInvoicingExtractionsUploadBatchResponseData,
+  EInvoicingExtractionsListQuery,
+  EInvoicingExtractionsListResponseData,
+  EInvoicingExtractionsGetResponseData,
+  EInvoicingExtractionsSaveDraftBody,
+  EInvoicingExtractionsSaveDraftResponseData,
+  EInvoicingExtractionsApproveBody,
+  EInvoicingExtractionsApproveResponseData,
+  EInvoicingExtractionsConvertBody,
+  EInvoicingExtractionsConvertResponseData,
+  EInvoicingExtractionsRejectBody,
+  EInvoicingExtractionsRejectResponseData,
+  EInvoicingExtractionsRetryResponseData,
+  EInvoicingExtractionsCancelResponseData,
+  EInvoicingExtractionUsageCurrentQuery,
+  EInvoicingExtractionUsageCurrentResponseData,
+  EInvoicingExtractionUsageHistoryQuery,
+  EInvoicingExtractionUsageHistoryResponseData,
+  EInvoicingExtractionUsageJobResponseData,
+  EInvoicingExtractionUsageSetBudgetBody,
+  EInvoicingExtractionUsageSetBudgetResponseData,
+} from "./generated/api/features/routes.e_invoicing.js";
+
+import type {
   CustomerCompaniesSearchExternalQuery,
   CustomerCompaniesSearchExternalResponseData,
   CustomerCompaniesGetByIdExternalResponseData,
@@ -98,6 +126,8 @@ import type {
 import { diagnoseOrvello, type BaseUrlProvider, type OrvelloDiagnosis } from "./diagnose.js";
 import {
   type ExpenseReceiptUpload,
+  type EInvoicingDocument,
+  eInvoicingDocumentBlob,
   type BankAccountDetails,
   mapPaymentAccountToBankDetails,
 } from "./helpers.js";
@@ -1351,6 +1381,160 @@ export class OrvelloClient {
       this._bankAccountCache = result;
       this._bankAccountCacheTime = now;
       return result;
+    },
+  };
+
+  // ── E-Rechnung: Pruefung, Belegerkennung, Verbrauch ──────────────────────
+  /**
+   * Validierung, Belegerkennung und Verbrauch des E-Rechnungsdienstes (`/e-invoicing`).
+   *
+   * Jeder Aufruf geht nur an orvello mit dem ueblichen Credential; die Fachlogik laeuft
+   * serverseitig. Es gibt keine weitere Adresse und keinen weiteren Schluessel.
+   * Lesen braucht `invoices:read`, Schreiben `invoices:write`, das Budget einen Admin-Zugang.
+   */
+  public eInvoicing = {
+    /**
+     * Prueft eine Rechnung als kanonische Daten (`mode: "canonical"`) oder als XML
+     * (`mode: "xml"`) gegen Geschaeftsregeln und KoSIT. Speichert nichts.
+     */
+    validate: (body: EInvoicingValidateBody, options?: RequestOptions) =>
+      this.request<EInvoicingValidateResponseData>("/e-invoicing/validate", {
+        ...options,
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+
+    extractions: {
+      /**
+       * Einen Beleg (PDF, Bild, Office, XML, hoechstens 10 MB) zur Erkennung hochladen.
+       *
+       * Geht als `multipart/form-data` im Feld `file`. Jeder Upload startet eine
+       * kostenpflichtige Erkennung, deshalb wiederholt der Client ihn nicht von selbst
+       * (`maxRetries: 0`, ueber `options` aenderbar).
+       */
+      upload: (document: EInvoicingDocument, fields?: EInvoicingExtractionsUploadBody, options?: RequestOptions) => {
+        const form = new FormData();
+        form.append("file", eInvoicingDocumentBlob(document), document.filename);
+        if (fields?.direction) form.append("direction", fields.direction);
+        return this.request<EInvoicingExtractionsUploadResponseData>("/e-invoicing/extractions", {
+          ...options,
+          maxRetries: options?.maxRetries ?? 0,
+          method: "POST",
+          body: form,
+        });
+      },
+
+      /**
+       * Bis zu 20 Belege in einem Aufruf hochladen. Abgelehnte Dateien stehen mit ihrem
+       * Index in `errors`, angenommene in `jobs`. Wie {@link upload} ohne automatische
+       * Wiederholung.
+       */
+      uploadBatch: (documents: readonly EInvoicingDocument[], options?: RequestOptions) => {
+        const form = new FormData();
+        for (const document of documents) {
+          form.append("files", eInvoicingDocumentBlob(document), document.filename);
+        }
+        return this.request<EInvoicingExtractionsUploadBatchResponseData>("/e-invoicing/extractions/batch", {
+          ...options,
+          maxRetries: options?.maxRetries ?? 0,
+          method: "POST",
+          body: form,
+        });
+      },
+
+      /** Belegerkennungen des eigenen Mandanten, seitenweise ueber `cursor`. */
+      list: (query?: EInvoicingExtractionsListQuery, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsListResponseData>("/e-invoicing/extractions", {
+          ...options,
+          method: "GET",
+          query: query as Record<string, unknown>,
+        }),
+
+      /** Eine Belegerkennung mit Ergebnis lesen. */
+      get: (id: string, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsGetResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}`, {
+          ...options,
+          method: "GET",
+        }),
+
+      /** Korrekturen zwischenspeichern, ohne freizugeben. */
+      saveDraft: (id: string, body: EInvoicingExtractionsSaveDraftBody, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsSaveDraftResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}/draft`, {
+          ...options,
+          method: "PATCH",
+          body: JSON.stringify(body),
+        }),
+
+      /** Belegerkennung mit optionalen Korrekturen freigeben. */
+      approve: (id: string, body: EInvoicingExtractionsApproveBody = {}, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsApproveResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}/approve`, {
+          ...options,
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+
+      /** Freigegebene Belegerkennung in eine E-Rechnung (XRechnung/ZUGFeRD) umwandeln. */
+      convert: (id: string, body: EInvoicingExtractionsConvertBody = {}, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsConvertResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}/convert`, {
+          ...options,
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+
+      /** Belegerkennung mit Begruendung ablehnen. */
+      reject: (id: string, body: EInvoicingExtractionsRejectBody, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsRejectResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}/reject`, {
+          ...options,
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+
+      /** Fehlgeschlagene Belegerkennung erneut starten. */
+      retry: (id: string, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsRetryResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}/retry`, {
+          ...options,
+          method: "POST",
+        }),
+
+      /** Laufende Belegerkennung abbrechen. */
+      cancel: (id: string, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionsCancelResponseData>(`/e-invoicing/extractions/${encodeURIComponent(id)}`, {
+          ...options,
+          method: "DELETE",
+        }),
+    },
+
+    usage: {
+      /** Verbrauch der Belegerkennung in einem Monat (`yearMonth` als `YYYY-MM`, sonst der laufende). */
+      current: (query?: EInvoicingExtractionUsageCurrentQuery, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionUsageCurrentResponseData>("/e-invoicing/usage/extractions", {
+          ...options,
+          method: "GET",
+          query: query as Record<string, unknown>,
+        }),
+
+      /** Verbrauch der letzten `months` Monate. */
+      history: (query?: EInvoicingExtractionUsageHistoryQuery, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionUsageHistoryResponseData>("/e-invoicing/usage/extractions/history", {
+          ...options,
+          method: "GET",
+          query: query as Record<string, unknown>,
+        }),
+
+      /** Verbrauch einer einzelnen Belegerkennung. */
+      job: (extractionId: string, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionUsageJobResponseData>(`/e-invoicing/usage/extractions/${encodeURIComponent(extractionId)}`, {
+          ...options,
+          method: "GET",
+        }),
+
+      /** Monatsbudget in Cent setzen; `null` hebt die Grenze auf. Nur mit Admin-Zugang. */
+      setBudget: (body: EInvoicingExtractionUsageSetBudgetBody, options?: RequestOptions) =>
+        this.request<EInvoicingExtractionUsageSetBudgetResponseData>("/e-invoicing/usage/extractions/budget", {
+          ...options,
+          method: "PATCH",
+          body: JSON.stringify(body),
+        }),
     },
   };
 
