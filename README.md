@@ -317,6 +317,34 @@ if (results.length === 0) {
 Needs the scopes `invoices:publish` (request) and `invoices:read` (status). Everything goes
 through orvello; no further endpoint or credential is involved. Available from SDK 0.7.34.
 
+#### Validate E-Invoices, Recognise Receipts, Track Usage
+```typescript
+// KoSIT and business-rule check, nothing is stored. Canonical data or raw XML.
+const check = await orvello.eInvoicing.validate({ mode: "xml", xml: xrechnungXml });
+console.log(check.valid, check.kosit.messages);
+
+// Upload a receipt (PDF, image, Office, XML, max 10 MB) as multipart; Node Buffers work too.
+const job = await orvello.eInvoicing.extractions.upload(
+  { data: pdfBuffer, filename: "supplier-invoice.pdf", mediaType: "application/pdf" },
+  { direction: "inbound" },
+);
+// Up to 20 at once: rejected files come back in `errors` with their index.
+await orvello.eInvoicing.extractions.uploadBatch([doc1, doc2]);
+
+const detail = await orvello.eInvoicing.extractions.get(job.id);
+await orvello.eInvoicing.extractions.approve(job.id, { corrections: { /* ... */ } });
+await orvello.eInvoicing.extractions.convert(job.id, { format: "xrechnung_ubl" });
+// also: list, saveDraft, reject, retry, cancel
+
+const usage = await orvello.eInvoicing.usage.current();      // this month
+await orvello.eInvoicing.usage.history({ months: 6 });
+await orvello.eInvoicing.usage.job(job.id);
+await orvello.eInvoicing.usage.setBudget({ monthlyBudgetCents: 5000 }); // admin only, null lifts the limit
+```
+Reads need `invoices:read`, writes `invoices:write`. Uploads start a paid recognition and are
+not retried automatically (pass `{ maxRetries }` to opt in). Every call goes to orvello only.
+Available from SDK 0.7.36.
+
 ---
 
 ### 2. Bookkeeping & Expenses with Receipt Upload

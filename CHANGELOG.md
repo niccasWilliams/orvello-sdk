@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.36 - 2026-11-13
+
+- neu: `client.eInvoicing` deckt alle 15 Operationen unter `/e-invoicing` ab (operationIds `e_invoicing_*`): `validate`, `extractions.upload`/`uploadBatch`/`list`/`get`/`saveDraft`/`approve`/`convert`/`reject`/`retry`/`cancel`, `usage.current`/`history`/`job`/`setBudget`.
+- `extractions.upload` und `uploadBatch` senden `multipart/form-data` (Feld `file` bzw. ein Teil je Beleg) und nehmen Blob, ArrayBuffer oder Uint8Array (`EInvoicingDocument`). Uploads werden nicht automatisch wiederholt, weil jeder eine kostenpflichtige Erkennung startet.
+- Alle Aufrufe gehen nur an orvello mit dem ueblichen Credential; keine weitere Adresse, kein weiterer Schluessel.
+
 ## 0.7.35 - 2026-11-13
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

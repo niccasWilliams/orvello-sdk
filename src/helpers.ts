@@ -13,6 +13,26 @@ export interface ExpenseReceiptUpload {
 }
 
 /**
+ * Ein Beleg fuer die Belegerkennung (`client.eInvoicing.extractions.upload`).
+ * `data` darf ein Blob/File, ein ArrayBuffer oder ein Uint8Array (auch ein Node-Buffer) sein.
+ */
+export interface EInvoicingDocument {
+  data: Blob | ArrayBuffer | Uint8Array;
+  filename: string;
+  /** Medientyp, z.B. `application/pdf`. Fehlt er, gilt der des Blobs. */
+  mediaType?: string;
+}
+
+/** Macht aus einem {@link EInvoicingDocument} den Blob fuer das Multipart-Feld. */
+export function eInvoicingDocumentBlob(document: EInvoicingDocument): Blob {
+  const { data, mediaType } = document;
+  if (data instanceof Blob) {
+    return mediaType && mediaType !== data.type ? new Blob([data], { type: mediaType }) : data;
+  }
+  return new Blob([new Uint8Array(data)], mediaType ? { type: mediaType } : {});
+}
+
+/**
  * Simplified bank account details for invoices, UI, and external payment references.
  */
 export interface BankAccountDetails {
