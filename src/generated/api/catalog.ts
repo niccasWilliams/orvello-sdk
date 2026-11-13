@@ -37,6 +37,7 @@ export const apiMountPrefixes = {
   "/customer-companies",
   "/documents",
   "/documents/private-import/external",
+  "/e-invoicing",
   "/exports",
   "/internal/fakturion/v1",
   "/invoices",
@@ -160,6 +161,10 @@ export const apiGroups = {
     "module": "./features/routes.dunning_external"
   },
   {
+    "key": "e_invoicing",
+    "module": "./features/routes.e_invoicing"
+  },
+  {
     "key": "enterprise",
     "module": "./features/routes.enterprise"
   },
@@ -264,6 +269,10 @@ export const apiGroups = {
   {
     "key": "dunning_external",
     "module": "./features/routes.dunning_external"
+  },
+  {
+    "key": "e_invoicing",
+    "module": "./features/routes.e_invoicing"
   },
   {
     "key": "enterprise",

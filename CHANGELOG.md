@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.35 - 2026-11-13
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: EInvoicingValidateParams, EInvoicingValidateQuery, EInvoicingValidateBody, EInvoicingValidateResponseData, EInvoicingValidateResponse, EInvoicingExtractionsUploadParams, EInvoicingExtractionsUploadQuery, EInvoicingExtractionsUploadBody (+68)
+
 ## 0.7.34 - 2026-11-12
 
 - neu: `client.invoices.requestEInvoice(id, { format })` fordert zu einer eigenen ausgestellten Rechnung eine E-Rechnung an (`POST /merchant-invoicing/invoices/:invoiceId/einvoice`, operationId `merchant_invoicing_einvoice_request`, Scope `invoices:publish`). Antwort `202` neu oder `200` mit `replayed: true`.
