@@ -65,7 +65,7 @@ export type PaymentAllocationTarget = 'invoice' | 'expense' | 'revenue' | 'capit
 export type PaymentAllocationKind = 'payment' | 'refund' | 'fee' | 'writeoff' | 'discount';
 export type IabStatus = 'active' | 'dissolved' | 'reversed' | 'warning';
 export type BookkeepingAuditEntity = 'payment' | 'payment_allocation' | 'payment_account' | 'payment_import_profile' | 'period_lock' | 'invoice' | 'expense' | 'revenue' | 'asset' | 'sammelposten_pool' | 'depreciation_record' | 'iab' | 'capital_movement' | 'supplier' | 'tax_report';
-export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'expense_tax_event_recorded' | 'tax_report_archived' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_issuer_correct' | 'invoice_issuer_evidence' | 'invoice_version_select' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
+export type BookkeepingAuditAction = 'payment_create_manual' | 'payment_update_manual' | 'payment_import_csv' | 'payment_import_csv_preview' | 'payment_allocate' | 'payment_unallocate' | 'payment_reverse' | 'payment_allocation_reverse' | 'payment_fee_correct' | 'payment_provider_fee_treatment_set' | 'payment_fee_treatment_period_set' | 'transfer_create' | 'transfer_reverse' | 'transfer_link' | 'transfer_unlink' | 'payment_import_profile_create' | 'payment_import_profile_update' | 'expense_create' | 'expense_update' | 'expense_confirm' | 'expense_cash_confirm' | 'expense_cash_confirm_revoke' | 'expense_delete' | 'expense_restore' | 'expense_fee_treatment_reassessed' | 'expense_supplier_assigned' | 'expense_supplier_treatment_applied' | 'expense_tax_event_recorded' | 'tax_report_archived' | 'supplier_create' | 'supplier_update' | 'supplier_vat_treatment_period_set' | 'revenue_create' | 'revenue_update' | 'revenue_confirm' | 'revenue_cash_confirm' | 'revenue_cash_confirm_revoke' | 'revenue_delete' | 'invoice_status_change' | 'invoice_issuer_correct' | 'invoice_issuer_evidence' | 'invoice_version_select' | 'invoice_delete' | 'invoice_credit_note_preview' | 'invoice_credit_note_issue' | 'invoice_email_sent' | 'asset_create' | 'asset_update' | 'asset_dispose' | 'asset_delete' | 'asset_method_change' | 'asset_sonderafa_apply' | 'sammelposten_pool_create' | 'sammelposten_pool_close' | 'depreciation_record_create' | 'depreciation_record_adjust' | 'iab_create' | 'iab_dissolve' | 'iab_reverse' | 'dunning_notice_issued' | 'dunning_settings_updated' | 'period_lock_set' | 'period_lock_clear' | 'capital_movement_create' | 'capital_movement_update' | 'capital_movement_confirm' | 'capital_movement_reverse' | 'capital_movement_delete' | 'capital_movement_cash_confirm' | 'capital_movement_cash_confirm_revoke';
 export type PaymentProvider = 'sumup' | 'paypal' | 'stripe' | 'klarna';
 export type FeeTreatmentScope = 'provider' | 'account_fee';
 export type PaymentAccountBalanceSnapshotSource = 'manual' | 'csv_import' | 'paypal_api' | 'sumup_api' | 'fints';
@@ -2251,6 +2251,8 @@ export type BookkeepingRevenue = {
   isDeleted: boolean;
   deletedAt: Date | null;
   deletedBy: number | null;
+  /** Schreibstand (TSK-000619 #3665), siehe booking-write-guard.ts; nicht im EUeR-Fingerabdruck. */
+  revision: number;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
   idempotencyKey: string | null;
   /** EÜR Payment Status (Zufluss-Prinzip) */
@@ -2358,6 +2360,8 @@ export type BookkeepingRevenueInsert = {
   isDeleted?: boolean;
   deletedAt?: Date | null;
   deletedBy?: number | null;
+  /** Schreibstand (TSK-000619 #3665), siehe booking-write-guard.ts; nicht im EUeR-Fingerabdruck. */
+  revision?: number;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
   idempotencyKey?: string | null;
   /** EÜR Payment Status (Zufluss-Prinzip) */
@@ -2470,6 +2474,8 @@ export type BookkeepingExpense = {
   supplierId: number | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus: FeeProposalStatus | null;
+  /** Schreibstand (TSK-000619 #3665), siehe booking-write-guard.ts; nicht im EUeR-Fingerabdruck. */
+  revision: number;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
   idempotencyKey: string | null;
   /** EÜR Payment Status (Abfluss-Prinzip) */
@@ -2580,6 +2586,8 @@ export type BookkeepingExpenseInsert = {
   supplierId?: number | null;
   /** Fee Proposal — for provider fee expenses that require user confirmation before booking */
   feeProposalStatus?: FeeProposalStatus | null;
+  /** Schreibstand (TSK-000619 #3665), siehe booking-write-guard.ts; nicht im EUeR-Fingerabdruck. */
+  revision?: number;
   /** Idempotency (for external API calls – prevents duplicate entries from webhook retries) */
   idempotencyKey?: string | null;
   /** EÜR Payment Status (Abfluss-Prinzip) */

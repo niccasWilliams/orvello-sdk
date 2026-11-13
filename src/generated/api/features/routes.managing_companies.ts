@@ -1942,6 +1942,7 @@ export type ManagingCompaniesCreateBody = {
   baseCurrency?: "EUR" | "USD" | "GBP" | "JPY" | "CHF" | "CAD" | "AUD" | "CNY" | "SEK" | "NOK" | "DKK" | "PLN" | "CZK" | "HUF" | "RON" | "BGN" | "KRW" | "SGD" | "HKD" | "NZD" | "INR" | "THB" | "MYR" | "IDR" | "PHP" | "BRL" | "MXN" | "ARS" | "CLP" | "COP" | "AED" | "SAR" | "ILS" | "ZAR" | "EGP" | "TRY" | "RUB";
   invoiceLayoutVariant?: "din5008_modern" | "din5008_classic" | "din5008_minimal" | "din5008_compact" | "din5008_enterprise";
   bookkeepingBasis?: "eur" | "accrual";
+  historySince?: string;
 };
 export type ManagingCompaniesCreateResponseData = ManagingCompany;
 export type ManagingCompaniesCreateResponse = import("../types").ApiEnvelope<ManagingCompaniesCreateResponseData>;
@@ -3557,7 +3558,7 @@ export const apiRoutes_managing_companies = {
     meta: {
       tags: ["managing-companies"],
       summary: "Verwaltendes Unternehmen anlegen",
-      description: "Erstellt ein neues Managing Company (Mandant) inkl. Grunddaten. Erfordert `bookkeeping_access`.",
+      description: "Erstellt ein neues Managing Company (Mandant) inkl. Grunddaten. Erfordert `bookkeeping_access`. Optional `historySince` (JJJJ-MM-TT, nicht in der Zukunft, Standard heute): Beginn der Aufzeichnung fuer eine rueckwirkend gefuehrte Firma; sonst 400 `HISTORY_SINCE_IN_FUTURE` bzw. `HISTORY_SINCE_INVALID`.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {

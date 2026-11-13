@@ -298,6 +298,7 @@ export const apiRoutes_work_tracking = {
     meta: {
       tags: ["work-tracking"],
       summary: "Create a new work entry",
+      description: "Eine inhaltsgleiche Anlage desselben Nutzers innerhalb von 5 Sekunden (Doppelklick) liefert den schon angelegten Eintrag zurueck. Verschiedene Eintraege gehen ohne Wartezeit durch.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -406,6 +407,7 @@ export const apiRoutes_work_tracking = {
     meta: {
       tags: ["work-tracking"],
       summary: "Bill multiple work entries (create invoice)",
+      description: "Legt einen Rechnungsentwurf an, ohne PDF. Das PDF entsteht mit der Ausstellung.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {

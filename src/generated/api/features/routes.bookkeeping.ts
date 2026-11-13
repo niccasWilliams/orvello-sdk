@@ -34,6 +34,37 @@ export type BookkeepingRevenuesGetByIdBody = undefined;
 export type BookkeepingRevenuesGetByIdResponseData = BookkeepingRevenue & { paymentAllocations: ResolvedPaymentAllocation[] } & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null; allocationSummary: { allocatedAmount: string; openAmount: string; allocationCount: number } } & { receipt: { documentId: number; fileName: string; mediaType: string; sizeBytes: number } | null };
 export type BookkeepingRevenuesGetByIdResponse = import("../types").ApiEnvelope<BookkeepingRevenuesGetByIdResponseData>;
 
+export type BookkeepingRevenuesHistoryParams = {
+  id: number;
+};
+export type BookkeepingRevenuesHistoryQuery = {
+  page?: number;
+  pageSize?: number;
+};
+export type BookkeepingRevenuesHistoryBody = undefined;
+export type BookkeepingRevenuesHistoryResponseData = {
+  items: Array<{
+  id: number;
+  action: string;
+  message: string | null;
+  createdAt: string;
+  actorUserId: number | null;
+  actorName: string | null;
+  changes: Array<{
+  field: string;
+  before: string | number | boolean | null;
+  after: string | number | boolean | null;
+}>;
+}>;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+export type BookkeepingRevenuesHistoryResponse = import("../types").ApiEnvelope<BookkeepingRevenuesHistoryResponseData>;
+
 export type BookkeepingRevenuesAnalyzeReceiptParams = undefined;
 export type BookkeepingRevenuesAnalyzeReceiptQuery = undefined;
 export type BookkeepingRevenuesAnalyzeReceiptBody = undefined;
@@ -59,6 +90,52 @@ export type BookkeepingRevenuesAnalyzeReceiptResponseData = {
   rawText: string;
 };
 export type BookkeepingRevenuesAnalyzeReceiptResponse = import("../types").ApiEnvelope<BookkeepingRevenuesAnalyzeReceiptResponseData>;
+
+export type BookkeepingRevenuesCommitParams = undefined;
+export type BookkeepingRevenuesCommitQuery = undefined;
+export type BookkeepingRevenuesCommitBody = {
+  idempotencyKey: string;
+  bookingId?: number | null;
+  expectedRevision?: number;
+  confirm?: boolean;
+  booking?: {
+  costCenterId?: number | null;
+  revenueDate: string;
+  performedAt?: string | null;
+  amount: string | number;
+  netAmount: string | number;
+  taxAmount?: string | number | null;
+  taxRate?: string | number | null;
+  currency?: string;
+  originalCurrency?: string | null;
+  originalAmount?: string | number | null;
+  description: string;
+  category: "customer_invoice" | "interest" | "refund" | "other" | "asset_disposal" | "pos_sale" | "saas_revenue_apple_iap" | "saas_revenue_google_iap";
+  invoiceId?: number | null;
+  assetId?: number | null;
+  documentId?: number | null;
+  notes?: string | null;
+  isSelfCreatedReceipt?: boolean;
+  selfReceiptReason?: string | null;
+  signatureName?: string | null;
+  place?: string | null;
+  language?: string | null;
+};
+  cash?: {
+  confirmedAt?: string;
+  account?: {
+  paymentAccountId: number;
+  amount: string;
+  currency?: string;
+  bookedAt: string;
+  reference?: string;
+  counterpartyName?: string;
+} | null;
+  receivedAt?: string;
+} | null;
+};
+export type BookkeepingRevenuesCommitResponseData = { replayed: boolean; steps: Array<"create" | "update" | "confirm" | "cashConfirm" | "cashPayment">; cashPaymentId: number | null; booking: BookkeepingRevenue & { paymentAllocations: ResolvedPaymentAllocation[] } & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null; allocationSummary: { allocatedAmount: string; openAmount: string; allocationCount: number } } & { receipt: { documentId: number; fileName: string; mediaType: string; sizeBytes: number } | null } };
+export type BookkeepingRevenuesCommitResponse = import("../types").ApiEnvelope<BookkeepingRevenuesCommitResponseData>;
 
 export type BookkeepingRevenuesCreateParams = undefined;
 export type BookkeepingRevenuesCreateQuery = undefined;
@@ -114,6 +191,7 @@ export type BookkeepingRevenuesUpdateBody = {
   signatureName?: string | null;
   place?: string | null;
   language?: string | null;
+  expectedRevision?: number;
 };
 export type BookkeepingRevenuesUpdateResponseData = BookkeepingRevenue;
 export type BookkeepingRevenuesUpdateResponse = import("../types").ApiEnvelope<BookkeepingRevenuesUpdateResponseData>;
@@ -147,7 +225,9 @@ export type BookkeepingRevenuesConfirmParams = {
   id: number;
 };
 export type BookkeepingRevenuesConfirmQuery = undefined;
-export type BookkeepingRevenuesConfirmBody = undefined;
+export type BookkeepingRevenuesConfirmBody = {
+  expectedRevision?: number;
+};
 export type BookkeepingRevenuesConfirmResponseData = BookkeepingRevenue;
 export type BookkeepingRevenuesConfirmResponse = import("../types").ApiEnvelope<BookkeepingRevenuesConfirmResponseData>;
 
@@ -158,6 +238,7 @@ export type BookkeepingRevenuesConfirmCashQuery = undefined;
 export type BookkeepingRevenuesConfirmCashBody = {
   confirmedAt?: string;
   receivedAt?: string;
+  expectedRevision?: number;
 };
 export type BookkeepingRevenuesConfirmCashResponseData = BookkeepingRevenue;
 export type BookkeepingRevenuesConfirmCashResponse = import("../types").ApiEnvelope<BookkeepingRevenuesConfirmCashResponseData>;
@@ -237,6 +318,151 @@ export type BookkeepingExpensesSearchQuery = {
 export type BookkeepingExpensesSearchBody = undefined;
 export type BookkeepingExpensesSearchResponseData = PaginatedResult<BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number; withoutReceiptCount: number } };
 export type BookkeepingExpensesSearchResponse = import("../types").ApiEnvelope<BookkeepingExpensesSearchResponseData>;
+
+export type BookkeepingExpensesExportParams = undefined;
+export type BookkeepingExpensesExportQuery = {
+  q?: string;
+  startDate?: string;
+  endDate?: string;
+  category?: "infrastructure" | "office" | "software" | "hardware" | "travel" | "marketing" | "legal" | "accounting" | "insurance" | "personnel" | "depreciation" | "interest_expense" | "rent" | "bank_fees" | "professional_services" | "other" | "private_withdrawal" | "ust_payment";
+  vendor?: string;
+  currency?: string;
+  isConfirmed?: boolean;
+  paymentStatus?: "unmatched" | "cash_confirmed" | "partially_matched" | "fully_matched";
+  isDeductible?: boolean;
+  hasReceipt?: boolean;
+  minAmount?: string;
+  maxAmount?: string;
+  sortBy?: "createdAt" | "expenseDate" | "amount" | "vendor" | "category" | "paymentStatus";
+  sortDir?: "asc" | "desc";
+};
+export type BookkeepingExpensesExportBody = undefined;
+export type BookkeepingExpensesExportResponseData = Blob;
+export type BookkeepingExpensesExportResponse = Blob;
+
+export type BookkeepingExpensesBulkUpdateParams = undefined;
+export type BookkeepingExpensesBulkUpdateQuery = undefined;
+export type BookkeepingExpensesBulkUpdateBody = {
+  ids: Array<number>;
+  patch: {
+  category?: "infrastructure" | "office" | "software" | "hardware" | "travel" | "marketing" | "legal" | "accounting" | "insurance" | "personnel" | "depreciation" | "interest_expense" | "rent" | "bank_fees" | "professional_services" | "other" | "ust_payment";
+  costCenterId?: number | null;
+  isDeductible?: boolean;
+};
+};
+export type BookkeepingExpensesBulkUpdateResponseData = {
+  updated: number;
+  unchanged: number;
+  items: Array<{
+  id: number;
+  changes: Array<{
+  field: string;
+  before: any;
+  after: any;
+}>;
+}>;
+};
+export type BookkeepingExpensesBulkUpdateResponse = import("../types").ApiEnvelope<BookkeepingExpensesBulkUpdateResponseData>;
+
+export type BookkeepingExpensesCommitParams = undefined;
+export type BookkeepingExpensesCommitQuery = undefined;
+export type BookkeepingExpensesCommitBody = {
+  idempotencyKey: string;
+  bookingId?: number | null;
+  expectedRevision?: number;
+  confirm?: boolean;
+  booking?: {
+  costCenterId?: number | null;
+  expenseDate: string;
+  amount: string | number;
+  netAmount: string | number;
+  taxAmount?: string | number | null;
+  taxRate?: string | number | null;
+  currency?: string;
+  description: string;
+  category: "infrastructure" | "office" | "software" | "hardware" | "travel" | "marketing" | "legal" | "accounting" | "insurance" | "personnel" | "depreciation" | "interest_expense" | "rent" | "bank_fees" | "professional_services" | "other" | "ust_payment";
+  vendor?: string | null;
+  vendorInvoiceNumber?: string | null;
+  notes?: string | null;
+  isDeductible?: boolean;
+  isConfirmed?: boolean;
+  isSelfCreatedReceipt?: boolean;
+  selfReceiptReason?: string | null;
+  signatureName?: string | null;
+  place?: string | null;
+  language?: string | null;
+  inputVatEligibility?: "NONE" | "FULL" | "PARTIAL";
+  inputVatAmount?: string | number | null;
+  inputVatRate?: string | number | null;
+  vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
+  supplierId?: number | null;
+};
+  asset?: {
+  name?: string;
+  description?: string | null;
+  assetType?: "equipment" | "vehicle" | "software" | "furniture" | "leasehold_improvement" | "other";
+  purchaseDate?: string;
+  purchaseAmountNet?: string | number;
+  currency?: string;
+  usefulLifeMonths?: number;
+  depreciationMethod?: "linear" | "immediate_gwg" | "none";
+  residualValue?: string | number;
+  inputVatEligibility?: "NONE" | "FULL" | "PARTIAL";
+  inputVatAmount?: string | number | null;
+  inputVatRate?: string | number | null;
+  vendorName?: string | null;
+  vendorInvoiceNumber?: string | null;
+  costCenterId?: number | null;
+  documentId?: number | null;
+  inheritExpenseDocument?: boolean;
+};
+  createAsAsset?: boolean;
+  cash?: {
+  confirmedAt?: string;
+  account?: {
+  paymentAccountId: number;
+  amount: string;
+  currency?: string;
+  bookedAt: string;
+  reference?: string;
+  counterpartyName?: string;
+} | null;
+} | null;
+};
+export type BookkeepingExpensesCommitResponseData = { replayed: boolean; steps: Array<"create" | "update" | "confirm" | "cashConfirm" | "cashPayment">; cashPaymentId: number | null; booking: BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null } & { receipt: { documentId: number; fileName: string; mediaType: string; sizeBytes: number } | null } };
+export type BookkeepingExpensesCommitResponse = import("../types").ApiEnvelope<BookkeepingExpensesCommitResponseData>;
+
+export type BookkeepingExpensesDuplicateCandidatesParams = undefined;
+export type BookkeepingExpensesDuplicateCandidatesQuery = {
+  amount?: string;
+  currency?: string;
+  expenseDate?: string;
+  vendor?: string;
+  supplierId?: number;
+  vendorInvoiceNumber?: string;
+  documentId?: number;
+  excludeId?: number;
+  windowDays?: number;
+  limit?: number;
+};
+export type BookkeepingExpensesDuplicateCandidatesBody = undefined;
+export type BookkeepingExpensesDuplicateCandidatesResponseData = {
+  items: Array<{
+  id: number;
+  expenseDate: string;
+  amount: string;
+  currency: string;
+  originalAmount: string | null;
+  originalCurrency: string | null;
+  vendor: string | null;
+  vendorInvoiceNumber: string | null;
+  description: string;
+  isConfirmed: boolean;
+  level: "strong" | "possible";
+  reasons: Array<"same_document" | "same_invoice_number" | "same_amount_same_day" | "same_amount_near_date" | "same_vendor">;
+}>;
+};
+export type BookkeepingExpensesDuplicateCandidatesResponse = import("../types").ApiEnvelope<BookkeepingExpensesDuplicateCandidatesResponseData>;
 
 export type BookkeepingExpensesGetByIdParams = {
   id: number;
@@ -352,6 +578,7 @@ export type BookkeepingExpensesUpdateBody = {
   inputVatRate?: string | number | null;
   vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
   supplierId?: number | null;
+  expectedRevision?: number;
 };
 export type BookkeepingExpensesUpdateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesUpdateResponse = import("../types").ApiEnvelope<BookkeepingExpensesUpdateResponseData>;
@@ -385,7 +612,9 @@ export type BookkeepingExpensesConfirmParams = {
   id: number;
 };
 export type BookkeepingExpensesConfirmQuery = undefined;
-export type BookkeepingExpensesConfirmBody = undefined;
+export type BookkeepingExpensesConfirmBody = {
+  expectedRevision?: number;
+};
 export type BookkeepingExpensesConfirmResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesConfirmResponse = import("../types").ApiEnvelope<BookkeepingExpensesConfirmResponseData>;
 
@@ -395,6 +624,7 @@ export type BookkeepingExpensesConfirmCashParams = {
 export type BookkeepingExpensesConfirmCashQuery = undefined;
 export type BookkeepingExpensesConfirmCashBody = {
   confirmedAt?: string;
+  expectedRevision?: number;
 };
 export type BookkeepingExpensesConfirmCashResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesConfirmCashResponse = import("../types").ApiEnvelope<BookkeepingExpensesConfirmCashResponseData>;
@@ -442,6 +672,45 @@ export type BookkeepingExpensesDeleteQuery = undefined;
 export type BookkeepingExpensesDeleteBody = undefined;
 export type BookkeepingExpensesDeleteResponseData = null;
 export type BookkeepingExpensesDeleteResponse = import("../types").ApiEnvelope<BookkeepingExpensesDeleteResponseData>;
+
+export type BookkeepingExpensesHistoryParams = {
+  id: number;
+};
+export type BookkeepingExpensesHistoryQuery = {
+  page?: number;
+  pageSize?: number;
+};
+export type BookkeepingExpensesHistoryBody = undefined;
+export type BookkeepingExpensesHistoryResponseData = {
+  items: Array<{
+  id: number;
+  action: string;
+  message: string | null;
+  createdAt: string;
+  actorUserId: number | null;
+  actorName: string | null;
+  changes: Array<{
+  field: string;
+  before: string | number | boolean | null;
+  after: string | number | boolean | null;
+}>;
+}>;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+export type BookkeepingExpensesHistoryResponse = import("../types").ApiEnvelope<BookkeepingExpensesHistoryResponseData>;
+
+export type BookkeepingExpensesRestoreParams = {
+  id: number;
+};
+export type BookkeepingExpensesRestoreQuery = undefined;
+export type BookkeepingExpensesRestoreBody = undefined;
+export type BookkeepingExpensesRestoreResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
+export type BookkeepingExpensesRestoreResponse = import("../types").ApiEnvelope<BookkeepingExpensesRestoreResponseData>;
 
 export type ExpenseForeignReceiptHistoryParams = {
   id: number;
@@ -3495,6 +3764,25 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "bookkeeping_revenues_history": {
+    method: "GET",
+    path: "/bookkeeping/revenues/:id/history",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","revenues"],
+      summary: "Änderungsverlauf der Einnahme",
+      description: "Alle Protokolleinträge der Einnahme (Anlegen, Ändern, Beleg, Bestätigen, Löschen), neueste zuerst und paginiert. Je Eintrag action, message, createdAt, actorName (Name der Person, null bei System oder Schnittstelle) und changes: je geändertem Feld field, before und after (Datum als ISO-Text, Beträge wie gespeichert). Einträge ohne Feldänderung oder von vor der Einführung haben eine leere Liste. Gleiche Sichtbarkeit wie der Einzelabruf: fremde Firma oder Kostenstelle ergibt 404 REVENUE_NOT_FOUND.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingRevenuesHistoryParams;
+      query: BookkeepingRevenuesHistoryQuery;
+      body: BookkeepingRevenuesHistoryBody;
+      response: BookkeepingRevenuesHistoryResponse;
+      responseData: BookkeepingRevenuesHistoryResponseData;
+    },
+  },
+  // Contract source: explicit
   "bookkeeping_revenues_analyze_receipt": {
     method: "POST",
     path: "/bookkeeping/revenues/analyze-receipt",
@@ -3511,6 +3799,25 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingRevenuesAnalyzeReceiptBody;
       response: BookkeepingRevenuesAnalyzeReceiptResponse;
       responseData: BookkeepingRevenuesAnalyzeReceiptResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_revenues_commit": {
+    method: "POST",
+    path: "/bookkeeping/revenues/commit",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","revenues"],
+      summary: "Einnahme in einem Aufruf anlegen oder ändern, bestätigen und bar erhalten",
+      description: "Ein Aufruf je Benutzeraktion, alles in einer Transaktion: ohne bookingId anlegen (booking Pflicht), mit bookingId und expectedRevision ändern (booking optional). Danach optional confirm (wie bookkeeping_revenues_confirm) und cash (wie bookkeeping_revenues_confirm_cash, mit receivedAt JJJJ-MM-TT; mit cash.account zusätzlich eine Kassenbuchung im Kassenkonto, Betrag ohne Vorzeichen, die der Einnahme zugeordnet wird). Scheitert ein Schritt, bleibt nichts gespeichert; der Fehler kommt mit dem Code des Schritts (z.B. 422 REVENUE_PROOF_REQUIRED). Beleg als files[] (base64, Feld file) oder multipart file. idempotencyKey ist Pflicht: dieselbe Anfrage noch einmal liefert den aktuellen Stand mit replayed=true und schreibt nichts; derselbe Schlüssel mit anderem Inhalt ergibt 409 IDEMPOTENCY_CONFLICT. Abweichende revision: 409 STALE_WRITE mit meta.currentRevision. Antwort: booking im Stand wie bookkeeping_revenues_get_by_id (mit revision), steps, cashPaymentId; 201 beim Anlegen, sonst 200.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingRevenuesCommitParams;
+      query: BookkeepingRevenuesCommitQuery;
+      body: BookkeepingRevenuesCommitBody;
+      response: BookkeepingRevenuesCommitResponse;
+      responseData: BookkeepingRevenuesCommitResponseData;
     },
   },
   // Contract source: explicit
@@ -3541,7 +3848,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahme aktualisieren",
-      description: "Aktualisiert eine bestehende Einnahme. Bestätigte Einnahmen können nicht mehr geändert werden, wenn die Periode gesperrt ist.",
+      description: "Aktualisiert eine bestehende Einnahme. Bestätigte Einnahmen können nicht mehr geändert werden, wenn die Periode gesperrt ist. Mit expectedRevision (revision aus dem letzten Lesen) 409 STALE_WRITE, wenn inzwischen jemand anders geschrieben hat.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -3599,8 +3906,8 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahme bestätigen",
-      description: "Bestätigt einen Einnahme-Entwurf (Datenpflege-Bestätigung). Um die Einnahme in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash).",
-      validated: {"params":true,"query":false,"body":false},
+      description: "Bestätigt einen Einnahme-Entwurf (Datenpflege-Bestätigung). Um die Einnahme in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash). Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
+      validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
       params: BookkeepingRevenuesConfirmParams;
@@ -3618,7 +3925,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","revenues"],
       summary: "Einnahme als Barzahlung bestätigen",
-      description: "Markiert eine Einnahme als Bareinnahme. receivedAt (JJJJ-MM-TT, nicht in der Zukunft) ist der Zuflusstag, an dem die Einnahme in der EÜR steht (§ 11 EStG); bei einer bezahlten Rechnung ohne zugeordnete Zahlungen folgt deren paidAt. Ohne receivedAt gilt das Einnahmedatum, bei Rechnungseinnahmen also das Rechnungsdatum. Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden.",
+      description: "Markiert eine Einnahme als Bareinnahme. receivedAt (JJJJ-MM-TT, nicht in der Zukunft) ist der Zuflusstag, an dem die Einnahme in der EÜR steht (§ 11 EStG); bei einer bezahlten Rechnung ohne zugeordnete Zahlungen folgt deren paidAt. Ohne receivedAt gilt das Einnahmedatum, bei Rechnungseinnahmen also das Rechnungsdatum. Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden. Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -3727,6 +4034,82 @@ export const apiRoutes_bookkeeping = {
     },
   },
   // Contract source: explicit
+  "bookkeeping_expenses_export": {
+    method: "GET",
+    path: "/bookkeeping/expenses/export",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Gefilterte Ausgabenliste als CSV",
+      description: "Exportiert genau die Ausgaben, die GET /bookkeeping/expenses mit denselben Filtern zeigt (gleiche Sortierung, Kostenstellen-Sicht des Lesers, ohne geloeschte), ohne Seitenschnitt. CSV fuer deutsches Excel: UTF-8 mit BOM, Semikolon, Dezimalkomma, Datum YYYY-MM-DD in Berliner Zeit, Steuersatz in Prozent. Spalten: ID, Datum, Lieferant, Rechnungsnummer, Beschreibung, Kategorie, Netto, Steuersatz, Steuer, Brutto, Waehrung, Originalbetrag, Originalwaehrung, Zahlstatus, Bestaetigt, Absetzbar, Beleg (Nachweis wie bei der Bestaetigung), Kostenstelle, Notizen. Textzellen, die mit = + - @ beginnen, tragen ein fuehrendes Hochkomma. Header X-Total-Count nennt die Zeilenzahl. Mehr als 10000 Treffer: 422 EXPORT_TOO_LARGE, Filter enger fassen.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesExportParams;
+      query: BookkeepingExpensesExportQuery;
+      body: BookkeepingExpensesExportBody;
+      response: BookkeepingExpensesExportResponse;
+      responseData: BookkeepingExpensesExportResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_expenses_bulk_update": {
+    method: "POST",
+    path: "/bookkeeping/expenses/bulk-update",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Mehrere Ausgaben gemeinsam ändern",
+      description: "Setzt Kategorie, Kostenstelle (null = firmenweit) oder Absetzbarkeit für bis zu 500 Ausgaben der gewählten Firma in einer Transaktion. Alles oder nichts: scheitert eine Zeile, bleibt keine geändert. Je Zeile gelten dieselben Prüfungen wie beim Einzel-Update: Firmen-Editor, Kostenstellen-Sicht (fremd, gelöscht oder unbekannt: 404 EXPENSE_NOT_FOUND mit meta.expenseId), strikte Periodensperre (422 BOOKKEEPING_PERIOD_LOCKED), bestätigte Ausgaben 422 EXPENSE_CONFIRMED, Kategoriewechsel an einer aktivierten Anlage 422 EXPENSE_LINKED_TO_ASSET. Die neue Kostenstelle muss zur Firma gehören (404 COST_CENTER_NOT_FOUND) und für den Benutzer freigegeben sein (403 COST_CENTER_ACCESS_DENIED). Jede geänderte Zeile bekommt einen Protokolleintrag expense_update mit changes (field, before, after); Zeilen ohne Änderung zählen unter unchanged und werden nicht geschrieben.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesBulkUpdateParams;
+      query: BookkeepingExpensesBulkUpdateQuery;
+      body: BookkeepingExpensesBulkUpdateBody;
+      response: BookkeepingExpensesBulkUpdateResponse;
+      responseData: BookkeepingExpensesBulkUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_expenses_commit": {
+    method: "POST",
+    path: "/bookkeeping/expenses/commit",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Ausgabe in einem Aufruf anlegen oder ändern, bestätigen und bar bezahlen",
+      description: "Ein Aufruf je Benutzeraktion, alles in einer Transaktion: ohne bookingId anlegen (booking Pflicht, optional createAsAsset mit asset), mit bookingId und expectedRevision ändern (booking optional). Danach optional confirm (wie bookkeeping_expenses_confirm) und cash (wie bookkeeping_expenses_confirm_cash; mit cash.account zusätzlich eine Kassenbuchung im Kassenkonto, Betrag ohne Vorzeichen, die der Ausgabe zugeordnet wird). Scheitert ein Schritt, bleibt nichts gespeichert; der Fehler kommt mit dem Code des Schritts (z.B. 422 EXPENSE_PROOF_REQUIRED, 422 BOOKKEEPING_PERIOD_LOCKED). Beleg als files[] (base64, Feld file) oder multipart file. idempotencyKey ist Pflicht: dieselbe Anfrage noch einmal liefert den aktuellen Stand mit replayed=true und schreibt nichts; derselbe Schlüssel mit anderem Inhalt ergibt 409 IDEMPOTENCY_CONFLICT. Abweichende revision: 409 STALE_WRITE mit meta.currentRevision. Antwort: booking im Stand wie bookkeeping_expenses_get_by_id (mit revision), steps (ausgeführte Schritte), cashPaymentId; 201 beim Anlegen, sonst 200.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesCommitParams;
+      query: BookkeepingExpensesCommitQuery;
+      body: BookkeepingExpensesCommitBody;
+      response: BookkeepingExpensesCommitResponse;
+      responseData: BookkeepingExpensesCommitResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_expenses_duplicate_candidates": {
+    method: "GET",
+    path: "/bookkeeping/expenses/duplicate-candidates",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Moegliche Dubletten einer Ausgabe",
+      description: "Nennt aktive Ausgaben der Firma (Kostenstellen-Sicht des Lesers), die nach demselben Beleg aussehen: gleiche Belegdatei (documentId), gleiche Rechnungsnummer ohne Gross-/Kleinschreibung und Satzzeichen, gleicher Betrag in derselben Waehrung am selben Tag oder innerhalb von windowDays Tagen (Standard 3). Mindestens amount mit expenseDate, vendorInvoiceNumber oder documentId angeben; excludeId nimmt die bearbeitete Ausgabe aus. Je Treffer level (strong: dieselbe Datei, oder Rechnungsnummer bzw. Betrag am selben Tag beim selben Lieferanten; sonst possible) und reasons. Nur ein Hinweis, das Anlegen bleibt erlaubt.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesDuplicateCandidatesParams;
+      query: BookkeepingExpensesDuplicateCandidatesQuery;
+      body: BookkeepingExpensesDuplicateCandidatesBody;
+      response: BookkeepingExpensesDuplicateCandidatesResponse;
+      responseData: BookkeepingExpensesDuplicateCandidatesResponseData;
+    },
+  },
+  // Contract source: explicit
   "bookkeeping_expenses_get_by_id": {
     method: "GET",
     path: "/bookkeeping/expenses/:id",
@@ -3792,7 +4175,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","expenses"],
       summary: "Ausgabe aktualisieren",
-      description: "Aktualisiert eine bestehende Ausgabe, optional mit neuem Beleganhang. Bestätigte Ausgaben in gesperrten Perioden können nicht mehr geändert werden.",
+      description: "Aktualisiert eine bestehende Ausgabe, optional mit neuem Beleganhang. Bestätigte Ausgaben in gesperrten Perioden können nicht mehr geändert werden. Mit expectedRevision (revision aus dem letzten Lesen) 409 STALE_WRITE, wenn inzwischen jemand anders geschrieben hat.",
       bodyContentType: "multipart/form-data",
       validated: {"params":true,"query":false,"body":true},
     },
@@ -3851,8 +4234,8 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","expenses"],
       summary: "Ausgabe bestätigen",
-      description: "Bestätigt einen Ausgabe-Entwurf (Datenpflege-Bestätigung). Um die Ausgabe in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash).",
-      validated: {"params":true,"query":false,"body":false},
+      description: "Bestätigt einen Ausgabe-Entwurf (Datenpflege-Bestätigung). Um die Ausgabe in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash). Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
+      validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
       params: BookkeepingExpensesConfirmParams;
@@ -3870,7 +4253,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","expenses"],
       summary: "Ausgabe als Barzahlung bestätigen",
-      description: "Markiert eine Ausgabe als Barausgabe mit einem expliziten Zahlungsdatum (confirmedAt). Die Ausgabe wird mit diesem Datum in die EÜR aufgenommen (Abfluss-Prinzip § 4 Abs. 3 EStG). Kann nicht auf bereits durch Payment zugeordnete Ausgaben angewendet werden.",
+      description: "Markiert eine Ausgabe als Barausgabe mit einem expliziten Zahlungsdatum (confirmedAt). Die Ausgabe wird mit diesem Datum in die EÜR aufgenommen (Abfluss-Prinzip § 4 Abs. 3 EStG). Kann nicht auf bereits durch Payment zugeordnete Ausgaben angewendet werden. Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -3936,6 +4319,44 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingExpensesDeleteBody;
       response: BookkeepingExpensesDeleteResponse;
       responseData: BookkeepingExpensesDeleteResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_expenses_history": {
+    method: "GET",
+    path: "/bookkeeping/expenses/:id/history",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Änderungsverlauf der Ausgabe",
+      description: "Alle Protokolleinträge der Ausgabe (Anlegen, Ändern, Beleg, Bestätigen, Löschen), neueste zuerst und paginiert. Je Eintrag action, message, createdAt, actorName (Name der Person, null bei System oder Schnittstelle) und changes: je geändertem Feld field, before und after (Datum als ISO-Text, Beträge wie gespeichert). Einträge ohne Feldänderung oder von vor der Einführung haben eine leere Liste. Gleiche Sichtbarkeit wie der Einzelabruf: fremde Firma oder Kostenstelle ergibt 404 EXPENSE_NOT_FOUND.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesHistoryParams;
+      query: BookkeepingExpensesHistoryQuery;
+      body: BookkeepingExpensesHistoryBody;
+      response: BookkeepingExpensesHistoryResponse;
+      responseData: BookkeepingExpensesHistoryResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_expenses_restore": {
+    method: "POST",
+    path: "/bookkeeping/expenses/:id/restore",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","expenses"],
+      summary: "Gelöschte Ausgabe wiederherstellen",
+      description: "Holt eine gelöschte Ausgabe zurück. Gleiche Prüfungen wie beim Löschen: Firmen-Admin, Kostenstellen-Sicht und strikte Periodensperre. Der Beleg wurde beim Löschen entfernt, die Ausgabe kommt ohne Beleg zurück. Nicht gelöschte Ausgaben ergeben 409 EXPENSE_NOT_DELETED. Wird im Protokoll als expense_restore geführt.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingExpensesRestoreParams;
+      query: BookkeepingExpensesRestoreQuery;
+      body: BookkeepingExpensesRestoreBody;
+      response: BookkeepingExpensesRestoreResponse;
+      responseData: BookkeepingExpensesRestoreResponseData;
     },
   },
   // Contract source: explicit

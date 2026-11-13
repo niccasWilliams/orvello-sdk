@@ -49824,7 +49824,7 @@
           "revenues"
         ],
         "summary": "Einnahme aktualisieren",
-        "description": "Aktualisiert eine bestehende Einnahme. Bestätigte Einnahmen können nicht mehr geändert werden, wenn die Periode gesperrt ist.",
+        "description": "Aktualisiert eine bestehende Einnahme. Bestätigte Einnahmen können nicht mehr geändert werden, wenn die Periode gesperrt ist. Mit expectedRevision (revision aus dem letzten Lesen) 409 STALE_WRITE, wenn inzwischen jemand anders geschrieben hat.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -50051,6 +50051,11 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   }
                 },
                 "required": [
@@ -50144,6 +50149,234 @@
               "type": "integer",
               "exclusiveMinimum": 0,
               "maximum": 9007199254740991
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/revenues/:id/history": {
+      "get": {
+        "operationId": "bookkeeping_revenues_history",
+        "tags": [
+          "bookkeeping",
+          "revenues"
+        ],
+        "summary": "Änderungsverlauf der Einnahme",
+        "description": "Alle Protokolleinträge der Einnahme (Anlegen, Ändern, Beleg, Bestätigen, Löschen), neueste zuerst und paginiert. Je Eintrag action, message, createdAt, actorName (Name der Person, null bei System oder Schnittstelle) und changes: je geändertem Feld field, before und after (Datum als ISO-Text, Beträge wie gespeichert). Einträge ohne Feldänderung oder von vor der Einführung haben eine leere Liste. Gleiche Sichtbarkeit wie der Einzelabruf: fremde Firma oder Kostenstelle ergibt 404 REVENUE_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "action": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "actorUserId": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "actorName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "changes": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "field": {
+                                          "type": "string"
+                                        },
+                                        "before": {
+                                          "type": [
+                                            "string",
+                                            "number",
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "after": {
+                                          "type": [
+                                            "string",
+                                            "number",
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "field",
+                                        "before",
+                                        "after"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "action",
+                                  "message",
+                                  "createdAt",
+                                  "actorUserId",
+                                  "actorName",
+                                  "changes"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "page": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "pageSize": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "total": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "page",
+                            "pageSize",
+                            "total",
+                            "totalPages",
+                            "hasNextPage",
+                            "hasPrevPage"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
             }
           }
         ],
@@ -50296,6 +50529,352 @@
                   ],
                   "additionalProperties": false
                 }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/revenues/commit": {
+      "post": {
+        "operationId": "bookkeeping_revenues_commit",
+        "tags": [
+          "bookkeeping",
+          "revenues"
+        ],
+        "summary": "Einnahme in einem Aufruf anlegen oder ändern, bestätigen und bar erhalten",
+        "description": "Ein Aufruf je Benutzeraktion, alles in einer Transaktion: ohne bookingId anlegen (booking Pflicht), mit bookingId und expectedRevision ändern (booking optional). Danach optional confirm (wie bookkeeping_revenues_confirm) und cash (wie bookkeeping_revenues_confirm_cash, mit receivedAt JJJJ-MM-TT; mit cash.account zusätzlich eine Kassenbuchung im Kassenkonto, Betrag ohne Vorzeichen, die der Einnahme zugeordnet wird). Scheitert ein Schritt, bleibt nichts gespeichert; der Fehler kommt mit dem Code des Schritts (z.B. 422 REVENUE_PROOF_REQUIRED). Beleg als files[] (base64, Feld file) oder multipart file. idempotencyKey ist Pflicht: dieselbe Anfrage noch einmal liefert den aktuellen Stand mit replayed=true und schreibt nichts; derselbe Schlüssel mit anderem Inhalt ergibt 409 IDEMPOTENCY_CONFLICT. Abweichende revision: 409 STALE_WRITE mit meta.currentRevision. Antwort: booking im Stand wie bookkeeping_revenues_get_by_id (mit revision), steps, cashPaymentId; 201 beim Anlegen, sonst 200.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 200
+                  },
+                  "bookingId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "confirm": {
+                    "type": "boolean"
+                  },
+                  "booking": {
+                    "type": "object",
+                    "properties": {
+                      "costCenterId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "revenueDate": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "performedAt": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "amount": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "netAmount": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "taxAmount": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "taxRate": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                      },
+                      "originalCurrency": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 3
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "originalAmount": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "customer_invoice",
+                          "interest",
+                          "refund",
+                          "other",
+                          "asset_disposal",
+                          "pos_sale",
+                          "saas_revenue_apple_iap",
+                          "saas_revenue_google_iap"
+                        ]
+                      },
+                      "invoiceId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "assetId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "documentId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "isSelfCreatedReceipt": {
+                        "type": "boolean"
+                      },
+                      "selfReceiptReason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "signatureName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "place": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "language": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "revenueDate",
+                      "amount",
+                      "netAmount",
+                      "description",
+                      "category"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "cash": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "confirmedAt": {
+                            "type": "string"
+                          },
+                          "account": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "paymentAccountId": {
+                                    "type": "integer",
+                                    "exclusiveMinimum": 0,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "amount": {
+                                    "type": "string",
+                                    "pattern": "^-?\\d+(\\.\\d{1,2})?$"
+                                  },
+                                  "currency": {
+                                    "type": "string",
+                                    "minLength": 3,
+                                    "maxLength": 3
+                                  },
+                                  "bookedAt": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "reference": {
+                                    "type": "string",
+                                    "maxLength": 500
+                                  },
+                                  "counterpartyName": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                  }
+                                },
+                                "required": [
+                                  "paymentAccountId",
+                                  "amount",
+                                  "bookedAt"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "receivedAt": {
+                            "type": "string",
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "idempotencyKey"
+                ],
+                "additionalProperties": false
               }
             }
           }
@@ -50538,7 +51117,7 @@
           "revenues"
         ],
         "summary": "Einnahme bestätigen",
-        "description": "Bestätigt einen Einnahme-Entwurf (Datenpflege-Bestätigung). Um die Einnahme in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash).",
+        "description": "Bestätigt einen Einnahme-Entwurf (Datenpflege-Bestätigung). Um die Einnahme in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash). Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -50601,6 +51180,24 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "security": [
           {
             "frontendBearer": []
@@ -50620,7 +51217,7 @@
           "revenues"
         ],
         "summary": "Einnahme als Barzahlung bestätigen",
-        "description": "Markiert eine Einnahme als Bareinnahme. receivedAt (JJJJ-MM-TT, nicht in der Zukunft) ist der Zuflusstag, an dem die Einnahme in der EÜR steht (§ 11 EStG); bei einer bezahlten Rechnung ohne zugeordnete Zahlungen folgt deren paidAt. Ohne receivedAt gilt das Einnahmedatum, bei Rechnungseinnahmen also das Rechnungsdatum. Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden.",
+        "description": "Markiert eine Einnahme als Bareinnahme. receivedAt (JJJJ-MM-TT, nicht in der Zukunft) ist der Zuflusstag, an dem die Einnahme in der EÜR steht (§ 11 EStG); bei einer bezahlten Rechnung ohne zugeordnete Zahlungen folgt deren paidAt. Ohne receivedAt gilt das Einnahmedatum, bei Rechnungseinnahmen also das Rechnungsdatum. Kann nicht auf bereits durch Payment zugeordnete Einnahmen angewendet werden. Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -50696,6 +51293,11 @@
                   "receivedAt": {
                     "type": "string",
                     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   }
                 },
                 "additionalProperties": false
@@ -51828,6 +52430,1139 @@
         ]
       }
     },
+    "/bookkeeping/expenses/export": {
+      "get": {
+        "operationId": "bookkeeping_expenses_export",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Gefilterte Ausgabenliste als CSV",
+        "description": "Exportiert genau die Ausgaben, die GET /bookkeeping/expenses mit denselben Filtern zeigt (gleiche Sortierung, Kostenstellen-Sicht des Lesers, ohne geloeschte), ohne Seitenschnitt. CSV fuer deutsches Excel: UTF-8 mit BOM, Semikolon, Dezimalkomma, Datum YYYY-MM-DD in Berliner Zeit, Steuersatz in Prozent. Spalten: ID, Datum, Lieferant, Rechnungsnummer, Beschreibung, Kategorie, Netto, Steuersatz, Steuer, Brutto, Waehrung, Originalbetrag, Originalwaehrung, Zahlstatus, Bestaetigt, Absetzbar, Beleg (Nachweis wie bei der Bestaetigung), Kostenstelle, Notizen. Textzellen, die mit = + - @ beginnen, tragen ein fuehrendes Hochkomma. Header X-Total-Count nennt die Zeilenzahl. Mehr als 10000 Treffer: 422 EXPORT_TOO_LARGE, Filter enger fassen.",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "infrastructure",
+                "office",
+                "software",
+                "hardware",
+                "travel",
+                "marketing",
+                "legal",
+                "accounting",
+                "insurance",
+                "personnel",
+                "depreciation",
+                "interest_expense",
+                "rent",
+                "bank_fees",
+                "professional_services",
+                "other",
+                "private_withdrawal",
+                "ust_payment"
+              ]
+            }
+          },
+          {
+            "name": "vendor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isConfirmed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "paymentStatus",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "unmatched",
+                "cash_confirmed",
+                "partially_matched",
+                "fully_matched"
+              ]
+            }
+          },
+          {
+            "name": "isDeductible",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hasReceipt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minAmount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxAmount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "expenseDate",
+                "amount",
+                "vendor",
+                "category",
+                "paymentStatus"
+              ]
+            }
+          },
+          {
+            "name": "sortDir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/bulk-update": {
+      "post": {
+        "operationId": "bookkeeping_expenses_bulk_update",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Mehrere Ausgaben gemeinsam ändern",
+        "description": "Setzt Kategorie, Kostenstelle (null = firmenweit) oder Absetzbarkeit für bis zu 500 Ausgaben der gewählten Firma in einer Transaktion. Alles oder nichts: scheitert eine Zeile, bleibt keine geändert. Je Zeile gelten dieselben Prüfungen wie beim Einzel-Update: Firmen-Editor, Kostenstellen-Sicht (fremd, gelöscht oder unbekannt: 404 EXPENSE_NOT_FOUND mit meta.expenseId), strikte Periodensperre (422 BOOKKEEPING_PERIOD_LOCKED), bestätigte Ausgaben 422 EXPENSE_CONFIRMED, Kategoriewechsel an einer aktivierten Anlage 422 EXPENSE_LINKED_TO_ASSET. Die neue Kostenstelle muss zur Firma gehören (404 COST_CENTER_NOT_FOUND) und für den Benutzer freigegeben sein (403 COST_CENTER_ACCESS_DENIED). Jede geänderte Zeile bekommt einen Protokolleintrag expense_update mit changes (field, before, after); Zeilen ohne Änderung zählen unter unchanged und werden nicht geschrieben.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "updated": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "unchanged": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "changes": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "field": {
+                                          "type": "string"
+                                        },
+                                        "before": {},
+                                        "after": {}
+                                      },
+                                      "required": [
+                                        "field",
+                                        "before",
+                                        "after"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "changes"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "updated",
+                            "unchanged",
+                            "items"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "patch": {
+                    "type": "object",
+                    "properties": {
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "infrastructure",
+                          "office",
+                          "software",
+                          "hardware",
+                          "travel",
+                          "marketing",
+                          "legal",
+                          "accounting",
+                          "insurance",
+                          "personnel",
+                          "depreciation",
+                          "interest_expense",
+                          "rent",
+                          "bank_fees",
+                          "professional_services",
+                          "other",
+                          "ust_payment"
+                        ]
+                      },
+                      "costCenterId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "isDeductible": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "ids",
+                  "patch"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/commit": {
+      "post": {
+        "operationId": "bookkeeping_expenses_commit",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Ausgabe in einem Aufruf anlegen oder ändern, bestätigen und bar bezahlen",
+        "description": "Ein Aufruf je Benutzeraktion, alles in einer Transaktion: ohne bookingId anlegen (booking Pflicht, optional createAsAsset mit asset), mit bookingId und expectedRevision ändern (booking optional). Danach optional confirm (wie bookkeeping_expenses_confirm) und cash (wie bookkeeping_expenses_confirm_cash; mit cash.account zusätzlich eine Kassenbuchung im Kassenkonto, Betrag ohne Vorzeichen, die der Ausgabe zugeordnet wird). Scheitert ein Schritt, bleibt nichts gespeichert; der Fehler kommt mit dem Code des Schritts (z.B. 422 EXPENSE_PROOF_REQUIRED, 422 BOOKKEEPING_PERIOD_LOCKED). Beleg als files[] (base64, Feld file) oder multipart file. idempotencyKey ist Pflicht: dieselbe Anfrage noch einmal liefert den aktuellen Stand mit replayed=true und schreibt nichts; derselbe Schlüssel mit anderem Inhalt ergibt 409 IDEMPOTENCY_CONFLICT. Abweichende revision: 409 STALE_WRITE mit meta.currentRevision. Antwort: booking im Stand wie bookkeeping_expenses_get_by_id (mit revision), steps (ausgeführte Schritte), cashPaymentId; 201 beim Anlegen, sonst 200.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 200
+                  },
+                  "bookingId": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "confirm": {
+                    "type": "boolean"
+                  },
+                  "booking": {
+                    "type": "object",
+                    "properties": {
+                      "costCenterId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "expenseDate": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "amount": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "netAmount": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "taxAmount": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "taxRate": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "category": {
+                        "type": "string",
+                        "enum": [
+                          "infrastructure",
+                          "office",
+                          "software",
+                          "hardware",
+                          "travel",
+                          "marketing",
+                          "legal",
+                          "accounting",
+                          "insurance",
+                          "personnel",
+                          "depreciation",
+                          "interest_expense",
+                          "rent",
+                          "bank_fees",
+                          "professional_services",
+                          "other",
+                          "ust_payment"
+                        ]
+                      },
+                      "vendor": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "vendorInvoiceNumber": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "isDeductible": {
+                        "type": "boolean"
+                      },
+                      "isConfirmed": {
+                        "type": "boolean"
+                      },
+                      "isSelfCreatedReceipt": {
+                        "type": "boolean"
+                      },
+                      "selfReceiptReason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "signatureName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "place": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "language": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "inputVatEligibility": {
+                        "type": "string",
+                        "enum": [
+                          "NONE",
+                          "FULL",
+                          "PARTIAL"
+                        ]
+                      },
+                      "inputVatAmount": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "inputVatRate": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "vatTreatment": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "REVERSE_CHARGE_13B",
+                              "DE_STANDARD_19",
+                              "DE_REDUCED_7",
+                              "EXEMPT_4",
+                              "KLEINUNTERNEHMER_0"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "supplierId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "expenseDate",
+                      "amount",
+                      "netAmount",
+                      "description",
+                      "category"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "asset": {
+                    "default": {},
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255
+                      },
+                      "description": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "assetType": {
+                        "type": "string",
+                        "enum": [
+                          "equipment",
+                          "vehicle",
+                          "software",
+                          "furniture",
+                          "leasehold_improvement",
+                          "other"
+                        ]
+                      },
+                      "purchaseDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                      },
+                      "purchaseAmountNet": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                      },
+                      "usefulLifeMonths": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "depreciationMethod": {
+                        "type": "string",
+                        "enum": [
+                          "linear",
+                          "immediate_gwg",
+                          "none"
+                        ]
+                      },
+                      "residualValue": {
+                        "type": [
+                          "string",
+                          "number"
+                        ]
+                      },
+                      "inputVatEligibility": {
+                        "type": "string",
+                        "enum": [
+                          "NONE",
+                          "FULL",
+                          "PARTIAL"
+                        ]
+                      },
+                      "inputVatAmount": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "inputVatRate": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "vendorName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "vendorInvoiceNumber": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "costCenterId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "documentId": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "inheritExpenseDocument": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "createAsAsset": {
+                    "type": "boolean"
+                  },
+                  "cash": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "confirmedAt": {
+                            "type": "string"
+                          },
+                          "account": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "paymentAccountId": {
+                                    "type": "integer",
+                                    "exclusiveMinimum": 0,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "amount": {
+                                    "type": "string",
+                                    "pattern": "^-?\\d+(\\.\\d{1,2})?$"
+                                  },
+                                  "currency": {
+                                    "type": "string",
+                                    "minLength": 3,
+                                    "maxLength": 3
+                                  },
+                                  "bookedAt": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "reference": {
+                                    "type": "string",
+                                    "maxLength": 500
+                                  },
+                                  "counterpartyName": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                  }
+                                },
+                                "required": [
+                                  "paymentAccountId",
+                                  "amount",
+                                  "bookedAt"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "idempotencyKey"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/duplicate-candidates": {
+      "get": {
+        "operationId": "bookkeeping_expenses_duplicate_candidates",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Moegliche Dubletten einer Ausgabe",
+        "description": "Nennt aktive Ausgaben der Firma (Kostenstellen-Sicht des Lesers), die nach demselben Beleg aussehen: gleiche Belegdatei (documentId), gleiche Rechnungsnummer ohne Gross-/Kleinschreibung und Satzzeichen, gleicher Betrag in derselben Waehrung am selben Tag oder innerhalb von windowDays Tagen (Standard 3). Mindestens amount mit expenseDate, vendorInvoiceNumber oder documentId angeben; excludeId nimmt die bearbeitete Ausgabe aus. Je Treffer level (strong: dieselbe Datei, oder Rechnungsnummer bzw. Betrag am selben Tag beim selben Lieferanten; sonst possible) und reasons. Nur ein Hinweis, das Anlegen bleibt erlaubt.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "expenseDate": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "string"
+                                  },
+                                  "currency": {
+                                    "type": "string"
+                                  },
+                                  "originalAmount": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "originalCurrency": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "vendor": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "vendorInvoiceNumber": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "isConfirmed": {
+                                    "type": "boolean"
+                                  },
+                                  "level": {
+                                    "type": "string",
+                                    "enum": [
+                                      "strong",
+                                      "possible"
+                                    ]
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "same_document",
+                                        "same_invoice_number",
+                                        "same_amount_same_day",
+                                        "same_amount_near_date",
+                                        "same_vendor"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "expenseDate",
+                                  "amount",
+                                  "currency",
+                                  "originalAmount",
+                                  "originalCurrency",
+                                  "vendor",
+                                  "vendorInvoiceNumber",
+                                  "description",
+                                  "isConfirmed",
+                                  "level",
+                                  "reasons"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d{1,4})?$"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$"
+            }
+          },
+          {
+            "name": "expenseDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "vendor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "supplierId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "vendorInvoiceNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "documentId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "excludeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "windowDays",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 3,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 31
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
     "/bookkeeping/expenses/:id": {
       "get": {
         "operationId": "bookkeeping_expenses_get_by_id",
@@ -51916,7 +53651,7 @@
           "expenses"
         ],
         "summary": "Ausgabe aktualisieren",
-        "description": "Aktualisiert eine bestehende Ausgabe, optional mit neuem Beleganhang. Bestätigte Ausgaben in gesperrten Perioden können nicht mehr geändert werden.",
+        "description": "Aktualisiert eine bestehende Ausgabe, optional mit neuem Beleganhang. Bestätigte Ausgaben in gesperrten Perioden können nicht mehr geändert werden. Mit expectedRevision (revision aus dem letzten Lesen) 409 STALE_WRITE, wenn inzwischen jemand anders geschrieben hat.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -52160,6 +53895,11 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   }
                 },
                 "required": [
@@ -52656,7 +54396,7 @@
           "expenses"
         ],
         "summary": "Ausgabe bestätigen",
-        "description": "Bestätigt einen Ausgabe-Entwurf (Datenpflege-Bestätigung). Um die Ausgabe in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash).",
+        "description": "Bestätigt einen Ausgabe-Entwurf (Datenpflege-Bestätigung). Um die Ausgabe in der EÜR zu erfassen, muss zusätzlich ein Zahlungsnachweis vorliegen (via Payment-Zuordnung oder /confirm-cash). Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -52719,6 +54459,24 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "security": [
           {
             "frontendBearer": []
@@ -52738,7 +54496,7 @@
           "expenses"
         ],
         "summary": "Ausgabe als Barzahlung bestätigen",
-        "description": "Markiert eine Ausgabe als Barausgabe mit einem expliziten Zahlungsdatum (confirmedAt). Die Ausgabe wird mit diesem Datum in die EÜR aufgenommen (Abfluss-Prinzip § 4 Abs. 3 EStG). Kann nicht auf bereits durch Payment zugeordnete Ausgaben angewendet werden.",
+        "description": "Markiert eine Ausgabe als Barausgabe mit einem expliziten Zahlungsdatum (confirmedAt). Die Ausgabe wird mit diesem Datum in die EÜR aufgenommen (Abfluss-Prinzip § 4 Abs. 3 EStG). Kann nicht auf bereits durch Payment zugeordnete Ausgaben angewendet werden. Optional expectedRevision: bei Abweichung 409 STALE_WRITE.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -52810,6 +54568,11 @@
                 "properties": {
                   "confirmedAt": {
                     "type": "string"
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   }
                 },
                 "additionalProperties": false
@@ -53181,6 +54944,364 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/history": {
+      "get": {
+        "operationId": "bookkeeping_expenses_history",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Änderungsverlauf der Ausgabe",
+        "description": "Alle Protokolleinträge der Ausgabe (Anlegen, Ändern, Beleg, Bestätigen, Löschen), neueste zuerst und paginiert. Je Eintrag action, message, createdAt, actorName (Name der Person, null bei System oder Schnittstelle) und changes: je geändertem Feld field, before und after (Datum als ISO-Text, Beträge wie gespeichert). Einträge ohne Feldänderung oder von vor der Einführung haben eine leere Liste. Gleiche Sichtbarkeit wie der Einzelabruf: fremde Firma oder Kostenstelle ergibt 404 EXPENSE_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "action": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "actorUserId": {
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "actorName": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "changes": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "field": {
+                                          "type": "string"
+                                        },
+                                        "before": {
+                                          "type": [
+                                            "string",
+                                            "number",
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "after": {
+                                          "type": [
+                                            "string",
+                                            "number",
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "field",
+                                        "before",
+                                        "after"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "action",
+                                  "message",
+                                  "createdAt",
+                                  "actorUserId",
+                                  "actorName",
+                                  "changes"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "page": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "pageSize": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "total": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "totalPages": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "hasNextPage": {
+                              "type": "boolean"
+                            },
+                            "hasPrevPage": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "items",
+                            "page",
+                            "pageSize",
+                            "total",
+                            "totalPages",
+                            "hasNextPage",
+                            "hasPrevPage"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/expenses/:id/restore": {
+      "post": {
+        "operationId": "bookkeeping_expenses_restore",
+        "tags": [
+          "bookkeeping",
+          "expenses"
+        ],
+        "summary": "Gelöschte Ausgabe wiederherstellen",
+        "description": "Holt eine gelöschte Ausgabe zurück. Gleiche Prüfungen wie beim Löschen: Firmen-Admin, Kostenstellen-Sicht und strikte Periodensperre. Der Beleg wurde beim Löschen entfernt, die Ausgabe kommt ohne Beleg zurück. Nicht gelöschte Ausgaben ergeben 409 EXPENSE_NOT_DELETED. Wird im Protokoll als expense_restore geführt.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {},
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []
@@ -87448,7 +89569,7 @@
           "overview"
         ],
         "summary": "Steuerlage in einem Aufruf",
-        "description": "Umsatzsteuerlage, Verlauf der USt-Regime, Steuerhinweise, Eckzahlen der EÜR des Jahres, Buchungssperre, Abschluss-Bereitschaft und die Zahl offener Gebührenvorschläge. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+        "description": "Umsatzsteuerlage, Verlauf der USt-Regime, Steuerhinweise, Eckzahlen der EÜR des Jahres, Buchungssperre, Abschluss-Bereitschaft, die Zahl offener Gebührenvorschläge und die offene AfA des Jahres (`depreciation`, dieselbe Rechnung wie POST /bookkeeping/assets/depreciation/generate). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -88409,6 +90530,70 @@
                                 "reason"
                               ],
                               "additionalProperties": false
+                            },
+                            "depreciation": {
+                              "type": "object",
+                              "properties": {
+                                "data": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "fiscalYear": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "openCount": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "openAmount": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "required": [
+                                        "fiscalYear",
+                                        "openCount",
+                                        "openAmount"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "reason": {
+                                  "anyOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "code": {
+                                          "type": "string"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "data",
+                                "reason"
+                              ],
+                              "additionalProperties": false
                             }
                           },
                           "required": [
@@ -88422,7 +90607,8 @@
                             "euer",
                             "lock",
                             "closing",
-                            "feeProposals"
+                            "feeProposals",
+                            "depreciation"
                           ],
                           "additionalProperties": false
                         },
@@ -89024,6 +91210,206 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http"
+      }
+    },
+    "/overview/search": {
+      "get": {
+        "operationId": "overview_search",
+        "tags": [
+          "overview"
+        ],
+        "summary": "Globale Suche",
+        "description": "Sucht q (mindestens 2 Zeichen, enthält, ohne Groß-/Kleinschreibung) in Rechnungen (Nummer, Notiz, Kunde), Kunden (Name, E-Mail, USt-IdNr., Ort), Ausgaben (Lieferant, Beschreibung, Rechnungsnummer, Notiz; nur aktive), Einnahmen (Beschreibung, Notiz, Rechnungsnummer; nicht gelöschte) und Lieferanten (Name, USt-IdNr., IBAN) der aktiven Firma. Belege und Kunden folgen der Kostenstellen-Sicht ihres Listenendpunkts, Lieferanten sind firmenweit. types wählt Gruppen (kommagetrennt), limit die Treffer je Gruppe (Standard 5, höchstens 20); hasMore heißt, die Liste mit q hat mehr. Recht Buchhaltung, ohne Firmenauswahl 409 NO_COMPANY_SELECTED.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "q": {
+                              "type": "string"
+                            },
+                            "groups": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "invoice",
+                                      "customer",
+                                      "expense",
+                                      "revenue",
+                                      "supplier"
+                                    ]
+                                  },
+                                  "items": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "invoice",
+                                            "customer",
+                                            "expense",
+                                            "revenue",
+                                            "supplier"
+                                          ]
+                                        },
+                                        "id": {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "title": {
+                                          "type": "string"
+                                        },
+                                        "subtitle": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "date": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "amount": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "currency": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "status": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "id",
+                                        "title",
+                                        "subtitle",
+                                        "date",
+                                        "amount",
+                                        "currency",
+                                        "status"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  "hasMore": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "items",
+                                  "hasMore"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "q",
+                            "groups"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []
@@ -105988,7 +108374,7 @@
           "managing-companies"
         ],
         "summary": "Verwaltendes Unternehmen anlegen",
-        "description": "Erstellt ein neues Managing Company (Mandant) inkl. Grunddaten. Erfordert `bookkeeping_access`.",
+        "description": "Erstellt ein neues Managing Company (Mandant) inkl. Grunddaten. Erfordert `bookkeeping_access`. Optional `historySince` (JJJJ-MM-TT, nicht in der Zukunft, Standard heute): Beginn der Aufzeichnung fuer eine rueckwirkend gefuehrte Firma; sonst 400 `HISTORY_SINCE_IN_FUTURE` bzw. `HISTORY_SINCE_INVALID`.",
         "responses": {
           "201": {
             "description": "JSON response",
@@ -106234,6 +108620,11 @@
                       "eur",
                       "accrual"
                     ]
+                  },
+                  "historySince": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
                   }
                 },
                 "required": [
@@ -110083,6 +112474,7 @@
           "work-tracking"
         ],
         "summary": "Create a new work entry",
+        "description": "Eine inhaltsgleiche Anlage desselben Nutzers innerhalb von 5 Sekunden (Doppelklick) liefert den schon angelegten Eintrag zurueck. Verschiedene Eintraege gehen ohne Wartezeit durch.",
         "responses": {
           "201": {
             "description": "JSON response",
@@ -110980,6 +113372,7 @@
           "work-tracking"
         ],
         "summary": "Bill multiple work entries (create invoice)",
+        "description": "Legt einen Rechnungsentwurf an, ohne PDF. Das PDF entsteht mit der Ausstellung.",
         "responses": {
           "201": {
             "description": "JSON response",

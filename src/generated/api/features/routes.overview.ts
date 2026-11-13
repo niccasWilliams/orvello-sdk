@@ -753,6 +753,17 @@ export type OverviewTaxResponseData = {
   message: string;
 } | null;
 };
+  depreciation: {
+  data: {
+  fiscalYear: number;
+  openCount: number;
+  openAmount: number;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
 };
 export type OverviewTaxResponse = import("../types").ApiEnvelope<OverviewTaxResponseData>;
 
@@ -849,6 +860,32 @@ export type OverviewTasksResponseData = {
 };
 export type OverviewTasksResponse = import("../types").ApiEnvelope<OverviewTasksResponseData>;
 
+export type OverviewSearchParams = undefined;
+export type OverviewSearchQuery = {
+  q: string;
+  types?: string;
+  limit?: number;
+};
+export type OverviewSearchBody = undefined;
+export type OverviewSearchResponseData = {
+  q: string;
+  groups: Array<{
+  type: "invoice" | "customer" | "expense" | "revenue" | "supplier";
+  items: Array<{
+  type: "invoice" | "customer" | "expense" | "revenue" | "supplier";
+  id: number;
+  title: string;
+  subtitle: string | null;
+  date: string | null;
+  amount: string | null;
+  currency: string | null;
+  status: string;
+}>;
+  hasMore: boolean;
+}>;
+};
+export type OverviewSearchResponse = import("../types").ApiEnvelope<OverviewSearchResponseData>;
+
 export const apiRoutes_overview = {
   // Contract source: explicit
   "overview_home": {
@@ -896,7 +933,7 @@ export const apiRoutes_overview = {
     meta: {
       tags: ["overview"],
       summary: "Steuerlage in einem Aufruf",
-      description: "Umsatzsteuerlage, Verlauf der USt-Regime, Steuerhinweise, Eckzahlen der EÜR des Jahres, Buchungssperre, Abschluss-Bereitschaft und die Zahl offener Gebührenvorschläge. Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
+      description: "Umsatzsteuerlage, Verlauf der USt-Regime, Steuerhinweise, Eckzahlen der EÜR des Jahres, Buchungssperre, Abschluss-Bereitschaft, die Zahl offener Gebührenvorschläge und die offene AfA des Jahres (`depreciation`, dieselbe Rechnung wie POST /bookkeeping/assets/depreciation/generate). Die aktive Firma des Benutzers gilt; ohne Auswahl 409 NO_COMPANY_SELECTED. Jeder Teil kommt als { data, reason }: fehlt das Recht (PERMISSION_DENIED, restricted_cost_centers) oder fällt ein Teil aus, ist data null und reason nennt den Grund, der Rest wird geliefert. Beträge im Format ihrer Quelle, je Währung getrennt.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -924,6 +961,25 @@ export const apiRoutes_overview = {
       body: OverviewTasksBody;
       response: OverviewTasksResponse;
       responseData: OverviewTasksResponseData;
+    },
+  },
+  // Contract source: explicit
+  "overview_search": {
+    method: "GET",
+    path: "/overview/search",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["overview"],
+      summary: "Globale Suche",
+      description: "Sucht q (mindestens 2 Zeichen, enthält, ohne Groß-/Kleinschreibung) in Rechnungen (Nummer, Notiz, Kunde), Kunden (Name, E-Mail, USt-IdNr., Ort), Ausgaben (Lieferant, Beschreibung, Rechnungsnummer, Notiz; nur aktive), Einnahmen (Beschreibung, Notiz, Rechnungsnummer; nicht gelöschte) und Lieferanten (Name, USt-IdNr., IBAN) der aktiven Firma. Belege und Kunden folgen der Kostenstellen-Sicht ihres Listenendpunkts, Lieferanten sind firmenweit. types wählt Gruppen (kommagetrennt), limit die Treffer je Gruppe (Standard 5, höchstens 20); hasMore heißt, die Liste mit q hat mehr. Recht Buchhaltung, ohne Firmenauswahl 409 NO_COMPANY_SELECTED.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: OverviewSearchParams;
+      query: OverviewSearchQuery;
+      body: OverviewSearchBody;
+      response: OverviewSearchResponse;
+      responseData: OverviewSearchResponseData;
     },
   },
 } as const;
