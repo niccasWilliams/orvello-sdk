@@ -898,6 +898,7 @@ export type InvoicesGetFullResponseData = {
   allowedNextStatuses: Array<"draft" | "issued" | "paid" | "overdue" | "cancelled">;
   locked: boolean;
   lockReason?: string | null;
+  lockReasonCode?: string | null;
   flags: {
   hasAnyCorrection: boolean;
   hasCancellation: boolean;
@@ -919,7 +920,84 @@ export type InvoicesGetFullResponseData = {
   paidSource: string | null;
   state: "fully_settled_and_paid" | "fully_settled_but_not_paid" | "open" | "paid_but_underallocated" | "paid_marked_without_full_settlement";
   needsAttention: boolean;
+  uiHintCode: "fully_settled_and_paid" | "fully_settled_but_not_paid" | "open" | "paid_but_underallocated" | "paid_marked_without_full_settlement" | "receivable_cancelled";
   uiHintDe: string;
+} | null;
+  payments: {
+  items: Array<{
+  allocationId: number;
+  paymentId: number | null;
+  visible: boolean;
+  kind: "payment" | "refund" | "fee" | "writeoff" | "discount";
+  direction: "in" | "out";
+  bookedAt: string | string;
+  valueAt: string | string | null;
+  allocatedAt: string | string;
+  targetAmount: string;
+  targetCurrency: string | null;
+  allocatedAmount: string;
+  paymentCurrency: string;
+  fx: {
+  rate: string;
+  provider: string | null;
+  asOfDate: string | null;
+} | null;
+  settlementEffect: string;
+  inSettlement: boolean;
+  storno: {
+  isReversed: boolean;
+  reversalOfAllocationId: number | null;
+  reversedByAllocationId: number | null;
+};
+  account: {
+  id: number;
+  name: string;
+  type: string;
+} | null;
+  counterpartyName: string | null;
+  reference: string | null;
+}>;
+  settlementTotal: number;
+  matchesReconciliation: boolean;
+  hiddenCount: number;
+} | null;
+  totals: {
+  currency: string;
+  source: "line_items" | "invoice";
+  netAmount: string;
+  taxAmount: string;
+  grossAmount: string;
+  matchesInvoice: boolean;
+  taxByRate: Array<{
+  rate: string;
+  netAmount: string;
+  taxAmount: string;
+  grossAmount: string;
+  lineCount: number;
+}>;
+};
+  fx: {
+  invoiceCurrency: string;
+  baseCurrency: string;
+  rate: string | null;
+  baseAmount: string | null;
+  originalAmount: string | null;
+  provider: string | null;
+  asOfDate: string | null;
+  source: "revenue" | null;
+  revenueId: number | null;
+} | null;
+  costCenter: {
+  id: number;
+  name: string;
+  code: string;
+  isArchived: boolean;
+} | null;
+  preferredDocument: {
+  documentId: number;
+  versionId: number | null;
+  revision: number | null;
+  kind: "original" | "correction" | "legacy";
 } | null;
   dunning: {
   noticeCount: number;
@@ -981,6 +1059,7 @@ export type InvoicesStatusPolicyResponseData = {
   allowedNextStatuses: Array<"draft" | "issued" | "paid" | "overdue" | "cancelled">;
   locked: boolean;
   lockReason?: string | null;
+  lockReasonCode?: string | null;
   flags: {
   hasAnyCorrection: boolean;
   hasCancellation: boolean;
@@ -1009,6 +1088,7 @@ export type InvoicesPaymentReconciliationResponseData = {
   paidSource: string | null;
   state: "fully_settled_and_paid" | "fully_settled_but_not_paid" | "open" | "paid_but_underallocated" | "paid_marked_without_full_settlement";
   needsAttention: boolean;
+  uiHintCode: "fully_settled_and_paid" | "fully_settled_but_not_paid" | "open" | "paid_but_underallocated" | "paid_marked_without_full_settlement" | "receivable_cancelled";
   uiHintDe: string;
 };
 export type InvoicesPaymentReconciliationResponse = import("../types").ApiEnvelope<InvoicesPaymentReconciliationResponseData>;
@@ -1595,7 +1675,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Rechnung vollständig für die Detailansicht",
-      description: "Rechnung mit Positionen, Kunde, Korrekturen (Gutschriften, Storno) bzw. korrigierter Rechnung, Statusregeln, Zahlungs- und Abgleichstand, Mahnstand samt Verlauf und den Aktionen, die der angemeldete Benutzer in diesem Zustand ausführen darf, in einem Aufruf. Sichtbarkeit wie GET /invoices/:invoiceId (Kostenstellen des Benutzers). reconciliation und dunning sind null ohne das Recht Buchhaltung.",
+      description: "Rechnung mit Positionen, Kunde, Korrekturen (Gutschriften, Storno) bzw. korrigierter Rechnung, Statusregeln, Zahlungs- und Abgleichstand, Mahnstand samt Verlauf und den Aktionen, die der angemeldete Benutzer in diesem Zustand ausführen darf, in einem Aufruf. Dazu zugeordnete Zahlungen samt Storno-Paaren und Erstattungen (Summe wie reconciliation.settlementTotal), Netto/Steuer/Brutto je Steuersatz aus den gespeicherten Positionen, Fremdwaehrungskurs der gebuchten Einnahme, Kostenstelle und bevorzugte Anzeigefassung (Kennungen wie /versions, keine signierte Adresse). Sichtbarkeit wie GET /invoices/:invoiceId (Kostenstellen des Benutzers). reconciliation, payments und dunning sind null ohne das Recht Buchhaltung; Zahlungen auf Konten ausserhalb der Kostenstellen des Benutzers stehen mit visible=false ohne Konto, Gegenseite und Verwendungszweck in der Liste.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {

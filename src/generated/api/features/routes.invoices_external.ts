@@ -271,6 +271,7 @@ export type InvoicesStatusPolicyExternalResponseData = {
   allowedNextStatuses: Array<"draft" | "issued" | "paid" | "overdue" | "cancelled">;
   locked: boolean;
   lockReason?: string | null;
+  lockReasonCode?: string | null;
   flags: {
   hasAnyCorrection: boolean;
   hasCancellation: boolean;

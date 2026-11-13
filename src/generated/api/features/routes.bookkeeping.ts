@@ -26,6 +26,26 @@ export type BookkeepingRevenuesSearchBody = undefined;
 export type BookkeepingRevenuesSearchResponseData = PaginatedResult<BookkeepingRevenue & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null; allocationSummary: { allocatedAmount: string; openAmount: string; allocationCount: number } }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number; withoutReceiptCount: number } };
 export type BookkeepingRevenuesSearchResponse = import("../types").ApiEnvelope<BookkeepingRevenuesSearchResponseData>;
 
+export type BookkeepingRevenuesExportParams = undefined;
+export type BookkeepingRevenuesExportQuery = {
+  q?: string;
+  startDate?: string;
+  endDate?: string;
+  category?: "customer_invoice" | "interest" | "refund" | "other" | "asset_disposal" | "pos_sale" | "saas_revenue_apple_iap" | "saas_revenue_google_iap";
+  isConfirmed?: boolean;
+  paymentStatus?: "unmatched" | "cash_confirmed" | "partially_matched" | "fully_matched";
+  minAmount?: string;
+  maxAmount?: string;
+  invoiceId?: number;
+  assetId?: number;
+  hasReceipt?: boolean;
+  sortBy?: "createdAt" | "revenueDate" | "amount" | "category" | "paymentStatus";
+  sortDir?: "asc" | "desc";
+};
+export type BookkeepingRevenuesExportBody = undefined;
+export type BookkeepingRevenuesExportResponseData = Blob;
+export type BookkeepingRevenuesExportResponse = Blob;
+
 export type BookkeepingRevenuesGetByIdParams = {
   id: number;
 };
@@ -1779,6 +1799,9 @@ export type PaymentsSearchQuery = {
   startDate?: string;
   endDate?: string;
   allocationStatus?: "allocated" | "partial" | "unallocated";
+  isOpen?: boolean;
+  isTransfer?: boolean;
+  inStornoPair?: boolean;
   amountMin?: number;
   amountMax?: number;
   sortBy?: "bookedAt" | "amount" | "counterpartyName";
@@ -1788,7 +1811,7 @@ export type PaymentsSearchQuery = {
   pageSize?: number;
 };
 export type PaymentsSearchBody = undefined;
-export type PaymentsSearchResponseData = PaginatedResult<Payment & { allocatedAmount: string; allocationCount: number }> & { summary?: { count: number; stornoPairCount: number; transferCount: number; allocatedCount: number; partialCount: number; unallocatedCount: number; byCurrency: Array<{ currency: string; count: number; sumIn: string; sumOut: string; allocatedAmount: string; openAmount: string }> } };
+export type PaymentsSearchResponseData = PaginatedResult<Payment & { allocatedAmount: string; allocationCount: number; allocationStatus: "allocated" | "partial" | "unallocated"; remainingAmount: string; isOpen: boolean; isTransfer: boolean; stornoRole: "original" | "reversal" | null }> & { summary?: { count: number; stornoPairCount: number; transferCount: number; allocatedCount: number; partialCount: number; unallocatedCount: number; byCurrency: Array<{ currency: string; count: number; sumIn: string; sumOut: string; allocatedAmount: string; openAmount: string }> } };
 export type PaymentsSearchResponse = import("../types").ApiEnvelope<PaymentsSearchResponseData>;
 
 export type PaymentsCreateManualParams = undefined;
@@ -1867,7 +1890,7 @@ export type PaymentsAllocateParams = {
 export type PaymentsAllocateQuery = undefined;
 export type PaymentsAllocateBody = {
   allocations: Array<{
-  targetType: "invoice" | "expense" | "revenue";
+  targetType: "invoice" | "expense" | "revenue" | "capital_movement";
   targetId: number;
   amount: string;
   kind?: "payment" | "refund";
@@ -2053,7 +2076,7 @@ export type PaymentsGetAccountByIdParams = {
 };
 export type PaymentsGetAccountByIdQuery = undefined;
 export type PaymentsGetAccountByIdBody = undefined;
-export type PaymentsGetAccountByIdResponseData = PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' };
+export type PaymentsGetAccountByIdResponseData = PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' } & { balance: string; systemBalance: string; balanceDelta: string | null; lastConfirmedSnapshot: PaymentAccountBalanceSnapshot | null; paymentCount: number; openPaymentCount: number; openFeeProposalCount: number };
 export type PaymentsGetAccountByIdResponse = import("../types").ApiEnvelope<PaymentsGetAccountByIdResponseData>;
 
 export type PaymentsAccountOptionsParams = undefined;
@@ -2077,12 +2100,13 @@ export type PaymentsAccountOptionsResponse = import("../types").ApiEnvelope<Paym
 export type PaymentsListAccountsParams = undefined;
 export type PaymentsListAccountsQuery = {
   search?: string;
+  archived?: "active" | "archived" | "all";
   q?: string;
   page?: number;
   pageSize?: number;
 };
 export type PaymentsListAccountsBody = undefined;
-export type PaymentsListAccountsResponseData = PaginatedResult<PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' } & { balance: string; systemBalance: string; balanceDelta: string | null; lastConfirmedSnapshot: PaymentAccountBalanceSnapshot | null; paymentCount: number; openPaymentCount: number; openFeeProposalCount: number }>;
+export type PaymentsListAccountsResponseData = PaginatedResult<PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' } & { balance: string; systemBalance: string; balanceDelta: string | null; lastConfirmedSnapshot: PaymentAccountBalanceSnapshot | null; paymentCount: number; openPaymentCount: number; openFeeProposalCount: number }> & { totalsByCurrency: Array<{ currency: string; accountCount: number; balance: string; systemBalance: string }> };
 export type PaymentsListAccountsResponse = import("../types").ApiEnvelope<PaymentsListAccountsResponseData>;
 
 export type PaymentsCreateAccountParams = undefined;
@@ -2384,6 +2408,8 @@ export type PaymentsGetByIdResponseData = {
   createdAt: string;
   createdBy: number | null;
   updatedAt: string | null;
+  raw: any | null;
+  transferFxRate: string | null;
 };
   account: {
   id: number;
@@ -3168,6 +3194,7 @@ export type ReconciliationQueueQuery = {
   costCenterId?: number;
   startDate?: string;
   endDate?: string;
+  hasSuggestion?: boolean;
   page?: number;
   pageSize?: number;
 };
@@ -3215,6 +3242,7 @@ export type ReconciliationQueueResponseData = {
   targetCurrency: string;
   totalAmount: string;
   openAmount: string;
+  difference: string | null;
   label: string;
   invoiceNumber?: string;
   customerName?: string | null;
@@ -3240,6 +3268,7 @@ export type ReconciliationQueueResponseData = {
   targetCurrency: string;
   totalAmount: string;
   openAmount: string;
+  difference: string | null;
   label: string;
   invoiceNumber?: string;
   customerName?: string | null;
@@ -3311,7 +3340,7 @@ export type ReconciliationBatchSuggestionsBody = {
 }>;
   limit?: number;
 };
-export type ReconciliationBatchSuggestionsResponseData = { results: Array<{ paymentId: number; remainingAmount: string; suggestions: Array<({ targetType: 'invoice'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; blockedReason?: 'invoice_not_issued' | 'invoice_already_paid' | 'invoice_cancelled'; invoiceNumber: string; status: string; customerName: string | null; invoiceDate: Date; dueDate: Date } | { targetType: 'expense'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; expenseDate: Date; vendor: string | null; vendorInvoiceNumber: string | null; description: string; isConfirmed: boolean } | { targetType: 'revenue'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; revenueDate: Date; description: string; invoiceId: number | null; isConfirmed: boolean })> }> };
+export type ReconciliationBatchSuggestionsResponseData = { results: Array<{ paymentId: number; remainingAmount: string; suggestions: Array<(({ targetType: 'invoice'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; blockedReason?: 'invoice_not_issued' | 'invoice_already_paid' | 'invoice_cancelled'; invoiceNumber: string; status: string; customerName: string | null; invoiceDate: Date; dueDate: Date } | { targetType: 'expense'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; expenseDate: Date; vendor: string | null; vendorInvoiceNumber: string | null; description: string; isConfirmed: boolean } | { targetType: 'revenue'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; revenueDate: Date; description: string; invoiceId: number | null; isConfirmed: boolean })) & { difference: string | null }>; error: { code: string; message: string } | null }> };
 export type ReconciliationBatchSuggestionsResponse = import("../types").ApiEnvelope<ReconciliationBatchSuggestionsResponseData>;
 
 export type ReconciliationAutoMatchPreviewParams = undefined;
@@ -3353,10 +3382,19 @@ export type ReconciliationAutoMatchConfirmResponseData = {
   results: Array<{
   paymentId: number;
   success: boolean;
+  currency: string | null;
+  amount: string;
+  errorCode: string | null;
   error?: string;
 }>;
   totalSuccess: number;
   totalFailed: number;
+  totalsByCurrency: Array<{
+  currency: string;
+  successCount: number;
+  failedCount: number;
+  allocatedAmount: string;
+}>;
 };
 export type ReconciliationAutoMatchConfirmResponse = import("../types").ApiEnvelope<ReconciliationAutoMatchConfirmResponseData>;
 
@@ -3724,6 +3762,117 @@ export type SuppliersAssignExpensesBody = {
 export type SuppliersAssignExpensesResponseData = SupplierAssignResultDto;
 export type SuppliersAssignExpensesResponse = import("../types").ApiEnvelope<SuppliersAssignExpensesResponseData>;
 
+export type BookkeepingSavedViewsListParams = undefined;
+export type BookkeepingSavedViewsListQuery = {
+  listKey?: string;
+};
+export type BookkeepingSavedViewsListBody = undefined;
+export type BookkeepingSavedViewsListResponseData = {
+  items: Array<{
+  id: number;
+  listKey: string;
+  name: string;
+  filters: Record<string, any>;
+  sort: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns: Array<string> | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}>;
+};
+export type BookkeepingSavedViewsListResponse = import("../types").ApiEnvelope<BookkeepingSavedViewsListResponseData>;
+
+export type BookkeepingSavedViewsCreateParams = undefined;
+export type BookkeepingSavedViewsCreateQuery = undefined;
+export type BookkeepingSavedViewsCreateBody = {
+  listKey: string;
+  name: string;
+  filters?: Record<string, any>;
+  sort?: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns?: Array<string> | null;
+  isDefault?: boolean;
+};
+export type BookkeepingSavedViewsCreateResponseData = {
+  id: number;
+  listKey: string;
+  name: string;
+  filters: Record<string, any>;
+  sort: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns: Array<string> | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+export type BookkeepingSavedViewsCreateResponse = import("../types").ApiEnvelope<BookkeepingSavedViewsCreateResponseData>;
+
+export type BookkeepingSavedViewsGetParams = {
+  id: number;
+};
+export type BookkeepingSavedViewsGetQuery = undefined;
+export type BookkeepingSavedViewsGetBody = undefined;
+export type BookkeepingSavedViewsGetResponseData = {
+  id: number;
+  listKey: string;
+  name: string;
+  filters: Record<string, any>;
+  sort: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns: Array<string> | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+export type BookkeepingSavedViewsGetResponse = import("../types").ApiEnvelope<BookkeepingSavedViewsGetResponseData>;
+
+export type BookkeepingSavedViewsUpdateParams = {
+  id: number;
+};
+export type BookkeepingSavedViewsUpdateQuery = undefined;
+export type BookkeepingSavedViewsUpdateBody = {
+  name?: string;
+  filters?: Record<string, any>;
+  sort?: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns?: Array<string> | null;
+  isDefault?: boolean;
+};
+export type BookkeepingSavedViewsUpdateResponseData = {
+  id: number;
+  listKey: string;
+  name: string;
+  filters: Record<string, any>;
+  sort: {
+  by: string;
+  dir: "asc" | "desc";
+} | null;
+  columns: Array<string> | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+export type BookkeepingSavedViewsUpdateResponse = import("../types").ApiEnvelope<BookkeepingSavedViewsUpdateResponseData>;
+
+export type BookkeepingSavedViewsDeleteParams = {
+  id: number;
+};
+export type BookkeepingSavedViewsDeleteQuery = undefined;
+export type BookkeepingSavedViewsDeleteBody = undefined;
+export type BookkeepingSavedViewsDeleteResponseData = null;
+export type BookkeepingSavedViewsDeleteResponse = import("../types").ApiEnvelope<BookkeepingSavedViewsDeleteResponseData>;
+
 export const apiRoutes_bookkeeping = {
   // Contract source: explicit
   "bookkeeping_revenues_search": {
@@ -3742,6 +3891,25 @@ export const apiRoutes_bookkeeping = {
       body: BookkeepingRevenuesSearchBody;
       response: BookkeepingRevenuesSearchResponse;
       responseData: BookkeepingRevenuesSearchResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_revenues_export": {
+    method: "GET",
+    path: "/bookkeeping/revenues/export",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","revenues"],
+      summary: "Gefilterte Einnahmenliste als CSV",
+      description: "Exportiert genau die Einnahmen, die GET /bookkeeping/revenues mit denselben Filtern zeigt (gleiche Sortierung, Kostenstellen-Sicht des Lesers, ohne geloeschte), ohne Seitenschnitt. CSV fuer deutsches Excel: UTF-8 mit BOM, Semikolon, Dezimalkomma, Datum YYYY-MM-DD in Berliner Zeit, Steuersatz in Prozent. Spalten: ID, Datum, Leistungsdatum, Beschreibung, Kategorie, Rechnungsnummer, Kunde, Netto, Steuersatz, Steuer, Brutto, Waehrung, Originalbetrag, Originalwaehrung, Zahlstatus, Bestaetigt, Beleg, Kostenstelle, Notizen. Rechnungsnummer, Kunde und Kostenstelle (Name) wie in der Liste; eine Rechnung ausserhalb der Kostenstellen-Sicht bleibt leer. Beleg: Nachweis wie bei der Bestaetigung (Rechnung, Beleg, Eigenbeleg oder Begruendung). Textzellen, die mit = + - @ beginnen, tragen ein fuehrendes Hochkomma. Header X-Total-Count nennt die Zeilenzahl. Mehr als 10000 Treffer: 422 EXPORT_TOO_LARGE, Filter enger fassen.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingRevenuesExportParams;
+      query: BookkeepingRevenuesExportQuery;
+      body: BookkeepingRevenuesExportBody;
+      response: BookkeepingRevenuesExportResponse;
+      responseData: BookkeepingRevenuesExportResponseData;
     },
   },
   // Contract source: explicit
@@ -5312,7 +5480,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlungen suchen",
-      description: "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff, Betrag von/bis auf den absoluten Betrag). Sortierung über sortBy/sortDir, Standard ist Buchungsdatum absteigend. Mit summary=true trägt die Antwort Summen über die ganze gefilterte Menge: je Währung Eingänge, Ausgänge, zugeordnet und offen, dazu Zähler. Storno-Paare zählen in keiner Summe, Umbuchungen sind weder offen noch zugeordnet.",
+      description: "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff, Betrag von/bis auf den absoluten Betrag). isOpen=true liefert genau die Zahlungen aus openPaymentCount der Kontenliste (ausserhalb eines Storno-Paars, keine Umbuchung, Rest > 0,009, kein Durchlaufkonto), isOpen=false alle anderen. isTransfer und inStornoPair: true nur Umbuchungen bzw. Storno-Paare, false diese ausblenden. Jede Zeile trägt allocationStatus (Grenzen wie der Filter), remainingAmount (Betrag minus aktive Zuordnungen), isOpen, isTransfer und stornoRole (original, reversal oder null). Sortierung über sortBy/sortDir, Standard ist Buchungsdatum absteigend. Mit summary=true trägt die Antwort Summen über die ganze gefilterte Menge: je Währung Eingänge, Ausgänge, zugeordnet und offen, dazu Zähler. Storno-Paare zählen in keiner Summe, Umbuchungen sind weder offen noch zugeordnet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -5426,7 +5594,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlung einer Rechnung zuweisen",
-      description: "Weist eine Zahlung einer oder mehreren Rechnungen/Ausgaben zu (Allokation). Gibt die aktualisierten Allokations-Einträge zurück.",
+      description: "Weist eine Zahlung einer oder mehreren Rechnungen, Ausgaben, Einnahmen oder Kapitalbewegungen zu (Allokation). Eingang: invoice, revenue, capital_movement (Einlage); Ausgang: expense, capital_movement (Entnahme), invoice als Erstattung. Gibt die aktualisierten Allokations-Einträge zurück.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -5692,7 +5860,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlungskonto nach ID laden",
-      description: "Lädt ein einzelnes Zahlungskonto (Bank/Kasse) anhand seiner ID mit allen Details (Name, IBAN, Typ, Eröffnungsbetrag).",
+      description: "Lädt ein einzelnes Zahlungskonto (Bank/Kasse) anhand seiner ID mit allen Details (Name, IBAN, Typ, Eröffnungsbetrag) und denselben Saldo- und Zählerfeldern wie eine Zeile der Kontenliste: balance, systemBalance, balanceDelta, lastConfirmedSnapshot, paymentCount, openPaymentCount, openFeeProposalCount. 404 PAYMENT_ACCOUNT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
@@ -5730,7 +5898,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlungskonten auflisten",
-      description: "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff. Je Konto mit Systemsaldo, letztem Ist-Saldo und Abweichung, Anzahl der Zahlungen, offenen Zahlungen (Definition des Abgleichs, Durchlaufkonten 0) und offenen Gebührenvorschlägen.",
+      description: "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff und Archivstand (archived=active|archived|all, Standard all: wie bisher alle Konten inklusive archivierter, der Filter wirkt serverseitig auch auf Seitenanzahl und Summen). Zusätzlich totalsByCurrency: je Währung Kontenanzahl und Systemsaldo (balance = systemBalance, Dezimal-String mit 2 Stellen) über die ganze gefilterte Menge, nicht nur die Seite. Je Konto mit Systemsaldo, letztem Ist-Saldo und Abweichung, Anzahl der Zahlungen, offenen Zahlungen (Definition des Abgleichs, Durchlaufkonten 0) und offenen Gebührenvorschlägen.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -6128,7 +6296,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlung im Detail",
-      description: "Eine Zahlung mit Konto, aufgelösten Zuordnungen (Rechnung, Ausgabe, Einnahme, Kapitalbewegung mit Nummer, Bezeichnung, Betrag), Restbetrag, Storno-Bezug und Gegenseite einer Umbuchung in einem Aufruf, ohne Matching-Lauf. Stornierte Zuordnungen bleiben als Nachweis in der Liste (isReversed/reversalOfId). Ziele in einer Kostenstelle außerhalb der eigenen Sicht kommen ohne Bezeichnung (targetVisible=false). 404 PAYMENT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
+      description: "Eine Zahlung mit Konto, aufgelösten Zuordnungen (Rechnung, Ausgabe, Einnahme, Kapitalbewegung mit Nummer, Bezeichnung, Betrag), Restbetrag, Storno-Bezug und Gegenseite einer Umbuchung in einem Aufruf, ohne Matching-Lauf. Stornierte Zuordnungen bleiben als Nachweis in der Liste (isReversed/reversalOfId). Ziele in einer Kostenstelle außerhalb der eigenen Sicht kommen ohne Bezeichnung (targetVisible=false). Im payment-Objekt zusätzlich raw (Rohdaten des Imports/Anbieters, beliebiges JSON oder null) und transferFxRate (Kurs einer Umbuchung zwischen Konten verschiedener Währung als Dezimal-String, sonst null). 404 PAYMENT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
@@ -6981,7 +7149,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","reconciliation"],
       summary: "Smart Reconciliation Queue",
-      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
+      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. hasSuggestion=true liefert nur Zahlungen mit mindestens einem Vorschlag, false nur ohne; dafür wird die ganze Menge (bis 500 offene Zahlungen) bewertet und erst danach paginiert, total/totalPages und summary gelten für die gefilterte Menge. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -7000,7 +7168,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","reconciliation"],
       summary: "Batch Match-Vorschläge",
-      description: "Gibt Match-Vorschläge für bis zu 20 Zahlungen gleichzeitig zurück. Effizienter als Einzelabfragen.",
+      description: "Gibt Match-Vorschläge für bis zu 20 Zahlungen gleichzeitig zurück. Ein fachlicher Fehler je Zahlung (etwa PAYMENT_NOT_FOUND) steht in error der Zeile, sonst ist error null.",
       validated: {"params":false,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -7557,6 +7725,101 @@ export const apiRoutes_bookkeeping = {
       body: SuppliersAssignExpensesBody;
       response: SuppliersAssignExpensesResponse;
       responseData: SuppliersAssignExpensesResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_saved_views_list": {
+    method: "GET",
+    path: "/bookkeeping/saved-views",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","saved-views"],
+      summary: "Gespeicherte Ansichten laden",
+      description: "Gespeicherte Ansichten (Filter, Sortierung, Spalten) des Nutzers in der gewählten Firma. Mit listKey nur die Ansichten dieser Liste, Standardansicht zuerst, danach nach Name. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingSavedViewsListParams;
+      query: BookkeepingSavedViewsListQuery;
+      body: BookkeepingSavedViewsListBody;
+      response: BookkeepingSavedViewsListResponse;
+      responseData: BookkeepingSavedViewsListResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_saved_views_create": {
+    method: "POST",
+    path: "/bookkeeping/saved-views",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","saved-views"],
+      summary: "Ansicht speichern",
+      description: "Legt eine Ansicht für eine Liste an. listKey benennt die Liste des Frontends (Kleinbuchstaben, Ziffern, getrennt durch - _ oder .), name ist je Liste eindeutig ohne Groß/Klein (409 SAVED_VIEW_NAME_TAKEN). filters ist das Filterobjekt der Liste (höchstens 8000 Bytes als JSON), sort { by, dir } und columns (sichtbare Spalten in Reihenfolge) sind optional, null heißt Vorgabe der Liste. isDefault=true macht die Ansicht zum Standard der Liste, eine bisherige Standardansicht verliert die Markierung. Höchstens 50 Ansichten je Liste (422 SAVED_VIEW_LIMIT). Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+      validated: {"params":false,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingSavedViewsCreateParams;
+      query: BookkeepingSavedViewsCreateQuery;
+      body: BookkeepingSavedViewsCreateBody;
+      response: BookkeepingSavedViewsCreateResponse;
+      responseData: BookkeepingSavedViewsCreateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_saved_views_get": {
+    method: "GET",
+    path: "/bookkeeping/saved-views/:id",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","saved-views"],
+      summary: "Gespeicherte Ansicht laden",
+      description: "Eine gespeicherte Ansicht. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingSavedViewsGetParams;
+      query: BookkeepingSavedViewsGetQuery;
+      body: BookkeepingSavedViewsGetBody;
+      response: BookkeepingSavedViewsGetResponse;
+      responseData: BookkeepingSavedViewsGetResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_saved_views_update": {
+    method: "PATCH",
+    path: "/bookkeeping/saved-views/:id",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","saved-views"],
+      summary: "Gespeicherte Ansicht ändern",
+      description: "Ändert nur die genannten Felder (name, filters, sort, columns, isDefault); listKey bleibt. sort oder columns auf null setzt die Vorgabe der Liste zurück. isDefault=true nimmt der bisherigen Standardansicht die Markierung, isDefault=false entfernt sie. Name schon vergeben: 409 SAVED_VIEW_NAME_TAKEN. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+      validated: {"params":true,"query":false,"body":true},
+    },
+    types: null as unknown as {
+      params: BookkeepingSavedViewsUpdateParams;
+      query: BookkeepingSavedViewsUpdateQuery;
+      body: BookkeepingSavedViewsUpdateBody;
+      response: BookkeepingSavedViewsUpdateResponse;
+      responseData: BookkeepingSavedViewsUpdateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "bookkeeping_saved_views_delete": {
+    method: "DELETE",
+    path: "/bookkeeping/saved-views/:id",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","saved-views"],
+      summary: "Gespeicherte Ansicht löschen",
+      description: "Löscht die Ansicht endgültig (reine Bedien-Einstellung, keine Buchungsdaten). Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: BookkeepingSavedViewsDeleteParams;
+      query: BookkeepingSavedViewsDeleteQuery;
+      body: BookkeepingSavedViewsDeleteBody;
+      response: BookkeepingSavedViewsDeleteResponse;
+      responseData: BookkeepingSavedViewsDeleteResponseData;
     },
   },
 } as const;

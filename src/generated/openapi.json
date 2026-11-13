@@ -43677,6 +43677,12 @@
                                 "null"
                               ]
                             },
+                            "lockReasonCode": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
                             "flags": {
                               "type": "object",
                               "properties": {
@@ -47208,7 +47214,7 @@
           "invoices"
         ],
         "summary": "Rechnung vollständig für die Detailansicht",
-        "description": "Rechnung mit Positionen, Kunde, Korrekturen (Gutschriften, Storno) bzw. korrigierter Rechnung, Statusregeln, Zahlungs- und Abgleichstand, Mahnstand samt Verlauf und den Aktionen, die der angemeldete Benutzer in diesem Zustand ausführen darf, in einem Aufruf. Sichtbarkeit wie GET /invoices/:invoiceId (Kostenstellen des Benutzers). reconciliation und dunning sind null ohne das Recht Buchhaltung.",
+        "description": "Rechnung mit Positionen, Kunde, Korrekturen (Gutschriften, Storno) bzw. korrigierter Rechnung, Statusregeln, Zahlungs- und Abgleichstand, Mahnstand samt Verlauf und den Aktionen, die der angemeldete Benutzer in diesem Zustand ausführen darf, in einem Aufruf. Dazu zugeordnete Zahlungen samt Storno-Paaren und Erstattungen (Summe wie reconciliation.settlementTotal), Netto/Steuer/Brutto je Steuersatz aus den gespeicherten Positionen, Fremdwaehrungskurs der gebuchten Einnahme, Kostenstelle und bevorzugte Anzeigefassung (Kennungen wie /versions, keine signierte Adresse). Sichtbarkeit wie GET /invoices/:invoiceId (Kostenstellen des Benutzers). reconciliation, payments und dunning sind null ohne das Recht Buchhaltung; Zahlungen auf Konten ausserhalb der Kostenstellen des Benutzers stehen mit visible=false ohne Konto, Gegenseite und Verwendungszweck in der Liste.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -48076,6 +48082,12 @@
                                     "null"
                                   ]
                                 },
+                                "lockReasonCode": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
                                 "flags": {
                                   "type": "object",
                                   "properties": {
@@ -48180,6 +48192,17 @@
                                     "needsAttention": {
                                       "type": "boolean"
                                     },
+                                    "uiHintCode": {
+                                      "type": "string",
+                                      "enum": [
+                                        "fully_settled_and_paid",
+                                        "fully_settled_but_not_paid",
+                                        "open",
+                                        "paid_but_underallocated",
+                                        "paid_marked_without_full_settlement",
+                                        "receivable_cancelled"
+                                      ]
+                                    },
                                     "uiHintDe": {
                                       "type": "string"
                                     }
@@ -48193,7 +48216,522 @@
                                     "paidSource",
                                     "state",
                                     "needsAttention",
+                                    "uiHintCode",
                                     "uiHintDe"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "payments": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "items": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "allocationId": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                          },
+                                          "paymentId": {
+                                            "anyOf": [
+                                              {
+                                                "type": "integer",
+                                                "minimum": -9007199254740991,
+                                                "maximum": 9007199254740991
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "visible": {
+                                            "type": "boolean"
+                                          },
+                                          "kind": {
+                                            "type": "string",
+                                            "enum": [
+                                              "payment",
+                                              "refund",
+                                              "fee",
+                                              "writeoff",
+                                              "discount"
+                                            ]
+                                          },
+                                          "direction": {
+                                            "type": "string",
+                                            "enum": [
+                                              "in",
+                                              "out"
+                                            ]
+                                          },
+                                          "bookedAt": {
+                                            "anyOf": [
+                                              {
+                                                "type": "string",
+                                                "format": "date-time"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "valueAt": {
+                                            "anyOf": [
+                                              {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                  },
+                                                  {
+                                                    "type": "string"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "allocatedAt": {
+                                            "anyOf": [
+                                              {
+                                                "type": "string",
+                                                "format": "date-time"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "targetAmount": {
+                                            "type": "string"
+                                          },
+                                          "targetCurrency": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
+                                          },
+                                          "allocatedAmount": {
+                                            "type": "string"
+                                          },
+                                          "paymentCurrency": {
+                                            "type": "string"
+                                          },
+                                          "fx": {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "rate": {
+                                                    "type": "string"
+                                                  },
+                                                  "provider": {
+                                                    "type": [
+                                                      "string",
+                                                      "null"
+                                                    ]
+                                                  },
+                                                  "asOfDate": {
+                                                    "type": [
+                                                      "string",
+                                                      "null"
+                                                    ]
+                                                  }
+                                                },
+                                                "required": [
+                                                  "rate",
+                                                  "provider",
+                                                  "asOfDate"
+                                                ],
+                                                "additionalProperties": false
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "settlementEffect": {
+                                            "type": "string"
+                                          },
+                                          "inSettlement": {
+                                            "type": "boolean"
+                                          },
+                                          "storno": {
+                                            "type": "object",
+                                            "properties": {
+                                              "isReversed": {
+                                                "type": "boolean"
+                                              },
+                                              "reversalOfAllocationId": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              },
+                                              "reversedByAllocationId": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ]
+                                              }
+                                            },
+                                            "required": [
+                                              "isReversed",
+                                              "reversalOfAllocationId",
+                                              "reversedByAllocationId"
+                                            ],
+                                            "additionalProperties": false
+                                          },
+                                          "account": {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "id": {
+                                                    "type": "integer",
+                                                    "minimum": -9007199254740991,
+                                                    "maximum": 9007199254740991
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "type": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "id",
+                                                  "name",
+                                                  "type"
+                                                ],
+                                                "additionalProperties": false
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "counterpartyName": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
+                                          },
+                                          "reference": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "allocationId",
+                                          "paymentId",
+                                          "visible",
+                                          "kind",
+                                          "direction",
+                                          "bookedAt",
+                                          "valueAt",
+                                          "allocatedAt",
+                                          "targetAmount",
+                                          "targetCurrency",
+                                          "allocatedAmount",
+                                          "paymentCurrency",
+                                          "fx",
+                                          "settlementEffect",
+                                          "inSettlement",
+                                          "storno",
+                                          "account",
+                                          "counterpartyName",
+                                          "reference"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "settlementTotal": {
+                                      "type": "number"
+                                    },
+                                    "matchesReconciliation": {
+                                      "type": "boolean"
+                                    },
+                                    "hiddenCount": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    }
+                                  },
+                                  "required": [
+                                    "items",
+                                    "settlementTotal",
+                                    "matchesReconciliation",
+                                    "hiddenCount"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "totals": {
+                              "type": "object",
+                              "properties": {
+                                "currency": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string",
+                                  "enum": [
+                                    "line_items",
+                                    "invoice"
+                                  ]
+                                },
+                                "netAmount": {
+                                  "type": "string"
+                                },
+                                "taxAmount": {
+                                  "type": "string"
+                                },
+                                "grossAmount": {
+                                  "type": "string"
+                                },
+                                "matchesInvoice": {
+                                  "type": "boolean"
+                                },
+                                "taxByRate": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "rate": {
+                                        "type": "string"
+                                      },
+                                      "netAmount": {
+                                        "type": "string"
+                                      },
+                                      "taxAmount": {
+                                        "type": "string"
+                                      },
+                                      "grossAmount": {
+                                        "type": "string"
+                                      },
+                                      "lineCount": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                      }
+                                    },
+                                    "required": [
+                                      "rate",
+                                      "netAmount",
+                                      "taxAmount",
+                                      "grossAmount",
+                                      "lineCount"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                }
+                              },
+                              "required": [
+                                "currency",
+                                "source",
+                                "netAmount",
+                                "taxAmount",
+                                "grossAmount",
+                                "matchesInvoice",
+                                "taxByRate"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "fx": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "invoiceCurrency": {
+                                      "type": "string"
+                                    },
+                                    "baseCurrency": {
+                                      "type": "string"
+                                    },
+                                    "rate": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "baseAmount": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "originalAmount": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "provider": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "asOfDate": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "source": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "revenue"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "revenueId": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "invoiceCurrency",
+                                    "baseCurrency",
+                                    "rate",
+                                    "baseAmount",
+                                    "originalAmount",
+                                    "provider",
+                                    "asOfDate",
+                                    "source",
+                                    "revenueId"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "costCenter": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "code": {
+                                      "type": "string"
+                                    },
+                                    "isArchived": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "code",
+                                    "isArchived"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "preferredDocument": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "documentId": {
+                                      "type": "integer",
+                                      "minimum": -9007199254740991,
+                                      "maximum": 9007199254740991
+                                    },
+                                    "versionId": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "revision": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": -9007199254740991,
+                                          "maximum": 9007199254740991
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "kind": {
+                                      "type": "string",
+                                      "enum": [
+                                        "original",
+                                        "correction",
+                                        "legacy"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "documentId",
+                                    "versionId",
+                                    "revision",
+                                    "kind"
                                   ],
                                   "additionalProperties": false
                                 },
@@ -48527,6 +49065,11 @@
                             "correctsInvoice",
                             "statusPolicy",
                             "reconciliation",
+                            "payments",
+                            "totals",
+                            "fx",
+                            "costCenter",
+                            "preferredDocument",
                             "dunning",
                             "actions",
                             "access",
@@ -48655,6 +49198,12 @@
                               "type": "boolean"
                             },
                             "lockReason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "lockReasonCode": {
                               "type": [
                                 "string",
                                 "null"
@@ -48839,6 +49388,17 @@
                             "needsAttention": {
                               "type": "boolean"
                             },
+                            "uiHintCode": {
+                              "type": "string",
+                              "enum": [
+                                "fully_settled_and_paid",
+                                "fully_settled_but_not_paid",
+                                "open",
+                                "paid_but_underallocated",
+                                "paid_marked_without_full_settlement",
+                                "receivable_cancelled"
+                              ]
+                            },
                             "uiHintDe": {
                               "type": "string"
                             }
@@ -48852,6 +49412,7 @@
                             "paidSource",
                             "state",
                             "needsAttention",
+                            "uiHintCode",
                             "uiHintDe"
                           ],
                           "additionalProperties": false
@@ -49725,6 +50286,176 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/revenues/export": {
+      "get": {
+        "operationId": "bookkeeping_revenues_export",
+        "tags": [
+          "bookkeeping",
+          "revenues"
+        ],
+        "summary": "Gefilterte Einnahmenliste als CSV",
+        "description": "Exportiert genau die Einnahmen, die GET /bookkeeping/revenues mit denselben Filtern zeigt (gleiche Sortierung, Kostenstellen-Sicht des Lesers, ohne geloeschte), ohne Seitenschnitt. CSV fuer deutsches Excel: UTF-8 mit BOM, Semikolon, Dezimalkomma, Datum YYYY-MM-DD in Berliner Zeit, Steuersatz in Prozent. Spalten: ID, Datum, Leistungsdatum, Beschreibung, Kategorie, Rechnungsnummer, Kunde, Netto, Steuersatz, Steuer, Brutto, Waehrung, Originalbetrag, Originalwaehrung, Zahlstatus, Bestaetigt, Beleg, Kostenstelle, Notizen. Rechnungsnummer, Kunde und Kostenstelle (Name) wie in der Liste; eine Rechnung ausserhalb der Kostenstellen-Sicht bleibt leer. Beleg: Nachweis wie bei der Bestaetigung (Rechnung, Beleg, Eigenbeleg oder Begruendung). Textzellen, die mit = + - @ beginnen, tragen ein fuehrendes Hochkomma. Header X-Total-Count nennt die Zeilenzahl. Mehr als 10000 Treffer: 422 EXPORT_TOO_LARGE, Filter enger fassen.",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "customer_invoice",
+                "interest",
+                "refund",
+                "other",
+                "asset_disposal",
+                "pos_sale",
+                "saas_revenue_apple_iap",
+                "saas_revenue_google_iap"
+              ]
+            }
+          },
+          {
+            "name": "isConfirmed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "paymentStatus",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "unmatched",
+                "cash_confirmed",
+                "partially_matched",
+                "fully_matched"
+              ]
+            }
+          },
+          {
+            "name": "minAmount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxAmount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "invoiceId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "assetId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "hasReceipt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "revenueDate",
+                "amount",
+                "category",
+                "paymentStatus"
+              ]
+            }
+          },
+          {
+            "name": "sortDir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []
@@ -62967,7 +63698,7 @@
           "payments"
         ],
         "summary": "Zahlungen suchen",
-        "description": "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff, Betrag von/bis auf den absoluten Betrag). Sortierung über sortBy/sortDir, Standard ist Buchungsdatum absteigend. Mit summary=true trägt die Antwort Summen über die ganze gefilterte Menge: je Währung Eingänge, Ausgänge, zugeordnet und offen, dazu Zähler. Storno-Paare zählen in keiner Summe, Umbuchungen sind weder offen noch zugeordnet.",
+        "description": "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff, Betrag von/bis auf den absoluten Betrag). isOpen=true liefert genau die Zahlungen aus openPaymentCount der Kontenliste (ausserhalb eines Storno-Paars, keine Umbuchung, Rest > 0,009, kein Durchlaufkonto), isOpen=false alle anderen. isTransfer und inStornoPair: true nur Umbuchungen bzw. Storno-Paare, false diese ausblenden. Jede Zeile trägt allocationStatus (Grenzen wie der Filter), remainingAmount (Betrag minus aktive Zuordnungen), isOpen, isTransfer und stornoRole (original, reversal oder null). Sortierung über sortBy/sortDir, Standard ist Buchungsdatum absteigend. Mit summary=true trägt die Antwort Summen über die ganze gefilterte Menge: je Währung Eingänge, Ausgänge, zugeordnet und offen, dazu Zähler. Storno-Paare zählen in keiner Summe, Umbuchungen sind weder offen noch zugeordnet.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -63078,6 +63809,30 @@
                 "partial",
                 "unallocated"
               ]
+            }
+          },
+          {
+            "name": "isOpen",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "isTransfer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "inStornoPair",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           },
           {
@@ -63772,7 +64527,7 @@
           "payments"
         ],
         "summary": "Zahlung einer Rechnung zuweisen",
-        "description": "Weist eine Zahlung einer oder mehreren Rechnungen/Ausgaben zu (Allokation). Gibt die aktualisierten Allokations-Einträge zurück.",
+        "description": "Weist eine Zahlung einer oder mehreren Rechnungen, Ausgaben, Einnahmen oder Kapitalbewegungen zu (Allokation). Eingang: invoice, revenue, capital_movement (Einlage); Ausgang: expense, capital_movement (Entnahme), invoice als Erstattung. Gibt die aktualisierten Allokations-Einträge zurück.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -63853,7 +64608,8 @@
                           "enum": [
                             "invoice",
                             "expense",
-                            "revenue"
+                            "revenue",
+                            "capital_movement"
                           ]
                         },
                         "targetId": {
@@ -64879,7 +65635,7 @@
           "payments"
         ],
         "summary": "Zahlung im Detail",
-        "description": "Eine Zahlung mit Konto, aufgelösten Zuordnungen (Rechnung, Ausgabe, Einnahme, Kapitalbewegung mit Nummer, Bezeichnung, Betrag), Restbetrag, Storno-Bezug und Gegenseite einer Umbuchung in einem Aufruf, ohne Matching-Lauf. Stornierte Zuordnungen bleiben als Nachweis in der Liste (isReversed/reversalOfId). Ziele in einer Kostenstelle außerhalb der eigenen Sicht kommen ohne Bezeichnung (targetVisible=false). 404 PAYMENT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
+        "description": "Eine Zahlung mit Konto, aufgelösten Zuordnungen (Rechnung, Ausgabe, Einnahme, Kapitalbewegung mit Nummer, Bezeichnung, Betrag), Restbetrag, Storno-Bezug und Gegenseite einer Umbuchung in einem Aufruf, ohne Matching-Lauf. Stornierte Zuordnungen bleiben als Nachweis in der Liste (isReversed/reversalOfId). Ziele in einer Kostenstelle außerhalb der eigenen Sicht kommen ohne Bezeichnung (targetVisible=false). Im payment-Objekt zusätzlich raw (Rohdaten des Imports/Anbieters, beliebiges JSON oder null) und transferFxRate (Kurs einer Umbuchung zwischen Konten verschiedener Währung als Dezimal-String, sonst null). 404 PAYMENT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -65055,6 +65811,20 @@
                                     "string",
                                     "null"
                                   ]
+                                },
+                                "raw": {
+                                  "anyOf": [
+                                    {},
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "transferFxRate": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
                                 }
                               },
                               "required": [
@@ -65082,7 +65852,9 @@
                                 "payoutId",
                                 "createdAt",
                                 "createdBy",
-                                "updatedAt"
+                                "updatedAt",
+                                "raw",
+                                "transferFxRate"
                               ],
                               "additionalProperties": false
                             },
@@ -66001,7 +66773,7 @@
           "payments"
         ],
         "summary": "Zahlungskonto nach ID laden",
-        "description": "Lädt ein einzelnes Zahlungskonto (Bank/Kasse) anhand seiner ID mit allen Details (Name, IBAN, Typ, Eröffnungsbetrag).",
+        "description": "Lädt ein einzelnes Zahlungskonto (Bank/Kasse) anhand seiner ID mit allen Details (Name, IBAN, Typ, Eröffnungsbetrag) und denselben Saldo- und Zählerfeldern wie eine Zeile der Kontenliste: balance, systemBalance, balanceDelta, lastConfirmedSnapshot, paymentCount, openPaymentCount, openFeeProposalCount. 404 PAYMENT_ACCOUNT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -66209,7 +66981,7 @@
           "payments"
         ],
         "summary": "Zahlungskonten auflisten",
-        "description": "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff. Je Konto mit Systemsaldo, letztem Ist-Saldo und Abweichung, Anzahl der Zahlungen, offenen Zahlungen (Definition des Abgleichs, Durchlaufkonten 0) und offenen Gebührenvorschlägen.",
+        "description": "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff und Archivstand (archived=active|archived|all, Standard all: wie bisher alle Konten inklusive archivierter, der Filter wirkt serverseitig auch auf Seitenanzahl und Summen). Zusätzlich totalsByCurrency: je Währung Kontenanzahl und Systemsaldo (balance = systemBalance, Dezimal-String mit 2 Stellen) über die ganze gefilterte Menge, nicht nur die Seite. Je Konto mit Systemsaldo, letztem Ist-Saldo und Abweichung, Anzahl der Zahlungen, offenen Zahlungen (Definition des Abgleichs, Durchlaufkonten 0) und offenen Gebührenvorschlägen.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -66267,6 +67039,19 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "archived",
+                "all"
+              ]
             }
           },
           {
@@ -74923,7 +75708,7 @@
           "reconciliation"
         ],
         "summary": "Smart Reconciliation Queue",
-        "description": "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
+        "description": "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. hasSuggestion=true liefert nur Zahlungen mit mindestens einem Vorschlag, false nur ohne; dafür wird die ganze Menge (bis 500 offene Zahlungen) bewertet und erst danach paginiert, total/totalPages und summary gelten für die gefilterte Menge. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -75172,6 +75957,12 @@
                                         "openAmount": {
                                           "type": "string"
                                         },
+                                        "difference": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
                                         "label": {
                                           "type": "string"
                                         },
@@ -75236,6 +76027,7 @@
                                         "targetCurrency",
                                         "totalAmount",
                                         "openAmount",
+                                        "difference",
                                         "label"
                                       ],
                                       "additionalProperties": false
@@ -75291,6 +76083,12 @@
                                           },
                                           "openAmount": {
                                             "type": "string"
+                                          },
+                                          "difference": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
                                           },
                                           "label": {
                                             "type": "string"
@@ -75356,6 +76154,7 @@
                                           "targetCurrency",
                                           "totalAmount",
                                           "openAmount",
+                                          "difference",
                                           "label"
                                         ],
                                         "additionalProperties": false
@@ -75722,6 +76521,14 @@
             }
           },
           {
+            "name": "hasSuggestion",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -75763,7 +76570,7 @@
           "reconciliation"
         ],
         "summary": "Batch Match-Vorschläge",
-        "description": "Gibt Match-Vorschläge für bis zu 20 Zahlungen gleichzeitig zurück. Effizienter als Einzelabfragen.",
+        "description": "Gibt Match-Vorschläge für bis zu 20 Zahlungen gleichzeitig zurück. Ein fachlicher Fehler je Zahlung (etwa PAYMENT_NOT_FOUND) steht in error der Zeile, sonst ist error null.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -76107,13 +76914,31 @@
                                   "success": {
                                     "type": "boolean"
                                   },
+                                  "currency": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "amount": {
+                                    "type": "string"
+                                  },
+                                  "errorCode": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
                                   "error": {
                                     "type": "string"
                                   }
                                 },
                                 "required": [
                                   "paymentId",
-                                  "success"
+                                  "success",
+                                  "currency",
+                                  "amount",
+                                  "errorCode"
                                 ],
                                 "additionalProperties": false
                               }
@@ -76123,12 +76948,44 @@
                             },
                             "totalFailed": {
                               "type": "number"
+                            },
+                            "totalsByCurrency": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "currency": {
+                                    "type": "string"
+                                  },
+                                  "successCount": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "failedCount": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "allocatedAmount": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "currency",
+                                  "successCount",
+                                  "failedCount",
+                                  "allocatedAmount"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
                             "results",
                             "totalSuccess",
-                            "totalFailed"
+                            "totalFailed",
+                            "totalsByCurrency"
                           ],
                           "additionalProperties": false
                         },
@@ -79630,6 +80487,902 @@
             }
           }
         },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/saved-views": {
+      "get": {
+        "operationId": "bookkeeping_saved_views_list",
+        "tags": [
+          "bookkeeping",
+          "saved-views"
+        ],
+        "summary": "Gespeicherte Ansichten laden",
+        "description": "Gespeicherte Ansichten (Filter, Sortierung, Spalten) des Nutzers in der gewählten Firma. Mit listKey nur die Ansichten dieser Liste, Standardansicht zuerst, danach nach Name. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "listKey": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "filters": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "sort": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "by": {
+                                            "type": "string"
+                                          },
+                                          "dir": {
+                                            "type": "string",
+                                            "enum": [
+                                              "asc",
+                                              "desc"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "by",
+                                          "dir"
+                                        ],
+                                        "additionalProperties": false
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "columns": {
+                                    "anyOf": [
+                                      {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "isDefault": {
+                                    "type": "boolean"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "listKey",
+                                  "name",
+                                  "filters",
+                                  "sort",
+                                  "columns",
+                                  "isDefault",
+                                  "createdAt",
+                                  "updatedAt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "listKey",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$"
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "post": {
+        "operationId": "bookkeeping_saved_views_create",
+        "tags": [
+          "bookkeeping",
+          "saved-views"
+        ],
+        "summary": "Ansicht speichern",
+        "description": "Legt eine Ansicht für eine Liste an. listKey benennt die Liste des Frontends (Kleinbuchstaben, Ziffern, getrennt durch - _ oder .), name ist je Liste eindeutig ohne Groß/Klein (409 SAVED_VIEW_NAME_TAKEN). filters ist das Filterobjekt der Liste (höchstens 8000 Bytes als JSON), sort { by, dir } und columns (sichtbare Spalten in Reihenfolge) sind optional, null heißt Vorgabe der Liste. isDefault=true macht die Ansicht zum Standard der Liste, eine bisherige Standardansicht verliert die Markierung. Höchstens 50 Ansichten je Liste (422 SAVED_VIEW_LIMIT). Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+        "responses": {
+          "201": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "listKey": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "filters": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            },
+                            "sort": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "by": {
+                                      "type": "string"
+                                    },
+                                    "dir": {
+                                      "type": "string",
+                                      "enum": [
+                                        "asc",
+                                        "desc"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "by",
+                                    "dir"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "columns": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "isDefault": {
+                              "type": "boolean"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "listKey",
+                            "name",
+                            "filters",
+                            "sort",
+                            "columns",
+                            "isDefault",
+                            "createdAt",
+                            "updatedAt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "listKey": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 64,
+                    "pattern": "^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "filters": {
+                    "default": {},
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {}
+                  },
+                  "sort": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "by": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64
+                          },
+                          "dir": {
+                            "type": "string",
+                            "enum": [
+                              "asc",
+                              "desc"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "by",
+                          "dir"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "columns": {
+                    "anyOf": [
+                      {
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "isDefault": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "listKey",
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      }
+    },
+    "/bookkeeping/saved-views/:id": {
+      "get": {
+        "operationId": "bookkeeping_saved_views_get",
+        "tags": [
+          "bookkeeping",
+          "saved-views"
+        ],
+        "summary": "Gespeicherte Ansicht laden",
+        "description": "Eine gespeicherte Ansicht. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "listKey": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "filters": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            },
+                            "sort": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "by": {
+                                      "type": "string"
+                                    },
+                                    "dir": {
+                                      "type": "string",
+                                      "enum": [
+                                        "asc",
+                                        "desc"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "by",
+                                    "dir"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "columns": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "isDefault": {
+                              "type": "boolean"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "listKey",
+                            "name",
+                            "filters",
+                            "sort",
+                            "columns",
+                            "isDefault",
+                            "createdAt",
+                            "updatedAt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "patch": {
+        "operationId": "bookkeeping_saved_views_update",
+        "tags": [
+          "bookkeeping",
+          "saved-views"
+        ],
+        "summary": "Gespeicherte Ansicht ändern",
+        "description": "Ändert nur die genannten Felder (name, filters, sort, columns, isDefault); listKey bleibt. sort oder columns auf null setzt die Vorgabe der Liste zurück. isDefault=true nimmt der bisherigen Standardansicht die Markierung, isDefault=false entfernt sie. Name schon vergeben: 409 SAVED_VIEW_NAME_TAKEN. Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "listKey": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "filters": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            },
+                            "sort": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "by": {
+                                      "type": "string"
+                                    },
+                                    "dir": {
+                                      "type": "string",
+                                      "enum": [
+                                        "asc",
+                                        "desc"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "by",
+                                    "dir"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "columns": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "isDefault": {
+                              "type": "boolean"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "listKey",
+                            "name",
+                            "filters",
+                            "sort",
+                            "columns",
+                            "isDefault",
+                            "createdAt",
+                            "updatedAt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "filters": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {}
+                  },
+                  "sort": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "by": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 64
+                          },
+                          "dir": {
+                            "type": "string",
+                            "enum": [
+                              "asc",
+                              "desc"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "by",
+                          "dir"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "columns": {
+                    "anyOf": [
+                      {
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "isDefault": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "frontendBearer": []
+          }
+        ],
+        "x-transport": "http",
+        "x-permissions": [
+          "bookkeeping_access"
+        ]
+      },
+      "delete": {
+        "operationId": "bookkeeping_saved_views_delete",
+        "tags": [
+          "bookkeeping",
+          "saved-views"
+        ],
+        "summary": "Gespeicherte Ansicht löschen",
+        "description": "Löscht die Ansicht endgültig (reine Bedien-Einstellung, keine Buchungsdaten). Gilt je angemeldetem Nutzer und gewählter Firma (Mitgliedschaft Pflicht, sonst 403 COMPANY_ACCESS_DENIED; ohne Firma 409 NO_COMPANY_SELECTED; ohne Sitzung 401). Ansichten anderer Nutzer oder anderer Firmen sind nicht sichtbar: 404 SAVED_VIEW_NOT_FOUND.",
+        "responses": {
+          "200": {
+            "description": "JSON response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "data": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
         "security": [
           {
             "frontendBearer": []

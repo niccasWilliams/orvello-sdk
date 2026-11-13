@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.40 - 2026-11-13
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: BookkeepingRevenuesExportParams, BookkeepingRevenuesExportQuery, BookkeepingRevenuesExportBody, BookkeepingRevenuesExportResponseData, BookkeepingRevenuesExportResponse, BookkeepingSavedViewsListParams, BookkeepingSavedViewsListQuery, BookkeepingSavedViewsListBody (+22)
+
 ## 0.7.39 - 2026-11-13
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
