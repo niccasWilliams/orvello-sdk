@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.37 - 2026-11-13
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- neu: ManagingCompaniesCostCentersOptionsParams, ManagingCompaniesCostCentersOptionsQuery, ManagingCompaniesCostCentersOptionsBody, ManagingCompaniesCostCentersOptionsResponseData, ManagingCompaniesCostCentersOptionsResponse, ManagingCompaniesOverviewParams, ManagingCompaniesOverviewQuery, ManagingCompaniesOverviewBody (+38)
+
 ## 0.7.36 - 2026-11-13
 
 - neu: `client.eInvoicing` deckt alle 15 Operationen unter `/e-invoicing` ab (operationIds `e_invoicing_*`): `validate`, `extractions.upload`/`uploadBatch`/`list`/`get`/`saveDraft`/`approve`/`convert`/`reject`/`retry`/`cancel`, `usage.current`/`history`/`job`/`setBudget`.

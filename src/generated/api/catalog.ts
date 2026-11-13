@@ -44,6 +44,7 @@ export const apiMountPrefixes = {
   "/managing-companies",
   "/merchant-invoicing",
   "/oauth",
+  "/overview",
   "/personal-finance/accounts",
   "/personal-finance/allocation",
   "/personal-finance/categories",
@@ -205,6 +206,10 @@ export const apiGroups = {
     "module": "./features/routes.merchant_invoicing"
   },
   {
+    "key": "overview",
+    "module": "./features/routes.overview"
+  },
+  {
     "key": "personal_finance",
     "module": "./features/routes.personal_finance"
   },
@@ -333,6 +338,10 @@ export const apiGroups = {
   {
     "key": "oauth2_external",
     "module": "./base/routes.oauth2_external"
+  },
+  {
+    "key": "overview",
+    "module": "./features/routes.overview"
   },
   {
     "key": "permissions",

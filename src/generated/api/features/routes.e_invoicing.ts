@@ -329,7 +329,6 @@ export type EInvoicingExtractionsUploadResponseData = {
   qualityTier: "high" | "medium" | "low" | "untrusted";
   profileCompliant: boolean;
 } | null;
-  documentUrl: string;
   documentHash: string;
   rawText: string | null;
   structuredText: Record<string, any> | null;
@@ -591,7 +590,6 @@ export type EInvoicingExtractionsGetResponseData = {
   qualityTier: "high" | "medium" | "low" | "untrusted";
   profileCompliant: boolean;
 } | null;
-  documentUrl: string;
   documentHash: string;
   rawText: string | null;
   structuredText: Record<string, any> | null;
@@ -725,7 +723,6 @@ export type EInvoicingExtractionsSaveDraftResponseData = {
   qualityTier: "high" | "medium" | "low" | "untrusted";
   profileCompliant: boolean;
 } | null;
-  documentUrl: string;
   documentHash: string;
   rawText: string | null;
   structuredText: Record<string, any> | null;

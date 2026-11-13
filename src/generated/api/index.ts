@@ -33,6 +33,7 @@ export * from "./features/routes.managing_company_postal_account";
 export * from "./features/routes.merchant_invoicing";
 export * from "./base/routes.oauth2";
 export * from "./base/routes.oauth2_external";
+export * from "./features/routes.overview";
 export * from "./base/routes.permissions";
 export * from "./features/routes.personal_finance";
 export * from "./base/routes.roles";
@@ -74,6 +75,7 @@ import { apiRoutes_managing_company_postal_account } from "./features/routes.man
 import { apiRoutes_merchant_invoicing } from "./features/routes.merchant_invoicing";
 import { apiRoutes_oauth2 } from "./base/routes.oauth2";
 import { apiRoutes_oauth2_external } from "./base/routes.oauth2_external";
+import { apiRoutes_overview } from "./features/routes.overview";
 import { apiRoutes_permissions } from "./base/routes.permissions";
 import { apiRoutes_personal_finance } from "./features/routes.personal_finance";
 import { apiRoutes_roles } from "./base/routes.roles";
@@ -115,6 +117,7 @@ export type ApiRoutes =
   & typeof apiRoutes_merchant_invoicing
   & typeof apiRoutes_oauth2
   & typeof apiRoutes_oauth2_external
+  & typeof apiRoutes_overview
   & typeof apiRoutes_permissions
   & typeof apiRoutes_personal_finance
   & typeof apiRoutes_roles
@@ -157,6 +160,7 @@ export const apiRoutes: ApiRoutes = {
   ...apiRoutes_merchant_invoicing,
   ...apiRoutes_oauth2,
   ...apiRoutes_oauth2_external,
+  ...apiRoutes_overview,
   ...apiRoutes_permissions,
   ...apiRoutes_personal_finance,
   ...apiRoutes_roles,

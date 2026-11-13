@@ -3,7 +3,7 @@
 // Run `pnpm run api:generate` to regenerate
 
 export type TaxYearsRemindersParams = undefined;
-export type TaxYearsRemindersQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type TaxYearsRemindersQuery = undefined;
 export type TaxYearsRemindersBody = undefined;
 export type TaxYearsRemindersResponseData = {
   generatedAt: string;

@@ -48,9 +48,14 @@ export type WorkTrackingListQuery = {
   userId?: number;
   companyId?: number;
   status?: "pending" | "approved" | "rejected";
+  isBillable?: "true" | "false";
+  isBilled?: "true" | "false";
+  from?: string;
+  to?: string;
+  withSummary?: "true" | "false";
 };
 export type WorkTrackingListBody = undefined;
-export type WorkTrackingListResponseData = PaginatedResult<WorkEntry>;
+export type WorkTrackingListResponseData = PaginatedResult<WorkEntry> & { summary?: { entryCount: number; pendingCount: number; approvedCount: number; rejectedCount: number; totalMinutes: number; billableMinutes: number; billedMinutes: number; openMinutes: number; openAmountNet: string; openMinutesWithoutRate: number } };
 export type WorkTrackingListResponse = import("../types").ApiEnvelope<WorkTrackingListResponseData>;
 
 export type WorkTrackingGetByIdParams = {

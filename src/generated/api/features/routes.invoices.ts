@@ -218,6 +218,9 @@ export type InvoiceDunningSuggestionsParams = undefined;
 export type InvoiceDunningSuggestionsQuery = {
   asOf?: string;
   limit?: number;
+  offset?: number;
+  page?: number;
+  pageSize?: number;
 };
 export type InvoiceDunningSuggestionsBody = undefined;
 export type InvoiceDunningSuggestionsResponseData = {
@@ -235,6 +238,11 @@ export type InvoiceDunningSuggestionsResponseData = {
   latestNoticeLevel: "level0" | "level1" | "level2" | "level3" | null;
   latestNoticeAt: string | null;
 }>;
+  total: number;
+  limit: number;
+  offset: number;
+  page: number;
+  pageSize: number;
 };
 export type InvoiceDunningSuggestionsResponse = import("../types").ApiEnvelope<InvoiceDunningSuggestionsResponseData>;
 
@@ -569,6 +577,7 @@ export type InvoicesCreateManualResponse = import("../types").ApiEnvelope<Invoic
 export type InvoicesSearchParams = undefined;
 export type InvoicesSearchQuery = {
   search?: string;
+  q?: string;
   page?: number;
   pageSize?: number;
   status?: string;
@@ -581,27 +590,99 @@ export type InvoicesSearchQuery = {
   minTotal?: string;
   maxTotal?: string;
   currency?: string;
+  receivable?: "open" | "overdue" | "settled";
+  asOf?: string;
   sortBy?: "createdAt" | "invoiceDate" | "dueDate" | "totalAmount";
   sortDir?: "asc" | "desc";
 };
 export type InvoicesSearchBody = undefined;
-export type InvoicesSearchResponseData = PaginatedResult<Invoice & { versionCount: number; corrections: Array<Pick<Invoice, 'id'|'invoiceNumber'|'status'|'totalAmount'|'currency'|'invoiceDate'|'s3Key'|'publicShareToken'> & { documentType: 'credit_note'|'cancellation' }> }>;
+export type InvoicesSearchResponseData = PaginatedResult<Invoice & { versionCount: number; corrections: Array<Pick<Invoice, 'id'|'invoiceNumber'|'status'|'totalAmount'|'currency'|'invoiceDate'|'s3Key'|'publicShareToken'> & { documentType: 'credit_note'|'cancellation' }>; customerDisplayName?: string | null; openAmount?: string; dunningLevel?: 'level0'|'level1'|'level2'|'level3'|null; suggestedDunningLevel?: 'level0'|'level1'|'level2'|'level3'|null }>;
 export type InvoicesSearchResponse = import("../types").ApiEnvelope<InvoicesSearchResponseData>;
+
+export type InvoicesSummaryParams = undefined;
+export type InvoicesSummaryQuery = {
+  search?: string;
+  q?: string;
+  status?: string;
+  companyId?: number;
+  documentType?: string;
+  invoiceDateFrom?: string;
+  invoiceDateTo?: string;
+  dueDateFrom?: string;
+  dueDateTo?: string;
+  minTotal?: string;
+  maxTotal?: string;
+  currency?: string;
+  receivable?: "open" | "overdue" | "settled";
+  asOf?: string;
+};
+export type InvoicesSummaryBody = undefined;
+export type InvoicesSummaryResponseData = {
+  asOf: string;
+  count: number;
+  currencies: Array<{
+  currency: string;
+  count: number;
+  totalAmount: string;
+  byStatus: Array<{
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  count: number;
+  totalAmount: string;
+}>;
+  open: {
+  count: number;
+  amount: string;
+};
+  overdue: {
+  count: number;
+  amount: string;
+};
+  aging: {
+  notDue: {
+  count: number;
+  amount: string;
+};
+  days1To30: {
+  count: number;
+  amount: string;
+};
+  days31To60: {
+  count: number;
+  amount: string;
+};
+  days61To90: {
+  count: number;
+  amount: string;
+};
+  over90: {
+  count: number;
+  amount: string;
+};
+};
+}>;
+  dunning: {
+  candidateCount: number;
+  suggestionCount: number;
+};
+};
+export type InvoicesSummaryResponse = import("../types").ApiEnvelope<InvoicesSummaryResponseData>;
 
 export type InvoicesListPendingParams = undefined;
 export type InvoicesListPendingQuery = {
-
+  page?: number;
+  pageSize?: number;
 };
 export type InvoicesListPendingBody = undefined;
-export type InvoicesListPendingResponseData = { total: number; invoices: Array<{ invoice: Invoice; company: CustomerCompany | null }> };
+export type InvoicesListPendingResponseData = { total: number; invoices: Array<{ invoice: Invoice; company: CustomerCompany | null }>; page?: number; pageSize?: number };
 export type InvoicesListPendingResponse = import("../types").ApiEnvelope<InvoicesListPendingResponseData>;
 
 export type InvoicesListOverdueParams = undefined;
 export type InvoicesListOverdueQuery = {
-
+  page?: number;
+  pageSize?: number;
 };
 export type InvoicesListOverdueBody = undefined;
-export type InvoicesListOverdueResponseData = { total: number; invoices: Array<{ invoice: Invoice; company: CustomerCompany | null; daysOverdue: number }> };
+export type InvoicesListOverdueResponseData = { total: number; invoices: Array<{ invoice: Invoice; company: CustomerCompany | null; daysOverdue: number }>; page?: number; pageSize?: number };
 export type InvoicesListOverdueResponse = import("../types").ApiEnvelope<InvoicesListOverdueResponseData>;
 
 export type InvoicesAnalysisParams = {
@@ -697,6 +778,193 @@ export type InvoicesCreditNoteIssueBody = {
 };
 export type InvoicesCreditNoteIssueResponseData = { invoice: Invoice; documentId: number; pdfUrl: string; originalInvoiceId?: number | null };
 export type InvoicesCreditNoteIssueResponse = import("../types").ApiEnvelope<InvoicesCreditNoteIssueResponseData>;
+
+export type InvoicesGetFullParams = {
+  invoiceId: number;
+};
+export type InvoicesGetFullQuery = undefined;
+export type InvoicesGetFullBody = undefined;
+export type InvoicesGetFullResponseData = {
+  invoice: {
+  id: number;
+  invoiceNumber: string;
+  companyId: number | null;
+  documentType: "invoice" | "credit_note" | "cancellation";
+  correctsInvoiceId: number | null;
+  correctionReason: string | null;
+  correctionIdempotencyKey: string | null;
+  correctionRequestHash: string | null;
+  managingCompanyId: number;
+  costCenterId: number | null;
+  invoiceDate: string | string;
+  dueDate: string | string;
+  totalAmount: string;
+  currency: string;
+  s3Key: string | null;
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  publicShareToken: string | null;
+  eInvoiceFormat: string | null;
+  zugferdProfile: string | null;
+  notes: string | null;
+  taxRate: string | null;
+  taxAmount: string | null;
+  netAmount: string | null;
+  vatTreatment: string | null;
+  vatLegalRef: string | null;
+  vatNote: string | null;
+  vatCustom: any;
+  performedAt: string | string | null;
+  paidAt: string | string | null;
+  paidSource: string | null;
+  paidByPaymentId: number | null;
+  paymentMethod: string | null;
+  paymentProvider: string | null;
+  customerName: string | null;
+  customerStreet: string | null;
+  customerStreetNr: string | null;
+  customerZip: string | null;
+  customerCity: string | null;
+  customerCountry: string | null;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  customerUstId: string | null;
+  language: string;
+  paymentAccountId: number | null;
+  bankFallbackAccountId: number | null;
+  paymentTermsDays: number | null;
+  paymentTermsText: string | null;
+  earlyPaymentDiscountPercent: string | null;
+  earlyPaymentDiscountDays: number | null;
+  createdAt: string | string;
+  updatedAt: string | string | null;
+};
+  lineItems: Array<{
+  id: number;
+  invoiceId: number;
+  itemType: string;
+  title: string;
+  description: string | null;
+  unitPriceNet: string;
+  quantity: string;
+  lineNetAmount: string;
+  lineGrossAmount: string;
+  taxRate: string;
+  lineTaxAmount: string;
+  supplyType: "goods" | "service" | "electronic_service" | "event_admission";
+  supplyTypeSource: string;
+  sortOrder: number | null;
+  createdAt: string | string;
+}>;
+  customer: {
+  source: "company" | "manual";
+  companyId: number | null;
+  name: string | null;
+  street: string | null;
+  streetNr: string | null;
+  zip: string | null;
+  city: string | null;
+  country: string | null;
+  email: string | null;
+  phone: string | null;
+  ustId: string | null;
+};
+  corrections: Array<{
+  id: number;
+  invoiceNumber: string;
+  documentType: "credit_note" | "cancellation";
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  totalAmount: string;
+  currency: string;
+  invoiceDate: string | string;
+  s3Key: string | null;
+  publicShareToken: string | null;
+}>;
+  correctsInvoice: {
+  id: number;
+  invoiceNumber: string;
+  documentType: "invoice" | "credit_note" | "cancellation";
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  totalAmount: string;
+  currency: string;
+  invoiceDate: string | string;
+} | null;
+  statusPolicy: {
+  invoiceId: number;
+  documentType: "invoice" | "credit_note" | "cancellation";
+  currentStatus: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  allowedNextStatuses: Array<"draft" | "issued" | "paid" | "overdue" | "cancelled">;
+  locked: boolean;
+  lockReason?: string | null;
+  flags: {
+  hasAnyCorrection: boolean;
+  hasCancellation: boolean;
+};
+  actions: {
+  canSetDraft: boolean;
+  canSetIssued: boolean;
+  canSetPaid: boolean;
+  canSetOverdue: boolean;
+  canSetCancelled: boolean;
+};
+};
+  reconciliation: {
+  invoiceId: number;
+  invoiceTotal: number;
+  settlementTotal: number;
+  openAmount: number;
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  paidSource: string | null;
+  state: "fully_settled_and_paid" | "fully_settled_but_not_paid" | "open" | "paid_but_underallocated" | "paid_marked_without_full_settlement";
+  needsAttention: boolean;
+  uiHintDe: string;
+} | null;
+  dunning: {
+  noticeCount: number;
+  latestLevel: "level0" | "level1" | "level2" | "level3" | null;
+  latestNoticeAt: string | string | null;
+  daysOverdue: number;
+  suggestedLevel: "level0" | "level1" | "level2" | "level3" | null;
+  notices: Array<{
+  id: number;
+  managingCompanyId: number;
+  invoiceId: number;
+  documentId?: number | null;
+  level: "level1" | "level2" | "level3";
+  delivery: "manual" | "email" | "letter";
+  issuedAt: string | string;
+  issuedBy?: number | null;
+  asOf: string | string;
+  daysOverdue: number;
+  invoiceTotal: string;
+  openAmount: string;
+  currency: string;
+  interestAmount: string;
+  feeAmount: string;
+  lumpSum40Amount: string;
+  totalClaimed: string;
+  baseRateUsed?: string | null;
+  statutoryRateUsed?: string | null;
+  subject?: string | null;
+  body?: string | null;
+  createdAt: string | string;
+  isPaymentReminder: boolean;
+}>;
+} | null;
+  actions: {
+  canChangeStatus: boolean;
+  canDelete: boolean;
+  canIssueCreditNote: boolean;
+  canIssueDunning: boolean;
+  canRepairPdf: boolean;
+};
+  access: {
+  role: "viewer" | "editor" | "admin";
+  bookkeeping: boolean;
+};
+  versionCount: number;
+  documentId: number | null;
+};
+export type InvoicesGetFullResponse = import("../types").ApiEnvelope<InvoicesGetFullResponseData>;
 
 export type InvoicesStatusPolicyParams = {
   invoiceId: number;
@@ -962,7 +1230,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices","dunning"],
       summary: "Mahn-Vorschläge ermitteln",
-      description: "Liefert eine Liste von Mahn-Kandidaten (inkl. vorgeschlagenem Mahn-Level) für einen Stichtag. Es wird nichts versendet – nur Vorschläge für manuelles Mahnen. Bezahlt/draft/cancelled werden serverseitig ausgeschlossen.",
+      description: "Liefert eine Liste von Mahn-Kandidaten (inkl. vorgeschlagenem Mahn-Level) für einen Stichtag. Es wird nichts versendet – nur Vorschläge für manuelles Mahnen. Bezahlt/draft/cancelled werden serverseitig ausgeschlossen. Älteste Fälligkeit zuerst; `total` zählt alle Vorschläge, `limit` und `offset` blättern.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -1191,7 +1459,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Rechnungen suchen/listen",
-      description: "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden.",
+      description: "Paginierte Suche über Rechnungen. Standardmäßig werden nur Original-Rechnungen (documentType=invoice) paginiert; Korrekturdokumente (GS/ST) sind als corrections[] direkt auf der jeweiligen Rechnung eingebettet. Pagination-Limits gelten nur für Original-Rechnungen. Suche nach einer Korrekturnummer (z.B. 'GS-2026') liefert die zugehörige Original-Rechnung. Mit ?documentType=credit_note,cancellation kann ein flaches Listing nur der Korrekturdokumente abgerufen werden. Jede Zeile trägt customerDisplayName (Kundenfirma, sonst der Kundenname der Rechnung); mit dem Recht Buchhaltung zusätzlich openAmount (Restforderung), dunningLevel (letzte Mahnstufe) und suggestedDunningLevel (fällige nächste Mahnstufe wie in den Mahnvorschlägen, sonst null). receivable=open|overdue|settled filtert nach Forderungsstand und trifft dieselbe Menge wie open und overdue der Kennzahlen; asOf (ISO) ist der Stichtag dafür, Standard ist jetzt. Kennzahlen über die ganze gefilterte Menge liefert GET /invoices/summary mit denselben Filtern.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -1203,6 +1471,25 @@ export const apiRoutes_invoices = {
     },
   },
   // Contract source: explicit
+  "invoices_summary": {
+    method: "GET",
+    path: "/invoices/summary",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Kennzahlen über die gefilterte Rechnungsmenge",
+      description: "Anzahl und Summe je Status, offener und überfälliger Betrag sowie die Fälligkeitsstruktur (nicht fällig, 1 bis 30, 31 bis 60, 61 bis 90, über 90 Tage), gerechnet über die ganze Menge und mit denselben Filtern wie GET /invoices (ohne Seite und Sortierung). Offen ist die Restforderung ausgestellter Rechnungen nach Gutschriften und zugeordneten Zahlungen; stornierte Rechnungen zählen als cancelled und sind nie offen. Beträge je Währung als Dezimaltext. asOf (ISO) setzt den Stichtag der Fälligkeit, Standard ist jetzt. dunning nennt unter denselben Filtern die Mahnkandidaten (candidateCount, gleich total der Mahnvorschläge) und davon die mit fälliger Mahnstufe (suggestionCount), vollständig gezählt.",
+      validated: {"params":false,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesSummaryParams;
+      query: InvoicesSummaryQuery;
+      body: InvoicesSummaryBody;
+      response: InvoicesSummaryResponse;
+      responseData: InvoicesSummaryResponseData;
+    },
+  },
+  // Contract source: explicit
   "invoices_list_pending": {
     method: "GET",
     path: "/invoices/pending",
@@ -1210,7 +1497,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Offene Rechnungen (pending) listen",
-      description: "Liefert eine zusammengefasste Liste offener Rechnungen inkl. optionaler Company-Infos (für Buchhaltung/Backoffice). Keine Query-Parameter.",
+      description: "Liefert eine zusammengefasste Liste offener Rechnungen inkl. optionaler Company-Infos (für Buchhaltung/Backoffice). Ohne Query-Parameter kommt wie bisher alles. Mit page und/oder pageSize (max 200) kommt eine Seite, älteste Fälligkeit zuerst; total zählt dann die ganze Menge. Summen bitte aus GET /invoices/summary lesen, nicht aus dieser Liste rechnen.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -1229,7 +1516,7 @@ export const apiRoutes_invoices = {
     meta: {
       tags: ["invoices"],
       summary: "Überfällige Rechnungen listen",
-      description: "Liefert überfällige Rechnungen inkl. daysOverdue (Tage überfällig) – für Mahnwesen/Monitoring. Keine Query-Parameter.",
+      description: "Liefert überfällige Rechnungen inkl. daysOverdue (Tage überfällig) – für Mahnwesen/Monitoring. Ohne Query-Parameter kommt wie bisher alles. Mit page und/oder pageSize (max 200) kommt eine Seite, am längsten überfällig zuerst; total zählt dann die ganze Menge. Summen bitte aus GET /invoices/summary lesen, nicht aus dieser Liste rechnen.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -1295,6 +1582,25 @@ export const apiRoutes_invoices = {
       body: InvoicesCreditNoteIssueBody;
       response: InvoicesCreditNoteIssueResponse;
       responseData: InvoicesCreditNoteIssueResponseData;
+    },
+  },
+  // Contract source: explicit
+  "invoices_get_full": {
+    method: "GET",
+    path: "/invoices/:invoiceId/full",
+    auth: {"type":"frontend_bearer_http"},
+    meta: {
+      tags: ["invoices"],
+      summary: "Rechnung vollständig für die Detailansicht",
+      description: "Rechnung mit Positionen, Kunde, Korrekturen (Gutschriften, Storno) bzw. korrigierter Rechnung, Statusregeln, Zahlungs- und Abgleichstand, Mahnstand samt Verlauf und den Aktionen, die der angemeldete Benutzer in diesem Zustand ausführen darf, in einem Aufruf. Sichtbarkeit wie GET /invoices/:invoiceId (Kostenstellen des Benutzers). reconciliation und dunning sind null ohne das Recht Buchhaltung.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: InvoicesGetFullParams;
+      query: InvoicesGetFullQuery;
+      body: InvoicesGetFullBody;
+      response: InvoicesGetFullResponse;
+      responseData: InvoicesGetFullResponseData;
     },
   },
   // Contract source: explicit

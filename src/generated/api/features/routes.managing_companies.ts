@@ -576,6 +576,22 @@ export type ManagingCompaniesCostCentersCreateBody = {
 export type ManagingCompaniesCostCentersCreateResponseData = CompanyCostCenter;
 export type ManagingCompaniesCostCentersCreateResponse = import("../types").ApiEnvelope<ManagingCompaniesCostCentersCreateResponseData>;
 
+export type ManagingCompaniesCostCentersOptionsParams = {
+  managingCompanyId: number;
+};
+export type ManagingCompaniesCostCentersOptionsQuery = {
+  includeArchived?: "true" | "false";
+};
+export type ManagingCompaniesCostCentersOptionsBody = undefined;
+export type ManagingCompaniesCostCentersOptionsResponseData = Array<{
+  id: number;
+  name: string;
+  code: string;
+  colour: string | null;
+  isArchived: boolean;
+}>;
+export type ManagingCompaniesCostCentersOptionsResponse = import("../types").ApiEnvelope<ManagingCompaniesCostCentersOptionsResponseData>;
+
 export type ManagingCompaniesCostCentersMyParams = {
   managingCompanyId: number;
 };
@@ -1948,6 +1964,307 @@ export type ManagingCompaniesGetByIdBody = undefined;
 export type ManagingCompaniesGetByIdResponseData = ManagingCompany;
 export type ManagingCompaniesGetByIdResponse = import("../types").ApiEnvelope<ManagingCompaniesGetByIdResponseData>;
 
+export type ManagingCompaniesOverviewParams = {
+  companyId: number;
+};
+export type ManagingCompaniesOverviewQuery = undefined;
+export type ManagingCompaniesOverviewBody = undefined;
+export type ManagingCompaniesOverviewResponseData = {
+  companyId: number;
+  profileChanges: {
+  data: {
+  revision: number;
+  historySince: string;
+  today: string;
+  issuedInvoices: boolean;
+  values: Record<string, string | null>;
+  fields: Array<{
+  field: "companyName" | "companyLegalForm" | "companyManagingDirector" | "companyStreet" | "companyStreetNr" | "companyZip" | "companyCity" | "companyCountry" | "companyEmail" | "companyPhone" | "companyWebsite" | "companyCommercialRegister" | "companyRegistrationCourt" | "companyTaxId" | "companyVatId" | "bookkeepingBasis" | "baseCurrency";
+  label: string;
+  role: "admin" | "editor";
+  reasons: Array<string>;
+  evidenceRequired: boolean;
+  publishedFix: "issuer_run" | "single_review" | "none";
+  effective: "year_start" | "setup_only" | null;
+  onInvoice: boolean;
+}>;
+  reasons: Array<{
+  code: string;
+  label: string;
+}>;
+  changes: Array<{
+  id: number;
+  managingCompanyId: number;
+  kind: "baseline" | "setup" | "change" | "correction";
+  reasonCode: "relocation" | "tax_office_change" | "tax_number_reassignment" | "vat_id_assignment" | "renaming" | "umwg_conversion" | "management_change" | "register_change" | "contact_update" | "method_change" | "entry_error" | "new_legal_person" | "initial_setup";
+  effectiveFrom: string | null;
+  changes: Array<{
+  field: string;
+  from: string | null;
+  to: string | null;
+}>;
+  evidence: string | null;
+  status: "planned" | "applied" | "cancelled";
+  baseRevision: number;
+  createdBy: number | null;
+  createdAt: string | string;
+  appliedAt: string | string | null;
+  cancelledBy: number | null;
+  cancelledAt: string | string | null;
+  statusNote: string | null;
+  actorName: string;
+}>;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  logos: {
+  data: {
+  whiteLogoKey: string | null;
+  darkLogoKey: string | null;
+  whiteLogoUrl: string | null;
+  darkLogoUrl: string | null;
+  invoiceLogoMode: string;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  invoiceNumbering: {
+  data: {
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  rules: {
+  invoice: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  credit_note: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+  cancellation: {
+  prefix: string;
+  separator: "-" | "/" | ".";
+  includeYear: boolean;
+  reset: "yearly" | "never";
+  padding: number;
+  startAt: number;
+};
+};
+}>;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  invoiceLayout: {
+  data: {
+  defaultVariant: "din5008_modern" | "din5008_classic" | "din5008_minimal" | "din5008_compact" | "din5008_enterprise";
+  effectiveVariant: "din5008_modern" | "din5008_classic" | "din5008_minimal" | "din5008_compact" | "din5008_enterprise";
+  source: "cost_center" | "company" | "system_default";
+  costCenterId: number | null;
+  variants: Array<{
+  id: "din5008_modern" | "din5008_classic" | "din5008_minimal" | "din5008_compact" | "din5008_enterprise";
+  name: string;
+  previewTitle: string;
+  description: string;
+  preview: {
+  accentColor: string;
+  fontFamily: string;
+  density: "compact" | "comfortable";
+  visualStyle: string;
+};
+  technical: {
+  paperStandard: "DIN 5008";
+  pageFormat: "A4";
+  windowEnvelopeCompatible: boolean;
+  renderEngine: "@react-pdf/renderer";
+  eInvoice: {
+  format: "ZUGFeRD";
+  profileSupport: string;
+  embedding: string;
+};
+};
+}>;
+  eInvoice: {
+  enabled: boolean;
+  format: "zugferd" | null;
+  defaultProfile: string | null;
+};
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  costCenters: {
+  data: Array<{
+  id: number;
+  name: string;
+  code: string;
+  colour: string | null;
+  isArchived: boolean;
+  invoiceLayoutVariant: string | null;
+  whiteLogoKey: string | null;
+  darkLogoKey: string | null;
+}> | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  postalAccount: {
+  data: {
+  connected: boolean;
+  username: string | null;
+  updatedAt: string | null;
+  mode: "live";
+  sendingEnabled: false;
+  sharedWithAmp: boolean;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  datevProfiles: {
+  data: {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  validFrom: string;
+  changedAt: string;
+  changedBy: number;
+  reason: string;
+  config: {
+  skr: "skr03" | "skr04";
+  advisorNumber: string;
+  clientNumber: string;
+  accountLength: number;
+  cashAccount: number | null;
+  moneyAccounts: Array<{
+  paymentAccountId: number;
+  account: number;
+}>;
+  accounts: Array<{
+  direction: "revenue" | "expense" | "expense_non_deductible" | "asset";
+  category: string;
+  taxCase: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
+  account: number;
+  automaticTax: boolean;
+  taxKey?: number | null;
+}>;
+  privateAccounts?: {
+  withdrawal?: number | null;
+  deposit?: number | null;
+};
+  fxDifferenceAccounts?: {
+  gain?: number | null;
+  loss?: number | null;
+};
+};
+}>;
+  paymentAccounts: Array<{
+  id: number;
+  name: string;
+  type: string;
+}>;
+  categories: {
+  revenue: Array<{
+  value: string;
+  label: string;
+}>;
+  expense: Array<{
+  value: string;
+  label: string;
+}>;
+  asset: Array<{
+  value: string;
+  label: string;
+}>;
+};
+  taxCases: Array<{
+  value: "sales_19" | "sales_7" | "input_19" | "input_7" | "no_deduction" | "sales_eu_supply" | "sales_eu_service" | "sales_export" | "sales_not_taxable_abroad" | "sales_exempt" | "sales_reverse_charge" | "reverse_charge_19" | "reverse_charge_7" | "reverse_charge_no_deduction_19" | "reverse_charge_no_deduction_7";
+  label: string;
+  directions: Array<"revenue" | "expense" | "expense_non_deductible" | "asset">;
+  special: boolean;
+}>;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+  vatEntrepreneurProfile: {
+  data: {
+  revision: number;
+  canManage: boolean;
+  history: Array<{
+  revision: number;
+  activityStartDate: string | null;
+  unitCompanyIds: Array<number>;
+  reason: string;
+  changedBy: number;
+  changedAt: string;
+}>;
+  selectableCompanies: Array<{
+  id: number;
+  name: string;
+}>;
+} | null;
+  reason: {
+  code: string;
+  message: string;
+} | null;
+};
+};
+export type ManagingCompaniesOverviewResponse = import("../types").ApiEnvelope<ManagingCompaniesOverviewResponseData>;
+
 export type ManagingCompaniesUpdateParams = {
   id: number;
 };
@@ -2279,6 +2596,25 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesCostCentersCreateBody;
       response: ManagingCompaniesCostCentersCreateResponse;
       responseData: ManagingCompaniesCostCentersCreateResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_cost_centers_options": {
+    method: "GET",
+    path: "/managing-companies/cost-centers/options/:managingCompanyId",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["managing-companies","cost-centers"],
+      summary: "Kostenstellen als Auswahlliste",
+      description: "Kompakte Liste (id, Name, Code, Farbe) der für den Benutzer sichtbaren Kostenstellen, nicht paginiert. Standard nur aktive, `includeArchived=true` zeigt alle. Erfordert `bookkeeping_access`.",
+      validated: {"params":true,"query":true,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesCostCentersOptionsParams;
+      query: ManagingCompaniesCostCentersOptionsQuery;
+      body: ManagingCompaniesCostCentersOptionsBody;
+      response: ManagingCompaniesCostCentersOptionsResponse;
+      responseData: ManagingCompaniesCostCentersOptionsResponseData;
     },
   },
   // Contract source: explicit
@@ -3268,6 +3604,25 @@ export const apiRoutes_managing_companies = {
       body: ManagingCompaniesGetByIdBody;
       response: ManagingCompaniesGetByIdResponse;
       responseData: ManagingCompaniesGetByIdResponseData;
+    },
+  },
+  // Contract source: explicit
+  "managing_companies_overview": {
+    method: "GET",
+    path: "/managing-companies/:companyId/overview",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["managing-companies"],
+      summary: "Einstellungen einer Firma in einem Aufruf",
+      description: "Bündelt die Lesedaten der Einstellungsseite: Stammdaten-Zeitachse, Logos, Nummernkreis, Rechnungslayout, Kostenstellen, Post-Konto, DATEV-Profile und Unternehmerangaben. Die Firma kommt aus dem Pfad, die ausgewählte Firma des Benutzers bleibt unverändert. Jeder Teil prüft die Rechte seines Einzelendpunkts; fehlt ein Recht oder ist ein Teil nicht erreichbar, ist `data` null und `reason` nennt Code und Meldung. Erfordert `bookkeeping_access`.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: ManagingCompaniesOverviewParams;
+      query: ManagingCompaniesOverviewQuery;
+      body: ManagingCompaniesOverviewBody;
+      response: ManagingCompaniesOverviewResponse;
+      responseData: ManagingCompaniesOverviewResponseData;
     },
   },
   // Contract source: explicit

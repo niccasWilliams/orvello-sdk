@@ -194,9 +194,16 @@ export type CustomerCompaniesSearchQuery = {
   page?: number;
   pageSize?: number;
   activeEmployeesOnly?: boolean;
+  sortBy?: "name" | "email" | "city" | "createdAt" | "employeeCount";
+  sortDir?: "asc" | "desc";
+  isFreelancer?: "true" | "false";
+  status?: "pending" | "active" | "inactive" | "suspended";
+  costCenterId?: number;
+  withStats?: boolean;
+  includeEmployees?: "true" | "false";
 };
 export type CustomerCompaniesSearchBody = undefined;
-export type CustomerCompaniesSearchResponseData = PaginatedResult<FullCompany>;
+export type CustomerCompaniesSearchResponseData = PaginatedResult<FullCompany & { employeeCount?: number; stats?: { invoiceCount: number; lastInvoiceDate: Date | null; totals: { currency: string; revenue: string; openAmount: string }[] } }>;
 export type CustomerCompaniesSearchResponse = import("../types").ApiEnvelope<CustomerCompaniesSearchResponseData>;
 
 export const apiRoutes_customer_companies = {

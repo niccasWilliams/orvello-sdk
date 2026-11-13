@@ -212,6 +212,7 @@ export type InvoicesPaymentInstructionsExternalResponse = import("../types").Api
 export type InvoicesSearchExternalParams = undefined;
 export type InvoicesSearchExternalQuery = {
   search?: string;
+  q?: string;
   page?: number;
   pageSize?: number;
   status?: string;
@@ -224,6 +225,8 @@ export type InvoicesSearchExternalQuery = {
   minTotal?: string;
   maxTotal?: string;
   currency?: string;
+  receivable?: "open" | "overdue" | "settled";
+  asOf?: string;
   sortBy?: "createdAt" | "invoiceDate" | "dueDate" | "totalAmount";
   sortDir?: "asc" | "desc";
 };

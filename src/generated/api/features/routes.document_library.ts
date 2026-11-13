@@ -46,6 +46,8 @@ export type DocumentLibraryListQuery = {
   q?: string;
   sort?: "createdAt" | "name" | "size";
   order?: "asc" | "desc";
+  sortBy?: "createdAt" | "name" | "size";
+  sortDir?: "asc" | "desc";
   fileKind?: "pdf" | "image" | "other";
   locked?: "true" | "false";
   invoiceStatus?: "draft" | "issued" | "paid" | "overdue" | "cancelled";

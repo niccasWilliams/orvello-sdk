@@ -1906,6 +1906,9 @@ export type PfStatementsTransactionsQuery = {
   includeTransfers?: boolean;
   limit?: number;
   offset?: number;
+  q?: string;
+  page?: number;
+  pageSize?: number;
 };
 export type PfStatementsTransactionsBody = undefined;
 export type PfStatementsTransactionsResponseData = {
@@ -1936,6 +1939,8 @@ export type PfStatementsTransactionsResponseData = {
   sumCents: number;
   limit: number;
   offset: number;
+  page: number;
+  pageSize: number;
 };
 export type PfStatementsTransactionsResponse = import("../types").ApiEnvelope<PfStatementsTransactionsResponseData>;
 

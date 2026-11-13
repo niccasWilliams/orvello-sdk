@@ -1109,6 +1109,8 @@ export type CustomerCompanyId = number;
 
 export type CompanyEmployee = {
   id: number;
+  /** Verwaltende Firma (Mandant): ein Mitarbeiter gehoert genau einer Firma. */
+  managingCompanyId: number;
   firstName: string | null;
   lastName: string | null;
   birthDate: Date | null;
@@ -1127,6 +1129,8 @@ export type CompanyEmployee = {
 };
 
 export type CompanyEmployeeInsert = {
+  /** Verwaltende Firma (Mandant): ein Mitarbeiter gehoert genau einer Firma. */
+  managingCompanyId: number;
   firstName?: string | null;
   lastName?: string | null;
   birthDate?: Date | null;

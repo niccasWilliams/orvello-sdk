@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Run `pnpm run api:generate` to regenerate
 
-import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, EStCalculationResult, EmploymentIncome, EuServiceZmReport, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IapContractProfile, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, TaxEventListDto, TaxEventPreviewDto, TaxEventSaveResultDto, TaxReportArchiveDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
+import type { AssetCostComponent, BookkeepingAsset, BookkeepingAuditLog, BookkeepingExpense, BookkeepingLockState, BookkeepingRevenue, CapitalMovement, DepreciationMethod, DepreciationRecord, EStCalculationResult, EmploymentIncome, EuServiceZmReport, FeeTreatmentApplyResultDto, FeeTreatmentEntryDto, FeeTreatmentOverviewDto, FeeTreatmentPreviewDto, ForeignReceiptHistoryDto, ForeignReceiptPreviewDto, ForeignReceiptSaveResultDto, IabEntry, IapContractProfile, IapPayoutImport, IncomeTaxSettings, IncomeTaxSummary, Invoice, PaginatedResult, Payment, PaymentAccount, PaymentAccountBalanceSnapshot, PaymentAllocation, PaymentAllocationFxResult, PaymentFeeCorrection, PaymentImportProfile, PaymentProviderConnection, ResolvedPaymentAllocation, SammelpostenPool, Sonderausgaben, Steuerminderungen, SupplierAssignResultDto, SupplierDto, SupplierOverviewDto, SupplierTreatmentApplyResultDto, SupplierTreatmentPreviewDto, SupplierUntreatedOverviewDto, TaxEventListDto, TaxEventPreviewDto, TaxEventSaveResultDto, TaxParameter, TaxParameterHistory, TaxReportArchiveDto, VorauszahlungResult, Vorsorgeaufwendungen, Werbungskosten } from "../../frontend-types";
 
 export type BookkeepingRevenuesSearchParams = undefined;
 export type BookkeepingRevenuesSearchQuery = {
@@ -22,7 +22,7 @@ export type BookkeepingRevenuesSearchQuery = {
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingRevenuesSearchBody = undefined;
-export type BookkeepingRevenuesSearchResponseData = PaginatedResult<BookkeepingRevenue>;
+export type BookkeepingRevenuesSearchResponseData = PaginatedResult<BookkeepingRevenue & { invoiceNumber: string | null; customerName: string | null; costCenterName: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
 export type BookkeepingRevenuesSearchResponse = import("../types").ApiEnvelope<BookkeepingRevenuesSearchResponseData>;
 
 export type BookkeepingRevenuesGetByIdParams = {
@@ -135,6 +135,7 @@ export type BookkeepingRevenuesBulkConfirmResponseData = {
   id: number;
   success: boolean;
   error?: string;
+  code?: string;
 }>;
   totalSuccess: number;
   totalFailed: number;
@@ -232,7 +233,7 @@ export type BookkeepingExpensesSearchQuery = {
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingExpensesSearchBody = undefined;
-export type BookkeepingExpensesSearchResponseData = PaginatedResult<BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] }>;
+export type BookkeepingExpensesSearchResponseData = PaginatedResult<BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null }> & { summary?: { count: number; sumAmount: string; sumNetAmount: string; sumTaxAmount: string; currency: string | null; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
 export type BookkeepingExpensesSearchResponse = import("../types").ApiEnvelope<BookkeepingExpensesSearchResponseData>;
 
 export type BookkeepingExpensesGetByIdParams = {
@@ -240,7 +241,7 @@ export type BookkeepingExpensesGetByIdParams = {
 };
 export type BookkeepingExpensesGetByIdQuery = undefined;
 export type BookkeepingExpensesGetByIdBody = undefined;
-export type BookkeepingExpensesGetByIdResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesGetByIdResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesGetByIdResponse = import("../types").ApiEnvelope<BookkeepingExpensesGetByIdResponseData>;
 
 export type BookkeepingExpensesAnalyzeReceiptParams = undefined;
@@ -317,7 +318,7 @@ export type BookkeepingExpensesCreateBody = {
   inheritExpenseDocument?: boolean;
 };
 };
-export type BookkeepingExpensesCreateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesCreateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesCreateResponse = import("../types").ApiEnvelope<BookkeepingExpensesCreateResponseData>;
 
 export type BookkeepingExpensesUpdateParams = {
@@ -350,7 +351,7 @@ export type BookkeepingExpensesUpdateBody = {
   vatTreatment?: "REVERSE_CHARGE_13B" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "KLEINUNTERNEHMER_0" | null;
   supplierId?: number | null;
 };
-export type BookkeepingExpensesUpdateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesUpdateResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesUpdateResponse = import("../types").ApiEnvelope<BookkeepingExpensesUpdateResponseData>;
 
 export type BookkeepingExpensesUploadReceiptParams = {
@@ -358,7 +359,7 @@ export type BookkeepingExpensesUploadReceiptParams = {
 };
 export type BookkeepingExpensesUploadReceiptQuery = undefined;
 export type BookkeepingExpensesUploadReceiptBody = undefined;
-export type BookkeepingExpensesUploadReceiptResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesUploadReceiptResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesUploadReceiptResponse = import("../types").ApiEnvelope<BookkeepingExpensesUploadReceiptResponseData>;
 
 export type BookkeepingExpensesBulkConfirmParams = undefined;
@@ -371,6 +372,7 @@ export type BookkeepingExpensesBulkConfirmResponseData = {
   id: number;
   success: boolean;
   error?: string;
+  code?: string;
 }>;
   totalSuccess: number;
   totalFailed: number;
@@ -382,7 +384,7 @@ export type BookkeepingExpensesConfirmParams = {
 };
 export type BookkeepingExpensesConfirmQuery = undefined;
 export type BookkeepingExpensesConfirmBody = undefined;
-export type BookkeepingExpensesConfirmResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesConfirmResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesConfirmResponse = import("../types").ApiEnvelope<BookkeepingExpensesConfirmResponseData>;
 
 export type BookkeepingExpensesConfirmCashParams = {
@@ -392,7 +394,7 @@ export type BookkeepingExpensesConfirmCashQuery = undefined;
 export type BookkeepingExpensesConfirmCashBody = {
   confirmedAt?: string;
 };
-export type BookkeepingExpensesConfirmCashResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesConfirmCashResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesConfirmCashResponse = import("../types").ApiEnvelope<BookkeepingExpensesConfirmCashResponseData>;
 
 export type BookkeepingExpensesRevokeCashConfirmParams = {
@@ -402,7 +404,7 @@ export type BookkeepingExpensesRevokeCashConfirmQuery = undefined;
 export type BookkeepingExpensesRevokeCashConfirmBody = {
   reason: string;
 };
-export type BookkeepingExpensesRevokeCashConfirmResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] };
+export type BookkeepingExpensesRevokeCashConfirmResponseData = BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null };
 export type BookkeepingExpensesRevokeCashConfirmResponse = import("../types").ApiEnvelope<BookkeepingExpensesRevokeCashConfirmResponseData>;
 
 export type BookkeepingExpensesMarkAsAssetParams = {
@@ -428,7 +430,7 @@ export type BookkeepingExpensesMarkAsAssetBody = {
   documentId?: number | null;
   inheritExpenseDocument?: boolean;
 };
-export type BookkeepingExpensesMarkAsAssetResponseData = { expense: BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[] }; asset: BookkeepingAsset; createdFromExpense: true };
+export type BookkeepingExpensesMarkAsAssetResponseData = { expense: BookkeepingExpense & { assetInfo: { hasLinkedAsset: boolean; linkedAssetId: number | null; linkedAssetIsActive: boolean | null; linkedAssetStatus: "none" | "active" | "disposed"; accountingTreatment: "immediate_expense" | "capitalized_asset"; reportingImpact: "expense" | "depreciation" }; paymentAllocations: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number }; costCenterName?: string | null; supplierName?: string | null }; asset: BookkeepingAsset; createdFromExpense: true };
 export type BookkeepingExpensesMarkAsAssetResponse = import("../types").ApiEnvelope<BookkeepingExpensesMarkAsAssetResponseData>;
 
 export type BookkeepingExpensesDeleteParams = {
@@ -586,9 +588,9 @@ export type BookkeepingExpensesCreateExternalResponseData = BookkeepingExpense &
 export type BookkeepingExpensesCreateExternalResponse = import("../types").ApiEnvelope<BookkeepingExpensesCreateExternalResponseData>;
 
 export type BookkeepingAssetsListSammelpostenPoolsParams = undefined;
-export type BookkeepingAssetsListSammelpostenPoolsQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type BookkeepingAssetsListSammelpostenPoolsQuery = undefined;
 export type BookkeepingAssetsListSammelpostenPoolsBody = undefined;
-export type BookkeepingAssetsListSammelpostenPoolsResponseData = Array<any>;
+export type BookkeepingAssetsListSammelpostenPoolsResponseData = SammelpostenPool[];
 export type BookkeepingAssetsListSammelpostenPoolsResponse = import("../types").ApiEnvelope<BookkeepingAssetsListSammelpostenPoolsResponseData>;
 
 export type BookkeepingAssetsGetSammelpostenPoolParams = {
@@ -596,7 +598,7 @@ export type BookkeepingAssetsGetSammelpostenPoolParams = {
 };
 export type BookkeepingAssetsGetSammelpostenPoolQuery = undefined;
 export type BookkeepingAssetsGetSammelpostenPoolBody = undefined;
-export type BookkeepingAssetsGetSammelpostenPoolResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsGetSammelpostenPoolResponseData = { pool: SammelpostenPool; assets: BookkeepingAsset[] };
 export type BookkeepingAssetsGetSammelpostenPoolResponse = import("../types").ApiEnvelope<BookkeepingAssetsGetSammelpostenPoolResponseData>;
 
 export type BookkeepingAssetsGenerateDepreciationParams = undefined;
@@ -604,7 +606,7 @@ export type BookkeepingAssetsGenerateDepreciationQuery = undefined;
 export type BookkeepingAssetsGenerateDepreciationBody = {
   fiscalYear: number;
 };
-export type BookkeepingAssetsGenerateDepreciationResponseData = Array<any>;
+export type BookkeepingAssetsGenerateDepreciationResponseData = DepreciationRecord[];
 export type BookkeepingAssetsGenerateDepreciationResponse = import("../types").ApiEnvelope<BookkeepingAssetsGenerateDepreciationResponseData>;
 
 export type BookkeepingAssetsGetDepreciationRecordsParams = undefined;
@@ -612,7 +614,7 @@ export type BookkeepingAssetsGetDepreciationRecordsQuery = {
   fiscalYear: number;
 };
 export type BookkeepingAssetsGetDepreciationRecordsBody = undefined;
-export type BookkeepingAssetsGetDepreciationRecordsResponseData = Array<any>;
+export type BookkeepingAssetsGetDepreciationRecordsResponseData = DepreciationRecord[];
 export type BookkeepingAssetsGetDepreciationRecordsResponse = import("../types").ApiEnvelope<BookkeepingAssetsGetDepreciationRecordsResponseData>;
 
 export type BookkeepingAssetsFinalizeDepreciationParams = undefined;
@@ -620,13 +622,13 @@ export type BookkeepingAssetsFinalizeDepreciationQuery = undefined;
 export type BookkeepingAssetsFinalizeDepreciationBody = {
   fiscalYear: number;
 };
-export type BookkeepingAssetsFinalizeDepreciationResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsFinalizeDepreciationResponseData = { fiscalYear: number; finalizedCount: number; records: DepreciationRecord[] };
 export type BookkeepingAssetsFinalizeDepreciationResponse = import("../types").ApiEnvelope<BookkeepingAssetsFinalizeDepreciationResponseData>;
 
 export type BookkeepingAssetsIabListParams = undefined;
-export type BookkeepingAssetsIabListQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type BookkeepingAssetsIabListQuery = undefined;
 export type BookkeepingAssetsIabListBody = undefined;
-export type BookkeepingAssetsIabListResponseData = Array<any>;
+export type BookkeepingAssetsIabListResponseData = IabEntry[];
 export type BookkeepingAssetsIabListResponse = import("../types").ApiEnvelope<BookkeepingAssetsIabListResponseData>;
 
 export type BookkeepingAssetsIabCreateParams = undefined;
@@ -638,7 +640,7 @@ export type BookkeepingAssetsIabCreateBody = {
   deductionRate?: string;
   fiscalYearClaimed: number;
 };
-export type BookkeepingAssetsIabCreateResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsIabCreateResponseData = IabEntry;
 export type BookkeepingAssetsIabCreateResponse = import("../types").ApiEnvelope<BookkeepingAssetsIabCreateResponseData>;
 
 export type BookkeepingAssetsIabGetParams = {
@@ -646,7 +648,7 @@ export type BookkeepingAssetsIabGetParams = {
 };
 export type BookkeepingAssetsIabGetQuery = undefined;
 export type BookkeepingAssetsIabGetBody = undefined;
-export type BookkeepingAssetsIabGetResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsIabGetResponseData = IabEntry;
 export type BookkeepingAssetsIabGetResponse = import("../types").ApiEnvelope<BookkeepingAssetsIabGetResponseData>;
 
 export type BookkeepingAssetsIabDissolveParams = {
@@ -656,7 +658,7 @@ export type BookkeepingAssetsIabDissolveQuery = undefined;
 export type BookkeepingAssetsIabDissolveBody = {
   linkedAssetId: number;
 };
-export type BookkeepingAssetsIabDissolveResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsIabDissolveResponseData = IabEntry;
 export type BookkeepingAssetsIabDissolveResponse = import("../types").ApiEnvelope<BookkeepingAssetsIabDissolveResponseData>;
 
 export type BookkeepingAssetsIabReverseParams = {
@@ -666,7 +668,7 @@ export type BookkeepingAssetsIabReverseQuery = undefined;
 export type BookkeepingAssetsIabReverseBody = {
   reversalFiscalYear: number;
 };
-export type BookkeepingAssetsIabReverseResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingAssetsIabReverseResponseData = IabEntry;
 export type BookkeepingAssetsIabReverseResponse = import("../types").ApiEnvelope<BookkeepingAssetsIabReverseResponseData>;
 
 export type BookkeepingAssetsIabDeleteParams = {
@@ -689,9 +691,12 @@ export type BookkeepingAssetsSearchQuery = {
   search?: string;
   sortBy?: "purchaseDate" | "name" | "purchaseAmountNet" | "inventoryNumber" | "inServiceDate";
   sortOrder?: "asc" | "desc";
+  pageSize?: number;
+  sortDir?: "asc" | "desc";
+  q?: string;
 };
 export type BookkeepingAssetsSearchBody = undefined;
-export type BookkeepingAssetsSearchResponseData = PaginatedResult<BookkeepingAsset>;
+export type BookkeepingAssetsSearchResponseData = PaginatedResult<BookkeepingAsset> & { summary?: { count: number; sumPurchaseAmountNet: string; currency: string | null; countActive: number; countDisposed: number } };
 export type BookkeepingAssetsSearchResponse = import("../types").ApiEnvelope<BookkeepingAssetsSearchResponseData>;
 
 export type BookkeepingAssetsCreateParams = undefined;
@@ -731,7 +736,7 @@ export type BookkeepingAssetsCreateBody = {
   expenseId?: number;
   documentId?: number;
 };
-export type BookkeepingAssetsCreateResponseData = BookkeepingAsset;
+export type BookkeepingAssetsCreateResponseData = { asset: BookkeepingAsset; warnings: string[] };
 export type BookkeepingAssetsCreateResponse = import("../types").ApiEnvelope<BookkeepingAssetsCreateResponseData>;
 
 export type BookkeepingAssetsGetByIdParams = {
@@ -739,16 +744,7 @@ export type BookkeepingAssetsGetByIdParams = {
 };
 export type BookkeepingAssetsGetByIdQuery = undefined;
 export type BookkeepingAssetsGetByIdBody = undefined;
-export type BookkeepingAssetsGetByIdResponseData = {
-  asset?: any;
-  depreciationSchedule?: any;
-  linkedDisposalRevenue: {
-  id: number;
-  amount: string;
-  revenueDate?: any;
-  isConfirmed: boolean;
-} | null;
-};
+export type BookkeepingAssetsGetByIdResponseData = { asset: BookkeepingAsset; depreciationSchedule: { method: DepreciationMethod; depreciableBase: number; totalUsefulLifeMonths: number; yearlySchedule: Array<{ fiscalYear: number; normalAfa: number; sonderAfa: number; totalAfa: number; accumulatedAfterYear: number; bookValueEndOfYear: number; monthsInYear: number; methodUsed: string; switchRecommended?: boolean }>; totalDepreciation: number; switchOptimalYear?: number }; linkedDisposalRevenue: { id: number; amount: string; revenueDate: Date; isConfirmed: boolean } | null };
 export type BookkeepingAssetsGetByIdResponse = import("../types").ApiEnvelope<BookkeepingAssetsGetByIdResponseData>;
 
 export type BookkeepingAssetsUpdateParams = {
@@ -853,7 +849,7 @@ export type BookkeepingAssetsListCostComponentsParams = {
 };
 export type BookkeepingAssetsListCostComponentsQuery = undefined;
 export type BookkeepingAssetsListCostComponentsBody = undefined;
-export type BookkeepingAssetsListCostComponentsResponseData = Array<any>;
+export type BookkeepingAssetsListCostComponentsResponseData = AssetCostComponent[];
 export type BookkeepingAssetsListCostComponentsResponse = import("../types").ApiEnvelope<BookkeepingAssetsListCostComponentsResponseData>;
 
 export type BookkeepingAssetsDeleteCostComponentParams = {
@@ -1102,8 +1098,8 @@ export type BookkeepingReportsVatStatusBody = undefined;
 export type BookkeepingReportsVatStatusResponseData = {
   currentRegime: {
   regime: string | null;
-  validFrom?: any | null;
-  validTo?: any | null;
+  validFrom?: string | null;
+  validTo?: string | null;
   reason?: string | null;
 };
   thresholds: {
@@ -1141,14 +1137,36 @@ export type BookkeepingReportsVatStatusResponseData = {
   warningLevel: "none" | "info" | "warning" | "critical";
   userDecisionRequired: boolean;
   regimeRecommendation: {
-  currentYear?: any;
-  nextYear?: any;
+  currentYear: {
+  shouldSwitch: boolean;
+  currentRegime: "kleinunternehmer" | "regelbesteuert";
+  newRegime?: "kleinunternehmer" | "regelbesteuert";
+  reason?: string;
+  triggerAmount?: number;
+  triggerDocId?: number;
+  triggerDocType?: "invoice" | "revenue";
+  limit?: number;
+};
+  nextYear: {
+  shouldSwitch: boolean;
+  currentRegime: "kleinunternehmer" | "regelbesteuert";
+  newRegime?: "kleinunternehmer" | "regelbesteuert";
+  reason?: string;
+  triggerAmount?: number;
+  triggerDocId?: number;
+  triggerDocType?: "invoice" | "revenue";
+  limit?: number;
+};
 };
   taxDecisions: Record<string, any>;
   accountingMethod: string;
   ustva: {
   filingPreference: string;
-  recommendation?: any;
+  recommendation: {
+  recommended: "monthly" | "quarterly" | "annual" | "none";
+  reason: string;
+  priorYearNetVatDueEUR?: number;
+};
   thresholds: {
   monthlyVatDueThreshold: number;
   annualVatDueExemptThreshold: number;
@@ -1166,14 +1184,14 @@ export type BookkeepingReportsVatPeriodsResponseData = {
   periods: Array<{
   id: number;
   regime: string;
-  validFrom?: any | null;
-  validTo?: any | null;
+  validFrom?: string | null;
+  validTo?: string | null;
   reason?: string | null;
   triggerAmount: number | null;
-  triggerAt?: any | null;
+  triggerAt?: string | null;
   triggerDocId?: number | null;
   triggerDocType?: string | null;
-  createdAt?: any | null;
+  createdAt?: string | null;
 }>;
 };
 export type BookkeepingReportsVatPeriodsResponse = import("../types").ApiEnvelope<BookkeepingReportsVatPeriodsResponseData>;
@@ -1196,25 +1214,121 @@ export type BookkeepingReportsVatUstvaResponseData = {
 };
   generatedAt: string;
   outputVat: {
-  standard19?: any;
-  reduced7?: any;
-  reverseCharge?: any;
-  section13bReceived?: any;
-  section13bTax?: any;
-  section13bOtherReceived?: any;
-  section13bOtherTax?: any;
-  euB2b?: any;
-  euB2bServices?: any;
-  export?: any;
-  notTaxable?: any;
-  exempt?: any;
+  standard19: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  reduced7: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  reverseCharge: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  section13bReceived: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  section13bTax: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  section13bOtherReceived: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  section13bOtherTax: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  euB2b: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  euB2bServices: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  export: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  notTaxable: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  exempt: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
   total: number;
 };
   inputVat: {
-  standard19?: any;
-  reduced7?: any;
-  section13b?: any;
-  other?: any;
+  standard19: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  reduced7: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  section13b: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
+  other: {
+  kennziffer: string;
+  description: string;
+  amount: number;
+  taxBase?: number;
+  taxRate?: number;
+};
   total: number;
 };
   taxLiability: {
@@ -1306,8 +1420,25 @@ export type PaymentsImportCsvPreviewResponseData = {
   headers: Array<string>;
   rowCount: number;
 };
-  mappedRows: Array<any>;
-  errors: Array<any>;
+  mappedRows: Array<{
+  bookedAt: string;
+  valueAt: string | null;
+  direction: "in" | "out" | null;
+  amount: string | null;
+  currency: string;
+  counterpartyName: string | null;
+  counterpartyIban: string | null;
+  counterpartyBic: string | null;
+  reference: string | null;
+  endToEndId: string | null;
+  bankTransactionId: string | null;
+}>;
+  errors: Array<{
+  rowNumber: number;
+  field: string;
+  message: string;
+  rawValue?: string;
+}>;
   stats: {
   validRows: number;
   invalidRows: number;
@@ -1377,11 +1508,16 @@ export type PaymentsSearchQuery = {
   startDate?: string;
   endDate?: string;
   allocationStatus?: "allocated" | "partial" | "unallocated";
+  amountMin?: number;
+  amountMax?: number;
+  sortBy?: "bookedAt" | "amount" | "counterpartyName";
+  sortDir?: "asc" | "desc";
+  summary?: boolean;
   page?: number;
   pageSize?: number;
 };
 export type PaymentsSearchBody = undefined;
-export type PaymentsSearchResponseData = PaginatedResult<Payment & { allocatedAmount: string; allocationCount: number }>;
+export type PaymentsSearchResponseData = PaginatedResult<Payment & { allocatedAmount: string; allocationCount: number }> & { summary?: { count: number; stornoPairCount: number; transferCount: number; allocatedCount: number; partialCount: number; unallocatedCount: number; byCurrency: Array<{ currency: string; count: number; sumIn: string; sumOut: string; allocatedAmount: string; openAmount: string }> } };
 export type PaymentsSearchResponse = import("../types").ApiEnvelope<PaymentsSearchResponseData>;
 
 export type PaymentsCreateManualParams = undefined;
@@ -1423,9 +1559,11 @@ export type PaymentsCashbookQuery = {
   paymentAccountId: number;
   startDate?: string;
   endDate?: string;
+  page?: number;
+  pageSize?: number;
 };
 export type PaymentsCashbookBody = undefined;
-export type PaymentsCashbookResponseData = { account: PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' }; openingBalance: string; closingBalance: string; movements: PaginatedResult<Payment> };
+export type PaymentsCashbookResponseData = { account: PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' }; openingBalance: string; closingBalance: string; movements: PaginatedResult<Payment & { allocatedAmount: string; allocationCount: number; runningBalance: string }>; total: number; truncated: boolean };
 export type PaymentsCashbookResponse = import("../types").ApiEnvelope<PaymentsCashbookResponseData>;
 
 export type PaymentsMatchSuggestionsParams = {
@@ -1437,25 +1575,7 @@ export type PaymentsMatchSuggestionsQuery = {
   includeDraft?: boolean;
 };
 export type PaymentsMatchSuggestionsBody = undefined;
-export type PaymentsMatchSuggestionsResponseData = {
-  payment?: any;
-  remainingAmount: string;
-  suggestions: Array<any>;
-  allocations: Array<any>;
-  providerPayoutSuggestion: {
-  payoutId: string;
-  providerAccountId: number;
-  providerAccountName: string;
-  existingPayoutPaymentId: number | null;
-  transactionCount: number;
-  totalGross: string;
-  totalNet: string;
-  totalFees: string;
-  bankDepositAmount: string;
-  difference: string;
-  confidence: "high" | "medium" | "low";
-} | null;
-};
+export type PaymentsMatchSuggestionsResponseData = { payment: Payment | Pick<Payment, 'id' | 'amount' | 'currency' | 'direction'>; remainingAmount: string; suggestions: Array<({ targetType: 'invoice'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; blockedReason?: 'invoice_not_issued' | 'invoice_already_paid' | 'invoice_cancelled'; invoiceNumber: string; status: string; customerName: string | null; invoiceDate: Date; dueDate: Date } | { targetType: 'expense'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; expenseDate: Date; vendor: string | null; vendorInvoiceNumber: string | null; description: string; isConfirmed: boolean } | { targetType: 'revenue'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; revenueDate: Date; description: string; invoiceId: number | null; isConfirmed: boolean })>; allocations?: Array<PaymentAllocation & { targetLabel?: string | null; targetDescription?: string | null; targetCurrencyResolved?: string | null; customerName?: string | null; vendor?: string | null; invoiceNumber?: string | null }>; providerPayoutSuggestion?: { payoutId: string; providerAccountId: number; providerAccountName: string; existingPayoutPaymentId: number | null; transactionCount: number; totalGross: string; totalNet: string; totalFees: string; bankDepositAmount: string; difference: string; confidence: 'high' | 'medium' | 'low' } | null; truncated?: boolean };
 export type PaymentsMatchSuggestionsResponse = import("../types").ApiEnvelope<PaymentsMatchSuggestionsResponseData>;
 
 export type PaymentsBookingPaymentSuggestionsParams = {
@@ -1467,14 +1587,7 @@ export type PaymentsBookingPaymentSuggestionsQuery = {
   paymentAccountId?: number;
 };
 export type PaymentsBookingPaymentSuggestionsBody = undefined;
-export type PaymentsBookingPaymentSuggestionsResponseData = {
-  targetType: "expense" | "revenue";
-  targetId: number;
-  targetAmount: string;
-  targetCurrency: string;
-  openAmount: string;
-  suggestions: Array<any>;
-};
+export type PaymentsBookingPaymentSuggestionsResponseData = { targetType: 'expense' | 'revenue'; targetId: number; targetAmount: string; targetCurrency: string; openAmount: string; suggestions: Array<{ paymentId: number; score: number; confidence: 'high' | 'medium' | 'low'; reasons: string[]; suggestedAllocateAmount: string; paymentAmount: string; paymentCurrency: string; remainingPaymentAmount: string; bookedAt: Date; counterpartyName: string | null; counterpartyIban: string | null; reference: string | null; bankTransactionId: string | null; paymentAccountId: number; originalAmount: string | null; originalCurrency: string | null }> };
 export type PaymentsBookingPaymentSuggestionsResponse = import("../types").ApiEnvelope<PaymentsBookingPaymentSuggestionsResponseData>;
 
 export type PaymentsAllocateParams = {
@@ -1528,13 +1641,7 @@ export type PaymentsReversalPreviewParams = {
 };
 export type PaymentsReversalPreviewQuery = undefined;
 export type PaymentsReversalPreviewBody = undefined;
-export type PaymentsReversalPreviewResponseData = {
-  payment?: any;
-  allocations: Array<any>;
-  warnings: Array<string>;
-  canReverse: boolean;
-  blockers: Array<string>;
-};
+export type PaymentsReversalPreviewResponseData = { payment: Pick<Payment, 'id' | 'amount' | 'direction' | 'reference' | 'counterpartyName' | 'bookedAt'>; allocations: Array<{ id: number; targetType: PaymentAllocation['targetType']; targetId: number; allocatedAmount: string; targetAmount: string | null; kind: PaymentAllocation['kind']; invoiceNumber: string | null; currentStatus: string | null; newStatus: string | null; impact: string }>; warnings: string[]; canReverse: boolean; blockers: string[] };
 export type PaymentsReversalPreviewResponse = import("../types").ApiEnvelope<PaymentsReversalPreviewResponseData>;
 
 export type PaymentsReverseParams = {
@@ -1544,11 +1651,7 @@ export type PaymentsReverseQuery = undefined;
 export type PaymentsReverseBody = {
   reason: string;
 };
-export type PaymentsReverseResponseData = {
-  reversalPayment?: any;
-  reversedAllocations: Array<any>;
-  updatedInvoices: Array<any>;
-};
+export type PaymentsReverseResponseData = { reversalPayment: Payment; reversedAllocations: PaymentAllocation[]; updatedInvoices: Array<{ id: number; invoiceNumber: string; oldStatus: string; newStatus: string }>; isIdempotent?: boolean };
 export type PaymentsReverseResponse = import("../types").ApiEnvelope<PaymentsReverseResponseData>;
 
 export type PaymentsTransferUnlinkParams = {
@@ -1585,15 +1688,7 @@ export type PaymentsAllocationReversalPreviewParams = {
 };
 export type PaymentsAllocationReversalPreviewQuery = undefined;
 export type PaymentsAllocationReversalPreviewBody = undefined;
-export type PaymentsAllocationReversalPreviewResponseData = {
-  allocation?: any;
-  invoice?: any | null;
-  newInvoiceStatus: string | null;
-  remainingAllocationAfterReversal: string;
-  impact: string;
-  canReverse: boolean;
-  blockers: Array<string>;
-};
+export type PaymentsAllocationReversalPreviewResponseData = { allocation: { id: number; targetType: PaymentAllocation['targetType']; targetId: number; allocatedAmount: string; targetAmount: string | null; kind: PaymentAllocation['kind'] }; invoice: { id: number; number: Invoice['invoiceNumber']; currentStatus: string } | null; newInvoiceStatus: string | null; remainingAllocationAfterReversal: string; impact: string; canReverse: boolean; blockers: string[] };
 export type PaymentsAllocationReversalPreviewResponse = import("../types").ApiEnvelope<PaymentsAllocationReversalPreviewResponseData>;
 
 export type PaymentsAllocationReverseParams = {
@@ -1602,10 +1697,7 @@ export type PaymentsAllocationReverseParams = {
 };
 export type PaymentsAllocationReverseQuery = undefined;
 export type PaymentsAllocationReverseBody = undefined;
-export type PaymentsAllocationReverseResponseData = {
-  reversalAllocation?: any;
-  updatedInvoice?: any | null;
-};
+export type PaymentsAllocationReverseResponseData = { reversalAllocation: PaymentAllocation | null; updatedInvoice: { id: number; invoiceNumber: string; oldStatus: string; newStatus: string } | null; isIdempotent?: boolean };
 export type PaymentsAllocationReverseResponse = import("../types").ApiEnvelope<PaymentsAllocationReverseResponseData>;
 
 export type PaymentsDeleteParams = {
@@ -1696,11 +1788,12 @@ export type PaymentsGetAccountByIdResponse = import("../types").ApiEnvelope<Paym
 export type PaymentsListAccountsParams = undefined;
 export type PaymentsListAccountsQuery = {
   search?: string;
+  q?: string;
   page?: number;
   pageSize?: number;
 };
 export type PaymentsListAccountsBody = undefined;
-export type PaymentsListAccountsResponseData = PaginatedResult<PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' }>;
+export type PaymentsListAccountsResponseData = PaginatedResult<PaymentAccount & { paypalApiConfigured: boolean; sumupConnected: boolean; sumupMerchantCode: string | null; sumupMerchantLabel: string | null; sumupLastSyncAt: Date | null; sumupSyncEnabled: boolean; sumupReauthRequired: boolean; feeVatTreatment: string | null; feeVatRate: string | null; allowCsvImport: boolean; openingBalanceLocked: boolean; canEditOpeningBalance: boolean; openingBalanceLockReason: string | null; canCreateBalanceSnapshot: boolean; balanceCorrectionMode: 'opening_balance' | 'snapshot_only' } & { balance: string; systemBalance: string; balanceDelta: string | null; lastConfirmedSnapshot: PaymentAccountBalanceSnapshot | null; paymentCount: number; openPaymentCount: number; openFeeProposalCount: number }>;
 export type PaymentsListAccountsResponse = import("../types").ApiEnvelope<PaymentsListAccountsResponseData>;
 
 export type PaymentsCreateAccountParams = undefined;
@@ -1853,7 +1946,7 @@ export type PaymentsListBalanceSnapshotsQuery = {
   pageSize?: number;
 };
 export type PaymentsListBalanceSnapshotsBody = undefined;
-export type PaymentsListBalanceSnapshotsResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type PaymentsListBalanceSnapshotsResponseData = PaginatedResult<PaymentAccountBalanceSnapshot>;
 export type PaymentsListBalanceSnapshotsResponse = import("../types").ApiEnvelope<PaymentsListBalanceSnapshotsResponseData>;
 
 export type PaymentsCreateBalanceSnapshotParams = undefined;
@@ -1869,7 +1962,7 @@ export type PaymentsCreateBalanceSnapshotBody = {
   note?: string | null;
   raw?: any;
 };
-export type PaymentsCreateBalanceSnapshotResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type PaymentsCreateBalanceSnapshotResponseData = PaymentAccountBalanceSnapshot;
 export type PaymentsCreateBalanceSnapshotResponse = import("../types").ApiEnvelope<PaymentsCreateBalanceSnapshotResponseData>;
 
 export type PaymentsVoidBalanceSnapshotParams = {
@@ -1879,7 +1972,7 @@ export type PaymentsVoidBalanceSnapshotQuery = undefined;
 export type PaymentsVoidBalanceSnapshotBody = {
   reason: string;
 };
-export type PaymentsVoidBalanceSnapshotResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type PaymentsVoidBalanceSnapshotResponseData = PaymentAccountBalanceSnapshot;
 export type PaymentsVoidBalanceSnapshotResponse = import("../types").ApiEnvelope<PaymentsVoidBalanceSnapshotResponseData>;
 
 export type PaymentsUpdateFeeVatTreatmentParams = {
@@ -1947,7 +2040,7 @@ export type PaymentsListFeeProposalsQuery = {
   pageSize?: number;
 };
 export type PaymentsListFeeProposalsBody = undefined;
-export type PaymentsListFeeProposalsResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type PaymentsListFeeProposalsResponseData = { items: BookkeepingExpense[]; page: number; pageSize: number; total: number };
 export type PaymentsListFeeProposalsResponse = import("../types").ApiEnvelope<PaymentsListFeeProposalsResponseData>;
 
 export type PaymentsConfirmFeeProposalsParams = undefined;
@@ -1970,6 +2063,90 @@ export type PaymentsRejectFeeProposalsResponseData = {
 };
 export type PaymentsRejectFeeProposalsResponse = import("../types").ApiEnvelope<PaymentsRejectFeeProposalsResponseData>;
 
+export type PaymentsGetByIdParams = {
+  paymentId: number;
+};
+export type PaymentsGetByIdQuery = undefined;
+export type PaymentsGetByIdBody = undefined;
+export type PaymentsGetByIdResponseData = {
+  payment: {
+  id: number;
+  paymentAccountId: number;
+  source: "bank_import" | "manual" | "transfer" | "paypal_api" | "sumup_api";
+  direction: "in" | "out";
+  amount: string;
+  currency: string;
+  feeAmount: string | null;
+  feeCurrency: string | null;
+  netAmount: string | null;
+  feeExpenseId: number | null;
+  originalAmount: string | null;
+  originalCurrency: string | null;
+  conversionRate: string | null;
+  bookedAt: string;
+  valueAt: string | null;
+  counterpartyName: string | null;
+  counterpartyIban: string | null;
+  counterpartyBic: string | null;
+  reference: string | null;
+  endToEndId: string | null;
+  bankTransactionId: string | null;
+  payoutId: string | null;
+  createdAt: string;
+  createdBy: number | null;
+  updatedAt: string | null;
+};
+  account: {
+  id: number;
+  name: string;
+  type: "bank" | "cash" | "paypal" | "sumup" | "stripe";
+  currency: string;
+  isArchived: boolean;
+  costCenterId: number | null;
+};
+  allocatedAmount: string;
+  remainingAmount: string;
+  allocationStatus: "allocated" | "partial" | "unallocated";
+  allocations: Array<{
+  id: number;
+  kind: "payment" | "refund" | "fee" | "writeoff" | "discount";
+  targetType: "invoice" | "expense" | "revenue" | "capital_movement";
+  targetId: number;
+  allocatedAmount: string;
+  paymentCurrency: string;
+  targetAmount: string | null;
+  targetCurrency: string | null;
+  createdAt: string;
+  isReversed: boolean;
+  reversalOfId: number | null;
+  target: {
+  number: string | null;
+  label: string;
+  amount: string;
+  currency: string;
+  date: string;
+} | null;
+  targetVisible: boolean;
+}>;
+  reversal: {
+  isReversed: boolean;
+  reversedAt: string | null;
+  reversalReason: string | null;
+  reversalPaymentId: number | null;
+  reversalOfId: number | null;
+};
+  linkedPayment: {
+  id: number;
+  paymentAccountId: number;
+  paymentAccountName: string | null;
+  direction: "in" | "out";
+  amount: string;
+  currency: string;
+  bookedAt: string;
+} | null;
+};
+export type PaymentsGetByIdResponse = import("../types").ApiEnvelope<PaymentsGetByIdResponseData>;
+
 export type PaymentsPaypalWebhookReceiveParams = undefined;
 export type PaymentsPaypalWebhookReceiveQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
 export type PaymentsPaypalWebhookReceiveBody = import("../types").ContractNotReady<"Body not typed yet. Add DTO + validate({ body }) or contract({ request: ... }) to the route.">;
@@ -1984,12 +2161,13 @@ export type PaymentsSumupOauthCallbackQuery = {
   error_description?: string;
 };
 export type PaymentsSumupOauthCallbackBody = undefined;
-export type PaymentsSumupOauthCallbackResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
-export type PaymentsSumupOauthCallbackResponse = import("../types").ApiEnvelope<PaymentsSumupOauthCallbackResponseData>;
+export type PaymentsSumupOauthCallbackResponseData = Blob;
+export type PaymentsSumupOauthCallbackResponse = Blob;
 
 export type BookkeepingPaymentsListAccountsExternalParams = undefined;
 export type BookkeepingPaymentsListAccountsExternalQuery = {
   search?: string;
+  q?: string;
   includeArchived?: boolean;
 };
 export type BookkeepingPaymentsListAccountsExternalBody = undefined;
@@ -2091,7 +2269,11 @@ export type BookkeepingLocksRecommendationResponseData = {
   asOf: string;
   companyPreference: string;
   vatRegime: string | null;
-  ustvaRecommendation?: any;
+  ustvaRecommendation: {
+  recommended: "monthly" | "quarterly" | "annual" | "none";
+  reason: string;
+  priorYearNetVatDueEUR?: number;
+};
   thresholds: {
   ustvaMonthlyVatDueThreshold: number;
   ustvaAnnualVatDueExemptThreshold: number;
@@ -2189,15 +2371,45 @@ export type BookkeepingLocksSetResponseData = BookkeepingLockState;
 export type BookkeepingLocksSetResponse = import("../types").ApiEnvelope<BookkeepingLocksSetResponseData>;
 
 export type BookkeepingTaxParamsHealthParams = undefined;
-export type BookkeepingTaxParamsHealthQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type BookkeepingTaxParamsHealthQuery = undefined;
 export type BookkeepingTaxParamsHealthBody = undefined;
-export type BookkeepingTaxParamsHealthResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingTaxParamsHealthResponseData = {
+  healthy: boolean;
+  totalExpected: number;
+  totalFound: number;
+  missingKeys: Array<string>;
+  currentDateParams: {
+  afa: {
+  gwgThreshold: number;
+  sammelpostenLowerBound: number;
+  sammelpostenUpperBound: number;
+  sammelpostenDurationYears: number;
+  degressiveMaxRate: number;
+  degressiveLinearMultiplier: number;
+  sonderafaMaxRate: number;
+  sonderafaProfitLimit: number;
+  digitalUsefulLifeMonths: number;
+  sonderafaClaimWindowYears: number;
+  iabMaxDeductionRate: number;
+  iabDeadlineYears: number;
+  iabReversalInterestRate: number;
+};
+  vat: {
+  standardRate: number;
+  reducedRate: number;
+};
+} | null;
+};
 export type BookkeepingTaxParamsHealthResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsHealthResponseData>;
 
 export type BookkeepingTaxParamsSyncParams = undefined;
-export type BookkeepingTaxParamsSyncQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
-export type BookkeepingTaxParamsSyncBody = import("../types").ContractNotReady<"Body not typed yet. Add DTO + validate({ body }) or contract({ request: ... }) to the route.">;
-export type BookkeepingTaxParamsSyncResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingTaxParamsSyncQuery = undefined;
+export type BookkeepingTaxParamsSyncBody = undefined;
+export type BookkeepingTaxParamsSyncResponseData = {
+  inserted: number;
+  skipped: number;
+  message: string;
+};
 export type BookkeepingTaxParamsSyncResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsSyncResponseData>;
 
 export type BookkeepingTaxParamsListParams = undefined;
@@ -2207,7 +2419,7 @@ export type BookkeepingTaxParamsListQuery = {
   effectiveDate?: string;
 };
 export type BookkeepingTaxParamsListBody = undefined;
-export type BookkeepingTaxParamsListResponseData = Array<any>;
+export type BookkeepingTaxParamsListResponseData = TaxParameter[];
 export type BookkeepingTaxParamsListResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsListResponseData>;
 
 export type BookkeepingTaxParamsHistoryParams = {
@@ -2215,7 +2427,7 @@ export type BookkeepingTaxParamsHistoryParams = {
 };
 export type BookkeepingTaxParamsHistoryQuery = undefined;
 export type BookkeepingTaxParamsHistoryBody = undefined;
-export type BookkeepingTaxParamsHistoryResponseData = Array<any>;
+export type BookkeepingTaxParamsHistoryResponseData = TaxParameterHistory[];
 export type BookkeepingTaxParamsHistoryResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsHistoryResponseData>;
 
 export type BookkeepingTaxParamsCreateParams = undefined;
@@ -2230,7 +2442,7 @@ export type BookkeepingTaxParamsCreateBody = {
   description?: string;
   changeReason: string;
 };
-export type BookkeepingTaxParamsCreateResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingTaxParamsCreateResponseData = TaxParameter;
 export type BookkeepingTaxParamsCreateResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsCreateResponseData>;
 
 export type BookkeepingTaxParamsUpdateParams = {
@@ -2244,11 +2456,11 @@ export type BookkeepingTaxParamsUpdateBody = {
   description?: string;
   changeReason: string;
 };
-export type BookkeepingTaxParamsUpdateResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
+export type BookkeepingTaxParamsUpdateResponseData = TaxParameter;
 export type BookkeepingTaxParamsUpdateResponse = import("../types").ApiEnvelope<BookkeepingTaxParamsUpdateResponseData>;
 
 export type BookkeepingIncomeTaxGetSettingsParams = undefined;
-export type BookkeepingIncomeTaxGetSettingsQuery = import("../types").ContractNotReady<"Query not typed yet. Add DTO + validate({ query }) to the route (or explicitly declare none).">;
+export type BookkeepingIncomeTaxGetSettingsQuery = undefined;
 export type BookkeepingIncomeTaxGetSettingsBody = undefined;
 export type BookkeepingIncomeTaxGetSettingsResponseData = IncomeTaxSettings;
 export type BookkeepingIncomeTaxGetSettingsResponse = import("../types").ApiEnvelope<BookkeepingIncomeTaxGetSettingsResponseData>;
@@ -2771,7 +2983,10 @@ export type ReconciliationQueueResponseData = {
   totalWithTransfers: number;
   totalWithProviderPayouts: number;
   totalHighConfidence: number;
+  evaluatedCount: number;
+  truncated: boolean;
 };
+  truncated: boolean;
   page: number;
   pageSize: number;
   total: number;
@@ -2787,13 +3002,7 @@ export type ReconciliationBatchSuggestionsBody = {
 }>;
   limit?: number;
 };
-export type ReconciliationBatchSuggestionsResponseData = {
-  results: Array<{
-  paymentId: number;
-  remainingAmount: string;
-  suggestions: Array<any>;
-}>;
-};
+export type ReconciliationBatchSuggestionsResponseData = { results: Array<{ paymentId: number; remainingAmount: string; suggestions: Array<({ targetType: 'invoice'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; blockedReason?: 'invoice_not_issued' | 'invoice_already_paid' | 'invoice_cancelled'; invoiceNumber: string; status: string; customerName: string | null; invoiceDate: Date; dueDate: Date } | { targetType: 'expense'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; expenseDate: Date; vendor: string | null; vendorInvoiceNumber: string | null; description: string; isConfirmed: boolean } | { targetType: 'revenue'; targetId: number; score: number; confidence: 'high' | 'medium' | 'low'; isAllocatable: boolean; reasons: string[]; suggestedAllocateAmount: string; targetCurrency: string; totalAmount: string; openAmount: string; costCenterId: number | null; revenueDate: Date; description: string; invoiceId: number | null; isConfirmed: boolean })> }> };
 export type ReconciliationBatchSuggestionsResponse = import("../types").ApiEnvelope<ReconciliationBatchSuggestionsResponseData>;
 
 export type ReconciliationAutoMatchPreviewParams = undefined;
@@ -2817,6 +3026,7 @@ export type ReconciliationAutoMatchPreviewResponseData = {
   targetLabel: string;
 }>;
   totalCount: number;
+  truncated: boolean;
 };
 export type ReconciliationAutoMatchPreviewResponse = import("../types").ApiEnvelope<ReconciliationAutoMatchPreviewResponseData>;
 
@@ -2912,7 +3122,7 @@ export type BookkeepingCapitalMovementsSearchQuery = {
   sortDir?: "asc" | "desc";
 };
 export type BookkeepingCapitalMovementsSearchBody = undefined;
-export type BookkeepingCapitalMovementsSearchResponseData = PaginatedResult<CapitalMovement>;
+export type BookkeepingCapitalMovementsSearchResponseData = PaginatedResult<CapitalMovement> & { summary?: { count: number; sumWithdrawals: string; sumDeposits: string; currency: string | null; countStornoPair: number; countByPaymentStatus: { unmatched: number; cash_confirmed: number; partially_matched: number; fully_matched: number }; countConfirmed: number; countUnconfirmed: number } };
 export type BookkeepingCapitalMovementsSearchResponse = import("../types").ApiEnvelope<BookkeepingCapitalMovementsSearchResponseData>;
 
 export type BookkeepingCapitalMovementsKapitalkontoParams = undefined;
@@ -2933,7 +3143,7 @@ export type BookkeepingCapitalMovementsGetByIdParams = {
 };
 export type BookkeepingCapitalMovementsGetByIdQuery = undefined;
 export type BookkeepingCapitalMovementsGetByIdBody = undefined;
-export type BookkeepingCapitalMovementsGetByIdResponseData = CapitalMovement;
+export type BookkeepingCapitalMovementsGetByIdResponseData = CapitalMovement & { paymentAllocations?: ResolvedPaymentAllocation[]; allocationSummary?: { allocatedAmount: string; openAmount: string; allocationCount: number } };
 export type BookkeepingCapitalMovementsGetByIdResponse = import("../types").ApiEnvelope<BookkeepingCapitalMovementsGetByIdResponseData>;
 
 export type BookkeepingCapitalMovementsCreateParams = undefined;
@@ -4054,7 +4264,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","assets"],
       summary: "Anlagevermögen suchen",
-      description: "Paginierte Suche über alle Anlagegüter mit erweiterten Filteroptionen (Typ, AfA-Methode, Gebäudetyp, Digital-Asset, Status). Unterstützt Sortierung nach Inventarnummer, Inbetriebnahmedatum etc.",
+      description: "Paginierte Suche über alle Anlagegüter mit erweiterten Filteroptionen (Typ, AfA-Methode, Gebäudetyp, Digital-Asset, Status). Unterstützt Sortierung nach Inventarnummer, Inbetriebnahmedatum etc. Neben limit, sortOrder und search gelten die Namen der übrigen Buchhaltungslisten: pageSize, sortDir, q.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -4622,7 +4832,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlungen suchen",
-      description: "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff). Hauptliste für die Zahlungsübersicht.",
+      description: "Paginierte Suche über alle Zahlungen mit Filteroptionen (Zeitraum, Konto, Zuweisungsstatus, Suchbegriff, Betrag von/bis auf den absoluten Betrag). Sortierung über sortBy/sortDir, Standard ist Buchungsdatum absteigend. Mit summary=true trägt die Antwort Summen über die ganze gefilterte Menge: je Währung Eingänge, Ausgänge, zugeordnet und offen, dazu Zähler. Storno-Paare zählen in keiner Summe, Umbuchungen sind weder offen noch zugeordnet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -4679,7 +4889,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Kassenbestand / Kontobuch",
-      description: "Gibt das Kontobuch für ein bestimmtes Zahlungskonto zurück: Eröffnungsbetrag, Schlussbetrag und paginierte Liste der Bewegungen im Zeitraum.",
+      description: "Gibt das Kontobuch für ein bestimmtes Zahlungskonto zurück: Eröffnungsbetrag, Schlussbetrag und paginierte Liste der Bewegungen im Zeitraum (page, pageSize bis 200). Ohne page und pageSize kommen wie bisher die ersten 200 Bewegungen; truncated=true heißt dann, dass total größer ist. runningBalance je Bewegung ist der Kontostand nach dieser Bewegung, gerechnet über das ganze Konto und nicht über die Seite.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -5021,7 +5231,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","payments"],
       summary: "Zahlungskonten auflisten",
-      description: "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff.",
+      description: "Gibt eine paginierte Liste aller Zahlungskonten (Bankkonten, Kassenkonten) zurück, optional gefiltert per Suchbegriff. Je Konto mit Systemsaldo, letztem Ist-Saldo und Abweichung, Anzahl der Zahlungen, offenen Zahlungen (Definition des Abgleichs, Durchlaufkonten 0) und offenen Gebührenvorschlägen.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -5409,6 +5619,25 @@ export const apiRoutes_bookkeeping = {
       body: PaymentsRejectFeeProposalsBody;
       response: PaymentsRejectFeeProposalsResponse;
       responseData: PaymentsRejectFeeProposalsResponseData;
+    },
+  },
+  // Contract source: explicit
+  "payments_get_by_id": {
+    method: "GET",
+    path: "/bookkeeping/payments/:paymentId",
+    auth: {"type":"frontend_permission_http","permission":"bookkeeping_access"},
+    meta: {
+      tags: ["bookkeeping","payments"],
+      summary: "Zahlung im Detail",
+      description: "Eine Zahlung mit Konto, aufgelösten Zuordnungen (Rechnung, Ausgabe, Einnahme, Kapitalbewegung mit Nummer, Bezeichnung, Betrag), Restbetrag, Storno-Bezug und Gegenseite einer Umbuchung in einem Aufruf, ohne Matching-Lauf. Stornierte Zuordnungen bleiben als Nachweis in der Liste (isReversed/reversalOfId). Ziele in einer Kostenstelle außerhalb der eigenen Sicht kommen ohne Bezeichnung (targetVisible=false). 404 PAYMENT_NOT_FOUND, 403 COST_CENTER_ACCESS_DENIED für die Kostenstelle des Kontos.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: PaymentsGetByIdParams;
+      query: PaymentsGetByIdQuery;
+      body: PaymentsGetByIdBody;
+      response: PaymentsGetByIdResponse;
+      responseData: PaymentsGetByIdResponseData;
     },
   },
   // Contract source: explicit
@@ -6253,7 +6482,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","reconciliation"],
       summary: "Smart Reconciliation Queue",
-      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit.",
+      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -6291,7 +6520,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","reconciliation"],
       summary: "Auto-Match Vorschau",
-      description: "Zeigt alle High-Confidence Match-Kandidaten (Score >= minScore) als Vorschau. Der User kann diese dann per Confirm-Endpoint bestätigen.",
+      description: "Zeigt alle High-Confidence Match-Kandidaten (Score >= minScore) als Vorschau. Der User kann diese dann per Confirm-Endpoint bestätigen. truncated=true heißt: mehr als 500 offene Zahlungen oder mehr als 250 offene Belege einer Art, der Rest wurde nicht bewertet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
@@ -6405,7 +6634,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","capital-movements"],
       summary: "Kapitalbewegung nach ID",
-      description: "Lädt eine einzelne Privatentnahme oder Privateinlage.",
+      description: "Lädt eine einzelne Privatentnahme oder Privateinlage mit ihren aktiven Zahlungszuordnungen.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {

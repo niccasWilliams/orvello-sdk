@@ -85,8 +85,8 @@ export type ExportsDatevBuchungsstapelQuery = {
   to?: string;
 };
 export type ExportsDatevBuchungsstapelBody = undefined;
-export type ExportsDatevBuchungsstapelResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
-export type ExportsDatevBuchungsstapelResponse = import("../types").ApiEnvelope<ExportsDatevBuchungsstapelResponseData>;
+export type ExportsDatevBuchungsstapelResponseData = Blob;
+export type ExportsDatevBuchungsstapelResponse = Blob;
 
 export type ExportsDatevKursjournalParams = undefined;
 export type ExportsDatevKursjournalQuery = {
@@ -98,8 +98,8 @@ export type ExportsDatevKursjournalQuery = {
   to?: string;
 };
 export type ExportsDatevKursjournalBody = undefined;
-export type ExportsDatevKursjournalResponseData = import("../types").ContractNotReady<"Response type not ready. Use typeRef(\"...\") (preferred) or a concrete Zod schema for responses[].data.">;
-export type ExportsDatevKursjournalResponse = import("../types").ApiEnvelope<ExportsDatevKursjournalResponseData>;
+export type ExportsDatevKursjournalResponseData = Blob;
+export type ExportsDatevKursjournalResponse = Blob;
 
 export const apiRoutes_exports = {
   // Contract source: explicit
