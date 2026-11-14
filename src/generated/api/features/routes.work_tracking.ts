@@ -55,7 +55,7 @@ export type WorkTrackingListQuery = {
   withSummary?: "true" | "false";
 };
 export type WorkTrackingListBody = undefined;
-export type WorkTrackingListResponseData = PaginatedResult<WorkEntry> & { summary?: { entryCount: number; pendingCount: number; approvedCount: number; rejectedCount: number; totalMinutes: number; billableMinutes: number; billedMinutes: number; openMinutes: number; openAmountNet: string; openMinutesWithoutRate: number } };
+export type WorkTrackingListResponseData = PaginatedResult<WorkEntry & { assignment: { id: number; workEntryId: number; managingCompanyId: number; companyId: number | null; companyName: string | null } | null }> & { summary?: { entryCount: number; pendingCount: number; approvedCount: number; rejectedCount: number; totalMinutes: number; billableMinutes: number; billedMinutes: number; openMinutes: number; openAmountNet: string; openMinutesWithoutRate: number } };
 export type WorkTrackingListResponse = import("../types").ApiEnvelope<WorkTrackingListResponseData>;
 
 export type WorkTrackingGetByIdParams = {

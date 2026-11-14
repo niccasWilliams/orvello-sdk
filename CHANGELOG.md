@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.42 - 2026-11-14
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- Vertragsinhalt geaendert, Oberflaeche gleich geblieben
+
 ## 0.7.41 - 2026-11-14
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
