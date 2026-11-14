@@ -126,6 +126,7 @@ export type BookkeepingRevenuesCommitBody = {
   netAmount: string | number;
   taxAmount?: string | number | null;
   taxRate?: string | number | null;
+  vatTreatment?: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "NOT_TAXABLE_0" | "NOT_TAXABLE_ABROAD_0" | "EU_B2B_SERVICE_0" | null;
   currency?: string;
   originalCurrency?: string | null;
   originalAmount?: string | number | null;
@@ -167,6 +168,7 @@ export type BookkeepingRevenuesCreateBody = {
   netAmount: string | number;
   taxAmount?: string | number | null;
   taxRate?: string | number | null;
+  vatTreatment?: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "NOT_TAXABLE_0" | "NOT_TAXABLE_ABROAD_0" | "EU_B2B_SERVICE_0" | null;
   currency?: string;
   originalCurrency?: string | null;
   originalAmount?: string | number | null;
@@ -197,6 +199,7 @@ export type BookkeepingRevenuesUpdateBody = {
   netAmount: string | number;
   taxAmount?: string | number | null;
   taxRate?: string | number | null;
+  vatTreatment?: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "NOT_TAXABLE_0" | "NOT_TAXABLE_ABROAD_0" | "EU_B2B_SERVICE_0" | null;
   currency?: string;
   originalCurrency?: string | null;
   originalAmount?: string | number | null;
@@ -291,6 +294,7 @@ export type BookkeepingRevenuesCreateExternalBody = {
   netAmount: string | number;
   taxAmount?: string | number | null;
   taxRate?: string | number | null;
+  vatTreatment?: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "NOT_TAXABLE_0" | "NOT_TAXABLE_ABROAD_0" | "EU_B2B_SERVICE_0" | null;
   currency?: string;
   description: string;
   category?: "customer_invoice" | "interest" | "refund" | "other" | "asset_disposal" | "pos_sale" | "saas_revenue_apple_iap" | "saas_revenue_google_iap";
@@ -1035,7 +1039,7 @@ export type BookkeepingAssetsGetByIdParams = {
 };
 export type BookkeepingAssetsGetByIdQuery = undefined;
 export type BookkeepingAssetsGetByIdBody = undefined;
-export type BookkeepingAssetsGetByIdResponseData = { asset: BookkeepingAsset; depreciationSchedule: { method: DepreciationMethod; depreciableBase: number; totalUsefulLifeMonths: number; yearlySchedule: Array<{ fiscalYear: number; normalAfa: number; sonderAfa: number; totalAfa: number; accumulatedAfterYear: number; bookValueEndOfYear: number; monthsInYear: number; methodUsed: string; switchRecommended?: boolean }>; totalDepreciation: number; switchOptimalYear?: number }; linkedDisposalRevenue: { id: number; amount: string; revenueDate: Date; isConfirmed: boolean } | null };
+export type BookkeepingAssetsGetByIdResponseData = { asset: BookkeepingAsset; depreciationSchedule: { method: DepreciationMethod; depreciableBase: number; totalUsefulLifeMonths: number; yearlySchedule: Array<{ fiscalYear: number; normalAfa: number; sonderAfa: number; totalAfa: number; accumulatedAfterYear: number; bookValueEndOfYear: number; monthsInYear: number; methodUsed: string; switchRecommended?: boolean }>; totalDepreciation: number; switchOptimalYear?: number }; linkedDisposalRevenue: { id: number; amount: string; revenueDate: Date; isConfirmed: boolean; vatTreatment: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "REVERSE_CHARGE_13B" | "EU_B2B_0" | "EXPORT_0" | "EXEMPT_4" | "CUSTOM" | "EU_B2B_SERVICE_0" | "NOT_TAXABLE_ABROAD_0" | "NOT_TAXABLE_0" | null; vatLegalRef: string | null } | null };
 export type BookkeepingAssetsGetByIdResponse = import("../types").ApiEnvelope<BookkeepingAssetsGetByIdResponseData>;
 
 export type BookkeepingAssetsUpdateParams = {
@@ -1089,6 +1093,7 @@ export type BookkeepingAssetsDisposeBody = {
   disposalType: "sale" | "scrapping" | "theft" | "private_withdrawal" | "insurance_claim" | "donation" | "destruction";
   disposalAmount?: string;
   disposalReason: string;
+  vatTreatment?: "KLEINUNTERNEHMER_0" | "DE_STANDARD_19" | "DE_REDUCED_7" | "EXEMPT_4" | "NOT_TAXABLE_0" | "NOT_TAXABLE_ABROAD_0" | "EU_B2B_SERVICE_0";
 };
 export type BookkeepingAssetsDisposeResponseData = BookkeepingAsset;
 export type BookkeepingAssetsDisposeResponse = import("../types").ApiEnvelope<BookkeepingAssetsDisposeResponseData>;

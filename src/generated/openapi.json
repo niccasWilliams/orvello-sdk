@@ -50163,6 +50163,25 @@
                       "null"
                     ]
                   },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "KLEINUNTERNEHMER_0",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "NOT_TAXABLE_0",
+                          "NOT_TAXABLE_ABROAD_0",
+                          "EU_B2B_SERVICE_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "currency": {
                     "type": "string",
                     "minLength": 3,
@@ -50671,6 +50690,25 @@
                       "string",
                       "number",
                       "null"
+                    ]
+                  },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "KLEINUNTERNEHMER_0",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "NOT_TAXABLE_0",
+                          "NOT_TAXABLE_ABROAD_0",
+                          "EU_B2B_SERVICE_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "currency": {
@@ -51415,6 +51453,25 @@
                           "string",
                           "number",
                           "null"
+                        ]
+                      },
+                      "vatTreatment": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "KLEINUNTERNEHMER_0",
+                              "DE_STANDARD_19",
+                              "DE_REDUCED_7",
+                              "EXEMPT_4",
+                              "NOT_TAXABLE_0",
+                              "NOT_TAXABLE_ABROAD_0",
+                              "EU_B2B_SERVICE_0"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "currency": {
@@ -52261,6 +52318,25 @@
                       "string",
                       "number",
                       "null"
+                    ]
+                  },
+                  "vatTreatment": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "KLEINUNTERNEHMER_0",
+                          "DE_STANDARD_19",
+                          "DE_REDUCED_7",
+                          "EXEMPT_4",
+                          "NOT_TAXABLE_0",
+                          "NOT_TAXABLE_ABROAD_0",
+                          "EU_B2B_SERVICE_0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "currency": {
@@ -59256,6 +59332,18 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 500
+                  },
+                  "vatTreatment": {
+                    "type": "string",
+                    "enum": [
+                      "KLEINUNTERNEHMER_0",
+                      "DE_STANDARD_19",
+                      "DE_REDUCED_7",
+                      "EXEMPT_4",
+                      "NOT_TAXABLE_0",
+                      "NOT_TAXABLE_ABROAD_0",
+                      "EU_B2B_SERVICE_0"
+                    ]
                   }
                 },
                 "required": [
