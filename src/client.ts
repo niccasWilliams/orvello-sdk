@@ -291,6 +291,55 @@ export class OrvelloApiError extends Error {
   }
 }
 
+/** Fehlerrumpf: JSON, wenn er sich lesen laesst, sonst der Text; leer wird `null`. */
+function parseErrorBody(text: string): unknown {
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+/**
+ * Warum der Token-Abruf scheiterte, so dass ein Befund sagt, WER abgelehnt hat (PRB-000206).
+ *
+ * "Failed to obtain OAuth2 token" allein trennt nicht, ob der Wert falsch ist (der Dienst
+ * antwortet `invalid_client`), ob die Anfrage den Dienst nie erreicht hat (Cloudflare Access,
+ * Edge oder Tunnel) oder ob der Token-Endpunkt selbst scheitert (5xx). Genau diese Frage
+ * entscheidet, ob ein Neuausstellen hilft. Aus der Antwort geht nur der Protokollcode mit,
+ * nie Beschreibung oder Rumpf, weil die beim Dienst Eingaben spiegeln koennen.
+ */
+export function describeTokenFailure(error: unknown): string {
+  if (error instanceof SyntaxError) {
+    return `${error.message} (Antwort des Token-Endpunkts war kein JSON, vermutlich eine Anmelde- oder Fehlerseite davor, etwa Cloudflare Access). Der Wert ist nicht geprueft`;
+  }
+  if (!(error instanceof OrvelloApiError)) {
+    const message = error instanceof Error ? error.message : String(error);
+    return `${message} (keine Antwort vom Token-Endpunkt: Netz, Zeitueberschreitung oder Adresse)`;
+  }
+  const where = `HTTP ${error.status} von ${error.endpoint}`;
+  const body = error.body;
+  const code =
+    body && typeof body === "object" && typeof (body as { error?: unknown }).error === "string"
+      ? (body as { error: string }).error
+      : null;
+  const text = typeof body === "string" ? body.toLowerCase() : "";
+  if (code === "invalid_client") {
+    return `${where}: der Dienst lehnt Kennung oder Geheimnis ab (invalid_client). Der Wert ist falsch, nicht der Weg`;
+  }
+  if (code) {
+    return `${where}: der Dienst lehnt die Anfrage ab (${code})`;
+  }
+  if (text.includes("cloudflareaccess") || text.includes("cloudflare access")) {
+    return `${where}: Cloudflare Access hat die Anfrage abgewiesen, bevor sie den Dienst erreichte (Access-Ausweis fehlt oder gilt nicht). Der Wert ist nicht geprueft`;
+  }
+  if (error.status >= 500 || error.status === 429) {
+    return `${where}: der Token-Endpunkt selbst scheitert (Dienst, Edge oder Tunnel nicht bereit). Der Wert ist nicht geprueft`;
+  }
+  return `${where}: Antwort ohne OAuth-Fehlercode, sie kam vermutlich nicht vom Dienst. Der Wert ist nicht geprueft`;
+}
+
 export class OrvelloClient {
   public readonly baseUrl: BaseUrlProvider;
   private readonly auth?: AuthProvider;
@@ -498,12 +547,9 @@ export class OrvelloClient {
       });
 
       if (!resp.ok) {
-        let errBody: unknown;
-        try {
-          errBody = await resp.json();
-        } catch {
-          errBody = await resp.text().catch(() => "");
-        }
+        // Rumpf einmal als Text lesen: nach einem gescheiterten json() ist er verbraucht,
+        // und eine Fehlerseite davor (Access, Edge) waere sonst nicht mehr erkennbar.
+        const errBody = parseErrorBody(await resp.text().catch(() => ""));
         throw new OrvelloApiError(
           resp.status,
           resp.statusText,
@@ -649,12 +695,7 @@ export class OrvelloClient {
             }
           }
 
-          let errBody: unknown;
-          try {
-            errBody = await resp.json();
-          } catch {
-            errBody = await resp.text().catch(() => null);
-          }
+          const errBody = parseErrorBody(await resp.text().catch(() => ""));
 
           const apiMessage =
             errBody && typeof errBody === "object" && "message" in errBody && typeof (errBody as { message: unknown }).message === "string"
@@ -985,7 +1026,7 @@ export class OrvelloClient {
         ? { ok: true, detail: "Das Bearer-Credential wird angenommen (Token wurde ausgestellt)." }
         : { ok: false, detail: "Es konnte kein Bearer-Credential ermittelt werden." };
     } catch (error) {
-      return { ok: false, detail: `Token konnte nicht geholt werden: ${(error as Error).message}` };
+      return { ok: false, detail: `Token konnte nicht geholt werden: ${describeTokenFailure(error)}` };
     }
   }
 

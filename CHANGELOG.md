@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.43 - 2026-11-17
+
+- Ein gescheiterter Token-Abruf sagt im Probelauf, wer abgelehnt hat: Status und Endpunkt, `invalid_client` als falscher Wert, Cloudflare Access, 5xx am Token-Endpunkt, Nicht-JSON-Seite davor oder Netzfehler (`describeTokenFailure`, PRB-000206).
+- Fehlerrumpf wird einmal als Text gelesen: nach einem gescheiterten `json()` ging der Text bisher verloren.
+
 ## 0.7.42 - 2026-11-14
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

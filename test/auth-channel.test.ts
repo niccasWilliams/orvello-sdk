@@ -427,3 +427,71 @@ describe("Erreichbarkeits-Weg", () => {
     expect(seen.at(-1)).toBe("https://orvello.example.com/app-info/health");
   });
 });
+
+describe("Ein gescheiterter Token-Abruf sagt, wer abgelehnt hat (PRB-000206)", () => {
+  function tokenClient(respond: () => Response | Promise<Response>) {
+    return createOrvelloClient({
+      baseUrl: "https://orvello.example.com",
+      auth: { clientId: "id", clientSecret: "secret" },
+      maxRetries: 0,
+      fetch: (async (url: string) => {
+        if (String(url).includes("/oauth/token")) return respond();
+        if (String(url).endsWith("/health/contract")) {
+          const { CONTRACT_SHA256 } = await import("../src/contract-hash.js");
+          return new Response(JSON.stringify({ contractSha256: CONTRACT_SHA256, files: 33 }), {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          });
+        }
+        return new Response(JSON.stringify({ status: "ok" }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      }) as unknown as typeof fetch,
+    });
+  }
+
+  async function probeDetail(respond: () => Response | Promise<Response>): Promise<string> {
+    const report = await tokenClient(respond).preflight("invoices_search_external", { query: { pageSize: 1 } });
+    const step = report.steps.find((s) => s.name === "credential-accepted");
+    expect(step?.ok).toBe(false);
+    return step!.detail;
+  }
+
+  it("nennt invalid_client als falschen Wert", async () => {
+    const detail = await probeDetail(() => new Response(
+      JSON.stringify({ error: "invalid_client", error_description: "Invalid client_id or client_secret" }),
+      { status: 401, headers: { "content-type": "application/json" } },
+    ));
+    expect(detail).toMatch(/HTTP 401/);
+    expect(detail).toMatch(/Wert ist falsch/);
+    expect(detail).not.toMatch(/Invalid client_id/);
+  });
+
+  it("nennt eine Abweisung durch Cloudflare Access als Weg, nicht als Wert", async () => {
+    const detail = await probeDetail(() => new Response(
+      "<html><title>Sign in ・ Cloudflare Access</title><a href=\"https://x.cloudflareaccess.com\">",
+      { status: 403, headers: { "content-type": "text/html" } },
+    ));
+    expect(detail).toMatch(/HTTP 403/);
+    expect(detail).toMatch(/Cloudflare Access/);
+    expect(detail).toMatch(/nicht geprueft/);
+  });
+
+  it("nennt einen 5xx als scheiternden Token-Endpunkt", async () => {
+    const detail = await probeDetail(() => new Response("bad gateway", { status: 502 }));
+    expect(detail).toMatch(/HTTP 502/);
+    expect(detail).toMatch(/Token-Endpunkt selbst scheitert/);
+  });
+
+  it("nennt eine Nicht-JSON-Antwort mit Status 200 als Seite davor", async () => {
+    const detail = await probeDetail(() => new Response("<html>login</html>", { status: 200 }));
+    expect(detail).toMatch(/kein JSON/);
+  });
+
+  it("nennt einen Netzfehler als keine Antwort", async () => {
+    const detail = await probeDetail(() => { throw new TypeError("fetch failed"); });
+    expect(detail).toMatch(/fetch failed/);
+    expect(detail).toMatch(/keine Antwort/);
+  });
+});
