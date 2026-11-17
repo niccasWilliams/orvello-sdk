@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.44 - 2026-11-17
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- Vertragsinhalt geaendert, Oberflaeche gleich geblieben
+
 ## 0.7.43 - 2026-11-17
 
 - Ein gescheiterter Token-Abruf sagt im Probelauf, wer abgelehnt hat: Status und Endpunkt, `invalid_client` als falscher Wert, Cloudflare Access, 5xx am Token-Endpunkt, Nicht-JSON-Seite davor oder Netzfehler (`describeTokenFailure`, PRB-000206).

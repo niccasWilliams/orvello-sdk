@@ -6026,6 +6026,10 @@ export type FintsBankConnection = {
   failedAuthAttempts: number;
   lockedAt: Date | null;
   lockedReason: string | null;
+  /** Letzter echter PIN-Wechsel (Anlegen zaehlt). Entsperren erst, wenn er nach Sperre bzw. Fehlversuch liegt (M16). */
+  pinChangedAt: Date | null;
+  /** Anleger. Im Firmenbereich spricht neben Firmen-Admins nur er die Bank an (M16). */
+  createdByUserId: number | null;
   lastSyncedAt: Date | null;
   lastSuccessAt: Date | null;
   /** Bereits bereinigte Fehlermeldung (ohne PIN, ohne Traceback, ohne Rohausgabe). */
@@ -6070,6 +6074,10 @@ export type FintsBankConnectionInsert = {
   failedAuthAttempts?: number;
   lockedAt?: Date | null;
   lockedReason?: string | null;
+  /** Letzter echter PIN-Wechsel (Anlegen zaehlt). Entsperren erst, wenn er nach Sperre bzw. Fehlversuch liegt (M16). */
+  pinChangedAt?: Date | null;
+  /** Anleger. Im Firmenbereich spricht neben Firmen-Admins nur er die Bank an (M16). */
+  createdByUserId?: number | null;
   lastSyncedAt?: Date | null;
   lastSuccessAt?: Date | null;
   /** Bereits bereinigte Fehlermeldung (ohne PIN, ohne Traceback, ohne Rohausgabe). */
