@@ -340,6 +340,28 @@ export function describeTokenFailure(error: unknown): string {
   return `${where}: Antwort ohne OAuth-Fehlercode, sie kam vermutlich nicht vom Dienst. Der Wert ist nicht geprueft`;
 }
 
+/**
+ * Das eigene Zeitlimit eines Versuchs. Vorher brach der Client mit einem nackten `Error` ab;
+ * `fetch` wirft genau diesen Grund weiter, und `isRetriable` erkannte ihn nicht. Ein
+ * Zeitablauf wurde deshalb nie wiederholt, auch nicht bei einem GET (INC-001226). Die
+ * Meldung bleibt wortgleich, Aufrufer und Logs lesen sie.
+ */
+export class OrvelloRequestTimeoutError extends Error {
+  constructor(public readonly timeoutMs: number) {
+    super(`Request timed out after ${timeoutMs}ms`);
+    this.name = "TimeoutError";
+  }
+}
+
+/**
+ * Darf ein Versuch nach einem Zeitablauf wiederholt werden? Nur wenn ein zweites Eintreffen
+ * nichts doppelt: lesende Methoden oder ein Aufruf mit `Idempotency-Key`. Ein POST ohne
+ * Schluessel kann beim Dienst schon angekommen sein, er bleibt bei einem Versuch.
+ */
+function replayableAfterTimeout(method: string, idempotencyKey: string | undefined): boolean {
+  return method === "GET" || method === "HEAD" || method === "OPTIONS" || Boolean(idempotencyKey);
+}
+
 export class OrvelloClient {
   public readonly baseUrl: BaseUrlProvider;
   private readonly auth?: AuthProvider;
@@ -628,7 +650,7 @@ export class OrvelloClient {
       if (options.signal?.aborted) controller.abort(options.signal.reason);
 
       const timer = setTimeout(
-        () => controller.abort(new Error(`Request timed out after ${timeoutMs}ms`)),
+        () => controller.abort(new OrvelloRequestTimeoutError(timeoutMs)),
         timeoutMs
       );
 
@@ -750,6 +772,11 @@ export class OrvelloClient {
         // Verbindungsabbruch, Namensaufloesung. Das sind die Faelle, gegen die
         // der Automat gebaut ist.
         if (!(err instanceof OrvelloApiError)) this.recordFailure();
+        // Hat der Aufrufer abgebrochen, ist jeder weitere Versuch sofort wieder abgebrochen.
+        if (options.signal?.aborted) throw err;
+        if (err instanceof OrvelloRequestTimeoutError && !replayableAfterTimeout(method, options.idempotencyKey)) {
+          throw err;
+        }
         if (!this.isRetriable(null, err) || attempt >= maxRetries) {
           throw err;
         }
