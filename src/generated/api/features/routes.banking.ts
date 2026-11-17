@@ -114,6 +114,8 @@ export type BankingPrivateFintsConnectionsResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 }>;
 };
 export type BankingPrivateFintsConnectionsResponse = import("../types").ApiEnvelope<BankingPrivateFintsConnectionsResponseData>;
@@ -171,6 +173,8 @@ export type BankingPrivateFintsCreateConnectionResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingPrivateFintsCreateConnectionResponse = import("../types").ApiEnvelope<BankingPrivateFintsCreateConnectionResponseData>;
@@ -224,6 +228,8 @@ export type BankingPrivateFintsUpdateCredentialsResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingPrivateFintsUpdateCredentialsResponse = import("../types").ApiEnvelope<BankingPrivateFintsUpdateCredentialsResponseData>;
@@ -286,6 +292,8 @@ export type BankingPrivateFintsUnlockResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingPrivateFintsUnlockResponse = import("../types").ApiEnvelope<BankingPrivateFintsUnlockResponseData>;
@@ -618,6 +626,8 @@ export type BankingCompanyFintsConnectionsResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 }>;
 };
 export type BankingCompanyFintsConnectionsResponse = import("../types").ApiEnvelope<BankingCompanyFintsConnectionsResponseData>;
@@ -675,6 +685,8 @@ export type BankingCompanyFintsCreateConnectionResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingCompanyFintsCreateConnectionResponse = import("../types").ApiEnvelope<BankingCompanyFintsCreateConnectionResponseData>;
@@ -728,6 +740,8 @@ export type BankingCompanyFintsUpdateCredentialsResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingCompanyFintsUpdateCredentialsResponse = import("../types").ApiEnvelope<BankingCompanyFintsUpdateCredentialsResponseData>;
@@ -790,6 +804,8 @@ export type BankingCompanyFintsUnlockResponseData = {
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+  canOperate: boolean;
+  pinChangeRequired: boolean;
 };
 };
 export type BankingCompanyFintsUnlockResponse = import("../types").ApiEnvelope<BankingCompanyFintsUnlockResponseData>;

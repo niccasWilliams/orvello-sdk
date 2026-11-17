@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.46 - 2026-11-17
+
+- Sync the node-bill contract snapshot (released automatically by node-boss on contract change).
+- Live orvello-Endpoint aus der Boss/AMP-Registry (fuer Kanten-Erkennung): https://bills.geilemukke.de
+- Vertragsinhalt geaendert, Oberflaeche gleich geblieben
+
 ## 0.7.45 - 2026-11-17
 
 - Das eigene Zeitlimit eines Versuchs wird wiederholt, wenn ein zweites Eintreffen nichts doppelt: GET, HEAD, OPTIONS oder ein Aufruf mit `Idempotency-Key`. Bisher warf `fetch` den nackten Abbruchgrund weiter, `isRetriable` erkannte ihn nicht, und `maxRetries` griff bei Zeitablauf nie (INC-001226). Ein POST ohne Schluessel bleibt bei einem Versuch.

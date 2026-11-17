@@ -2460,6 +2460,12 @@
                                   "updatedAt": {
                                     "type": "string",
                                     "format": "date-time"
+                                  },
+                                  "canOperate": {
+                                    "type": "boolean"
+                                  },
+                                  "pinChangeRequired": {
+                                    "type": "boolean"
                                   }
                                 },
                                 "required": [
@@ -2487,7 +2493,9 @@
                                   "lastError",
                                   "lastErrorAt",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "canOperate",
+                                  "pinChangeRequired"
                                 ],
                                 "additionalProperties": false
                               }
@@ -2783,6 +2791,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -2810,7 +2824,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
@@ -3160,6 +3176,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -3187,7 +3209,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
@@ -3608,6 +3632,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -3635,7 +3665,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
@@ -6037,6 +6069,12 @@
                                   "updatedAt": {
                                     "type": "string",
                                     "format": "date-time"
+                                  },
+                                  "canOperate": {
+                                    "type": "boolean"
+                                  },
+                                  "pinChangeRequired": {
+                                    "type": "boolean"
                                   }
                                 },
                                 "required": [
@@ -6064,7 +6102,9 @@
                                   "lastError",
                                   "lastErrorAt",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "canOperate",
+                                  "pinChangeRequired"
                                 ],
                                 "additionalProperties": false
                               }
@@ -6360,6 +6400,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -6387,7 +6433,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
@@ -6737,6 +6785,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -6764,7 +6818,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
@@ -7185,6 +7241,12 @@
                                 "updatedAt": {
                                   "type": "string",
                                   "format": "date-time"
+                                },
+                                "canOperate": {
+                                  "type": "boolean"
+                                },
+                                "pinChangeRequired": {
+                                  "type": "boolean"
                                 }
                               },
                               "required": [
@@ -7212,7 +7274,9 @@
                                 "lastError",
                                 "lastErrorAt",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "canOperate",
+                                "pinChangeRequired"
                               ],
                               "additionalProperties": false
                             }
