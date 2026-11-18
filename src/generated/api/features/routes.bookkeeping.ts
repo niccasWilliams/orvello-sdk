@@ -3200,6 +3200,7 @@ export type ReconciliationQueueQuery = {
   startDate?: string;
   endDate?: string;
   hasSuggestion?: boolean;
+  hasProviderPayoutSuggestion?: boolean;
   page?: number;
   pageSize?: number;
 };
@@ -7154,7 +7155,7 @@ export const apiRoutes_bookkeeping = {
     meta: {
       tags: ["bookkeeping","reconciliation"],
       summary: "Smart Reconciliation Queue",
-      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. hasSuggestion=true liefert nur Zahlungen mit mindestens einem Vorschlag, false nur ohne; dafür wird die ganze Menge (bis 500 offene Zahlungen) bewertet und erst danach paginiert, total/totalPages und summary gelten für die gefilterte Menge. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
+      description: "Payment-zentrierte Queue: Zeigt nicht zugeordnete Zahlungen mit ihrem besten Match-Vorschlag, priorisiert nach Confidence, Betrag und Alter. Leitet den User durch die Zuordnungsarbeit. hasSuggestion=true liefert nur Zahlungen mit mindestens einem Vorschlag, false nur ohne; hasProviderPayoutSuggestion=true nur Zahlungen mit providerPayoutSuggestion (Provider-Auszahlung, z.B. SumUp-PID), false nur ohne; beide zusammen gelten als UND. Für diese Filter wird die ganze Menge (bis 500 offene Zahlungen) bewertet und erst danach paginiert, total/totalPages und summary gelten für die gefilterte Menge. summary zählt über die ganze gefilterte Menge, nicht nur die Seite (bis 500 offene Zahlungen, darüber summary.truncated=true mit evaluatedCount). truncated=true heißt: mehr als 250 offene Belege einer Art, ältere wurden für die Vorschläge nicht bewertet.",
       validated: {"params":false,"query":true,"body":false},
     },
     types: null as unknown as {
