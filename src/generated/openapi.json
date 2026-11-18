@@ -89729,6 +89729,34 @@
                                             "reason"
                                           ],
                                           "additionalProperties": false
+                                        },
+                                        "reserveEstimate": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "yearly": {
+                                                  "type": "number"
+                                                },
+                                                "monthly": {
+                                                  "type": "number"
+                                                },
+                                                "basis": {
+                                                  "type": "string",
+                                                  "const": "collected_output_vat"
+                                                }
+                                              },
+                                              "required": [
+                                                "yearly",
+                                                "monthly",
+                                                "basis"
+                                              ],
+                                              "additionalProperties": false
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
                                         }
                                       },
                                       "required": [
@@ -89737,7 +89765,8 @@
                                         "accountingMethod",
                                         "revenue",
                                         "userDecisionRequired",
-                                        "ustva"
+                                        "ustva",
+                                        "reserveEstimate"
                                       ],
                                       "additionalProperties": false
                                     },
@@ -91366,6 +91395,34 @@
                                             "reason"
                                           ],
                                           "additionalProperties": false
+                                        },
+                                        "reserveEstimate": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "yearly": {
+                                                  "type": "number"
+                                                },
+                                                "monthly": {
+                                                  "type": "number"
+                                                },
+                                                "basis": {
+                                                  "type": "string",
+                                                  "const": "collected_output_vat"
+                                                }
+                                              },
+                                              "required": [
+                                                "yearly",
+                                                "monthly",
+                                                "basis"
+                                              ],
+                                              "additionalProperties": false
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
                                         }
                                       },
                                       "required": [
@@ -91374,7 +91431,8 @@
                                         "accountingMethod",
                                         "revenue",
                                         "userDecisionRequired",
-                                        "ustva"
+                                        "ustva",
+                                        "reserveEstimate"
                                       ],
                                       "additionalProperties": false
                                     },
@@ -91640,6 +91698,34 @@
                                             "reason"
                                           ],
                                           "additionalProperties": false
+                                        },
+                                        "reserveEstimate": {
+                                          "anyOf": [
+                                            {
+                                              "type": "object",
+                                              "properties": {
+                                                "yearly": {
+                                                  "type": "number"
+                                                },
+                                                "monthly": {
+                                                  "type": "number"
+                                                },
+                                                "basis": {
+                                                  "type": "string",
+                                                  "const": "collected_output_vat"
+                                                }
+                                              },
+                                              "required": [
+                                                "yearly",
+                                                "monthly",
+                                                "basis"
+                                              ],
+                                              "additionalProperties": false
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
                                         }
                                       },
                                       "required": [
@@ -91648,7 +91734,8 @@
                                         "accountingMethod",
                                         "revenue",
                                         "userDecisionRequired",
-                                        "ustva"
+                                        "ustva",
+                                        "reserveEstimate"
                                       ],
                                       "additionalProperties": false
                                     },

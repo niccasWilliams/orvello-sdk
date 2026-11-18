@@ -289,6 +289,11 @@ export type OverviewHomeResponseData = {
   recommended: "monthly" | "quarterly" | "annual" | "none";
   reason: string;
 };
+  reserveEstimate: {
+  yearly: number;
+  monthly: number;
+  basis: "collected_output_vat";
+} | null;
 } | null;
   reason: {
   code: string;
@@ -577,6 +582,11 @@ export type OverviewBookkeepingResponseData = {
   recommended: "monthly" | "quarterly" | "annual" | "none";
   reason: string;
 };
+  reserveEstimate: {
+  yearly: number;
+  monthly: number;
+  basis: "collected_output_vat";
+} | null;
 } | null;
   reason: {
   code: string;
@@ -621,6 +631,11 @@ export type OverviewTaxResponseData = {
   recommended: "monthly" | "quarterly" | "annual" | "none";
   reason: string;
 };
+  reserveEstimate: {
+  yearly: number;
+  monthly: number;
+  basis: "collected_output_vat";
+} | null;
 } | null;
   reason: {
   code: string;
