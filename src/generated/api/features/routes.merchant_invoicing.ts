@@ -58,7 +58,7 @@ export type MerchantInvoicingEinvoiceRequestResponseData = {
   format: "xrechnung_ubl" | "xrechnung_cii" | "zugferd";
   orderId: string;
   invoiceRevision: string;
-  status: "accepted";
+  status: "accepted" | "queued";
   acceptedAt: string;
   replayed: boolean;
 };
@@ -92,6 +92,16 @@ export type MerchantInvoicingEinvoiceStatusResponseData = {
 } | null;
   completedAt: string;
   receivedAt: string;
+}>;
+  orders: Array<{
+  orderId: string;
+  invoiceRevision: string;
+  format: string;
+  state: "waiting" | "failed";
+  attempts: number;
+  code: string | null;
+  queuedAt: string;
+  nextAttemptAt: string | null;
 }>;
 };
 export type MerchantInvoicingEinvoiceStatusResponse = import("../types").ApiEnvelope<MerchantInvoicingEinvoiceStatusResponseData>;
@@ -161,7 +171,7 @@ export const apiRoutes_merchant_invoicing = {
     meta: {
       tags: ["merchant-invoicing"],
       summary: "E-Rechnung (XRechnung) zu einer eigenen ausgestellten Rechnung anfordern",
-      description: "Baut aus der ausgestellten Rechnung des eigenen Mandanten einen Auftrag und gibt ihn serverseitig an den E-Rechnungsdienst. Idempotent: dieselbe Rechnung im selben Format liefert dieselbe Annahme (200, replayed). Fremde Rechnung 404, Entwurf 422. Das Ergebnis liefert GET auf denselben Pfad.",
+      description: "Baut aus der ausgestellten Rechnung des eigenen Mandanten einen Auftrag und gibt ihn serverseitig an den E-Rechnungsdienst. Idempotent: dieselbe Rechnung im selben Format liefert dieselbe Annahme (200, replayed). Ist der Dienst gerade nicht erreichbar, nimmt Bills den Auftrag selbst an (202, status queued) und uebergibt ihn spaeter ohne neue Anfrage. Fremde Rechnung 404, Entwurf 422. Das Ergebnis liefert GET auf denselben Pfad.",
       validated: {"params":true,"query":false,"body":true},
     },
     types: null as unknown as {
@@ -180,7 +190,7 @@ export const apiRoutes_merchant_invoicing = {
     meta: {
       tags: ["merchant-invoicing"],
       summary: "Ergebnisse der E-Rechnung zu einer eigenen Rechnung lesen",
-      description: "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis.",
+      description: "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed).",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {

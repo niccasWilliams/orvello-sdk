@@ -120214,7 +120214,7 @@
           "merchant-invoicing"
         ],
         "summary": "E-Rechnung (XRechnung) zu einer eigenen ausgestellten Rechnung anfordern",
-        "description": "Baut aus der ausgestellten Rechnung des eigenen Mandanten einen Auftrag und gibt ihn serverseitig an den E-Rechnungsdienst. Idempotent: dieselbe Rechnung im selben Format liefert dieselbe Annahme (200, replayed). Fremde Rechnung 404, Entwurf 422. Das Ergebnis liefert GET auf denselben Pfad.",
+        "description": "Baut aus der ausgestellten Rechnung des eigenen Mandanten einen Auftrag und gibt ihn serverseitig an den E-Rechnungsdienst. Idempotent: dieselbe Rechnung im selben Format liefert dieselbe Annahme (200, replayed). Ist der Dienst gerade nicht erreichbar, nimmt Bills den Auftrag selbst an (202, status queued) und uebergibt ihn spaeter ohne neue Anfrage. Fremde Rechnung 404, Entwurf 422. Das Ergebnis liefert GET auf denselben Pfad.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -120272,7 +120272,10 @@
                             },
                             "status": {
                               "type": "string",
-                              "const": "accepted"
+                              "enum": [
+                                "accepted",
+                                "queued"
+                              ]
                             },
                             "acceptedAt": {
                               "type": "string"
@@ -120363,7 +120366,10 @@
                             },
                             "status": {
                               "type": "string",
-                              "const": "accepted"
+                              "enum": [
+                                "accepted",
+                                "queued"
+                              ]
                             },
                             "acceptedAt": {
                               "type": "string"
@@ -120459,7 +120465,7 @@
           "merchant-invoicing"
         ],
         "summary": "Ergebnisse der E-Rechnung zu einer eigenen Rechnung lesen",
-        "description": "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis.",
+        "description": "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed).",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -120615,12 +120621,68 @@
                                 ],
                                 "additionalProperties": false
                               }
+                            },
+                            "orders": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "orderId": {
+                                    "type": "string"
+                                  },
+                                  "invoiceRevision": {
+                                    "type": "string"
+                                  },
+                                  "format": {
+                                    "type": "string"
+                                  },
+                                  "state": {
+                                    "type": "string",
+                                    "enum": [
+                                      "waiting",
+                                      "failed"
+                                    ]
+                                  },
+                                  "attempts": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "code": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "queuedAt": {
+                                    "type": "string"
+                                  },
+                                  "nextAttemptAt": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "orderId",
+                                  "invoiceRevision",
+                                  "format",
+                                  "state",
+                                  "attempts",
+                                  "code",
+                                  "queuedAt",
+                                  "nextAttemptAt"
+                                ],
+                                "additionalProperties": false
+                              }
                             }
                           },
                           "required": [
                             "invoiceId",
                             "sandbox",
-                            "results"
+                            "results",
+                            "orders"
                           ],
                           "additionalProperties": false
                         },
