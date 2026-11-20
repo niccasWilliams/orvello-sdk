@@ -346,6 +346,74 @@ export function describeTokenFailure(error: unknown): string {
  * Zeitablauf wurde deshalb nie wiederholt, auch nicht bei einem GET (INC-001226). Die
  * Meldung bleibt wortgleich, Aufrufer und Logs lesen sie.
  */
+/** Eine Datei der E-Rechnung, wie `GET /merchant-invoicing/invoices/:id/einvoice` sie unter `artifacts` nennt. */
+export type EInvoiceArtifact = NonNullable<MerchantInvoicingEinvoiceStatusResponseData["results"][number]["artifacts"]>[number];
+
+/**
+ * Ein Ergebnis der E-Rechnung. `artifacts` ist optional: Bills-Staende vor der
+ * Artefakt-Abholung (vor node-bill@7a41116f) liefern das Feld nicht.
+ */
+export type EInvoiceResult = Omit<MerchantInvoicingEinvoiceStatusResponseData["results"][number], "artifacts"> & {
+  artifacts?: EInvoiceArtifact[];
+};
+
+/** Antwort von {@link OrvelloClient.invoices}`.getEInvoiceStatus`. */
+export type EInvoiceStatus = Omit<MerchantInvoicingEinvoiceStatusResponseData, "results"> & {
+  results: EInvoiceResult[];
+};
+
+/** Die heruntergeladene und gegen ihren sha256 gepruefte Datei einer E-Rechnung. */
+export type EInvoiceDocumentDownload = {
+  data: Blob;
+  /** Der berechnete und mit Bills abgeglichene Hash (hex, klein). */
+  sha256: string;
+  mediaType: string;
+  /** Aus `Content-Disposition`, `null` wenn Bills keinen Namen nennt. */
+  fileName: string | null;
+  sizeBytes: number;
+};
+
+/**
+ * Die heruntergeladenen Bytes passen nicht zum sha256, den Bills fuer die Datei nennt
+ * (`mismatch`), oder es gab keinen Hash zum Abgleichen (`missing`). Die Daten werden
+ * dann nicht zurueckgegeben: eine veraenderte oder abgeschnittene E-Rechnung waere
+ * ein falscher Beleg.
+ */
+export class OrvelloIntegrityError extends Error {
+  constructor(
+    public readonly endpoint: string,
+    public readonly reason: "mismatch" | "missing",
+    public readonly expectedSha256: string | null,
+    public readonly actualSha256: string,
+  ) {
+    super(
+      reason === "missing"
+        ? `Download from ${endpoint} carries no sha256 to verify against (neither expectedSha256 nor X-Content-SHA256)`
+        : `Download from ${endpoint} failed the sha256 check: expected ${expectedSha256}, got ${actualSha256}`
+    );
+    this.name = "OrvelloIntegrityError";
+  }
+}
+
+async function sha256Hex(data: Blob): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", await data.arrayBuffer());
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function fileNameFromDisposition(header: string | null): string | null {
+  if (!header) return null;
+  const encoded = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(header);
+  if (encoded?.[1]) {
+    try {
+      return decodeURIComponent(encoded[1].trim().replace(/^"|"$/g, ""));
+    } catch {
+      // faellt auf den einfachen Namen zurueck
+    }
+  }
+  const plain = /filename="?([^";]+)"?/i.exec(header);
+  return plain?.[1]?.trim() || null;
+}
+
 export class OrvelloRequestTimeoutError extends Error {
   constructor(public readonly timeoutMs: number) {
     super(`Request timed out after ${timeoutMs}ms`);
@@ -616,7 +684,10 @@ export class OrvelloClient {
 
   public async request<T = unknown>(
     path: string,
-    options: RequestInit & RequestOptions = {}
+    options: RequestInit & RequestOptions & {
+      /** @internal Die rohe `Response` ungelesen zurueckgeben (Kopfzeilen + Rumpf), etwa fuer den Hash-Abgleich. */
+      returnResponse?: boolean;
+    } = {}
   ): Promise<T> {
     const maxRetries = options.maxRetries ?? this.maxRetries;
     const timeoutMs = options.timeoutMs ?? this.timeoutMs;
@@ -741,6 +812,10 @@ export class OrvelloClient {
           this.recordSuccess();
           // Success response
           const contentType = resp.headers.get("content-type") || "";
+
+          if (options.returnResponse) {
+            return resp as unknown as T;
+          }
 
           if (options.rawResponse || contentType.includes("application/pdf")) {
             return (await resp.blob()) as unknown as T;
@@ -1198,10 +1273,49 @@ export class OrvelloClient {
      * Eine leere `results`-Liste heisst: noch kein Ergebnis, spaeter erneut lesen.
      */
     getEInvoiceStatus: (id: number, options?: RequestOptions) =>
-      this.request<MerchantInvoicingEinvoiceStatusResponseData>(`/merchant-invoicing/invoices/${id}/einvoice`, {
+      this.request<EInvoiceStatus>(`/merchant-invoicing/invoices/${id}/einvoice`, {
         ...options,
         method: "GET",
       }),
+
+    /**
+     * Eine Datei der E-Rechnung (XML oder ZUGFeRD-PDF) herunterladen, die
+     * {@link getEInvoiceStatus} unter `artifacts` als `available` mit `documentId` nennt.
+     *
+     * Die Bytes werden gegen den sha256 geprueft: gegen `expectedSha256` (am besten
+     * `artifact.sha256` aus dem Status) und gegen den Kopf `X-Content-SHA256` von Bills.
+     * Weicht einer ab oder fehlen beide, wirft die Methode {@link OrvelloIntegrityError}
+     * statt die Daten zurueckzugeben. Andere Dokumente, fremde Rechnungen und noch
+     * folgende Dateien antworten 404 ({@link OrvelloApiError}).
+     */
+    downloadEInvoiceDocument: async (
+      invoiceId: number,
+      documentId: number,
+      options?: RequestOptions & { expectedSha256?: string },
+    ): Promise<EInvoiceDocumentDownload> => {
+      const { expectedSha256, ...requestOptions } = options ?? {};
+      const path = `/merchant-invoicing/invoices/${invoiceId}/einvoice/documents/${documentId}`;
+      const resp = await this.request<Response>(path, {
+        ...requestOptions,
+        method: "GET",
+        returnResponse: true,
+      });
+      const data = await resp.blob();
+      const actual = await sha256Hex(data);
+      const expected = [expectedSha256, resp.headers.get("x-content-sha256")]
+        .map((value) => value?.trim().toLowerCase())
+        .filter((value): value is string => Boolean(value));
+      if (expected.length === 0) throw new OrvelloIntegrityError(path, "missing", null, actual);
+      const wrong = expected.find((value) => value !== actual);
+      if (wrong !== undefined) throw new OrvelloIntegrityError(path, "mismatch", wrong, actual);
+      return {
+        data,
+        sha256: actual,
+        mediaType: resp.headers.get("content-type") || data.type || "application/octet-stream",
+        fileName: fileNameFromDisposition(resp.headers.get("content-disposition")),
+        sizeBytes: data.size,
+      };
+    },
 
     downloadPdfFromUrl: async (pdfUrl: string, options?: RequestOptions): Promise<Blob> => {
       const baseUrl = await this.resolveBaseUrl();

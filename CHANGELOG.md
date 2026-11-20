@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.50 - 2026-11-21
+
+- Sync the node-bill contract snapshot to node-bill@7a41116f (E-Rechnungs-Artefakte, Route `merchant_invoicing_einvoice_download`).
+- `invoices.getEInvoiceStatus` traegt `artifacts` je Ergebnis (`kind` xml/pdf, `mediaType`, `sizeBytes`, `sha256`, `state`, `documentId`), als optionales Feld, weil aeltere Bills-Staende es nicht liefern. Neue Typen `EInvoiceStatus`, `EInvoiceResult`, `EInvoiceArtifact`.
+- Neu `invoices.downloadEInvoiceDocument(invoiceId, documentId, { expectedSha256 })`: laedt die Datei, prueft die Bytes gegen `expectedSha256` und den Kopf `X-Content-SHA256` und wirft bei Abweichung oder fehlendem Hash `OrvelloIntegrityError`, statt die Daten zurueckzugeben (TSK-000468 #4786).
+
 ## 0.7.49 - 2026-11-20
 
 - Sync the node-bill contract snapshot (released automatically by node-boss on contract change).

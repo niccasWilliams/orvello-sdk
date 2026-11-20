@@ -313,9 +313,22 @@ if (results.length === 0) {
 } else if (results[0].status === "completed") {
   console.log("Valid:", results[0].validation?.valid);
 }
+
+// Download the files (XML, for ZUGFeRD also the PDF) once orvello holds them.
+// artifacts is missing on older orvello deployments; "pending" means the file is still coming.
+for (const artifact of results[0]?.artifacts ?? []) {
+  if (artifact.state !== "available" || artifact.documentId === null) continue;
+  const file = await orvello.invoices.downloadEInvoiceDocument(result.invoice.id, artifact.documentId, {
+    expectedSha256: artifact.sha256,
+  });
+  // file.data is a Blob; the bytes match artifact.sha256 and X-Content-SHA256,
+  // otherwise OrvelloIntegrityError is thrown and no data is returned.
+  console.log(file.fileName, file.mediaType, file.sizeBytes);
+}
 ```
-Needs the scopes `invoices:publish` (request) and `invoices:read` (status). Everything goes
-through orvello; no further endpoint or credential is involved. Available from SDK 0.7.34.
+Needs the scopes `invoices:publish` (request) and `invoices:read` (status, download). Everything goes
+through orvello; no further endpoint or credential is involved. Available from SDK 0.7.34,
+`artifacts` and `downloadEInvoiceDocument` from 0.7.50.
 
 #### Validate E-Invoices, Recognise Receipts, Track Usage
 ```typescript
