@@ -485,6 +485,7 @@ export const ROUTE_INDEX: Readonly<Record<string, RouteIndexEntry>> = {
   "managing_companies_vat_settings_upsert": ["POST", "/managing-companies/vat-settings/:companyId", "b", "frontend_bearer_http", 5],
   "merchant_invoicing_company_configure": ["PUT", "/merchant-invoicing/companies/:managingCompanyId", "b", "frontend_bearer_http", 5],
   "merchant_invoicing_company_get": ["GET", "/merchant-invoicing/companies/:managingCompanyId", "b", "frontend_bearer_http", 1],
+  "merchant_invoicing_einvoice_download": ["GET", "/merchant-invoicing/invoices/:invoiceId/einvoice/documents/:documentId", "b", "unified_bearer", 1, ["invoices:read"]],
   "merchant_invoicing_einvoice_request": ["POST", "/merchant-invoicing/invoices/:invoiceId/einvoice", "b", "unified_bearer", 5, ["invoices:publish"]],
   "merchant_invoicing_einvoice_status": ["GET", "/merchant-invoicing/invoices/:invoiceId/einvoice", "b", "unified_bearer", 1, ["invoices:read"]],
   "merchant_invoicing_token_external": ["POST", "/merchant-invoicing/external/token", "b", "unified_bearer", 4],

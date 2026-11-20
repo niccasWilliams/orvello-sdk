@@ -90,6 +90,14 @@ export type MerchantInvoicingEinvoiceStatusResponseData = {
   location?: string;
 }>;
 } | null;
+  artifacts: Array<{
+  kind: "xml" | "pdf";
+  mediaType: string;
+  sizeBytes: number;
+  sha256: string;
+  state: "available" | "pending" | "failed";
+  documentId: number | null;
+}>;
   completedAt: string;
   receivedAt: string;
 }>;
@@ -105,6 +113,15 @@ export type MerchantInvoicingEinvoiceStatusResponseData = {
 }>;
 };
 export type MerchantInvoicingEinvoiceStatusResponse = import("../types").ApiEnvelope<MerchantInvoicingEinvoiceStatusResponseData>;
+
+export type MerchantInvoicingEinvoiceDownloadParams = {
+  invoiceId: number;
+  documentId: number;
+};
+export type MerchantInvoicingEinvoiceDownloadQuery = undefined;
+export type MerchantInvoicingEinvoiceDownloadBody = undefined;
+export type MerchantInvoicingEinvoiceDownloadResponseData = Blob;
+export type MerchantInvoicingEinvoiceDownloadResponse = Blob;
 
 export const apiRoutes_merchant_invoicing = {
   // Contract source: explicit
@@ -190,7 +207,7 @@ export const apiRoutes_merchant_invoicing = {
     meta: {
       tags: ["merchant-invoicing"],
       summary: "Ergebnisse der E-Rechnung zu einer eigenen Rechnung lesen",
-      description: "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed).",
+      description: "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed). artifacts nennt die Dateien eines completed-Ergebnisses (xml, bei ZUGFeRD pdf): available mit documentId zum Herunterladen, pending solange die Datei noch folgt.",
       validated: {"params":true,"query":false,"body":false},
     },
     types: null as unknown as {
@@ -199,6 +216,25 @@ export const apiRoutes_merchant_invoicing = {
       body: MerchantInvoicingEinvoiceStatusBody;
       response: MerchantInvoicingEinvoiceStatusResponse;
       responseData: MerchantInvoicingEinvoiceStatusResponseData;
+    },
+  },
+  // Contract source: explicit
+  "merchant_invoicing_einvoice_download": {
+    method: "GET",
+    path: "/merchant-invoicing/invoices/:invoiceId/einvoice/documents/:documentId",
+    auth: {"type":"unified_bearer","allowUserSession":false,"allowOAuth2":true,"allowApiKey":true,"requireRole":"viewer","scopes":["invoices:read"]},
+    meta: {
+      tags: ["merchant-invoicing"],
+      summary: "Datei der E-Rechnung (XML oder ZUGFeRD-PDF) herunterladen",
+      description: "Laedt ein Dokument, das GET /invoices/:invoiceId/einvoice unter artifacts als available mit documentId nennt. X-Content-SHA256 traegt den geprueften Hash. Andere Dokumente, fremde Rechnungen und noch folgende Dateien 404.",
+      validated: {"params":true,"query":false,"body":false},
+    },
+    types: null as unknown as {
+      params: MerchantInvoicingEinvoiceDownloadParams;
+      query: MerchantInvoicingEinvoiceDownloadQuery;
+      body: MerchantInvoicingEinvoiceDownloadBody;
+      response: MerchantInvoicingEinvoiceDownloadResponse;
+      responseData: MerchantInvoicingEinvoiceDownloadResponseData;
     },
   },
 } as const;

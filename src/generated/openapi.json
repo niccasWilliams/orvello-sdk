@@ -120465,7 +120465,7 @@
           "merchant-invoicing"
         ],
         "summary": "Ergebnisse der E-Rechnung zu einer eigenen Rechnung lesen",
-        "description": "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed).",
+        "description": "Endergebnisse (completed, rejected, failed) samt KoSIT-Pruefung, neuestes zuerst. Leere Liste heisst: noch kein Ergebnis. orders nennt Auftraege ohne Ergebnis, die Bills noch uebergibt (waiting) oder die abgelehnt wurden (failed). artifacts nennt die Dateien eines completed-Ergebnisses (xml, bei ZUGFeRD pdf): available mit documentId zum Herunterladen, pending solange die Datei noch folgt.",
         "responses": {
           "200": {
             "description": "JSON response",
@@ -120600,6 +120600,61 @@
                                       }
                                     ]
                                   },
+                                  "artifacts": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "kind": {
+                                          "type": "string",
+                                          "enum": [
+                                            "xml",
+                                            "pdf"
+                                          ]
+                                        },
+                                        "mediaType": {
+                                          "type": "string"
+                                        },
+                                        "sizeBytes": {
+                                          "type": "integer",
+                                          "exclusiveMinimum": 0,
+                                          "maximum": 9007199254740991
+                                        },
+                                        "sha256": {
+                                          "type": "string"
+                                        },
+                                        "state": {
+                                          "type": "string",
+                                          "enum": [
+                                            "available",
+                                            "pending",
+                                            "failed"
+                                          ]
+                                        },
+                                        "documentId": {
+                                          "anyOf": [
+                                            {
+                                              "type": "integer",
+                                              "exclusiveMinimum": 0,
+                                              "maximum": 9007199254740991
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "kind",
+                                        "mediaType",
+                                        "sizeBytes",
+                                        "sha256",
+                                        "state",
+                                        "documentId"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
                                   "completedAt": {
                                     "type": "string"
                                   },
@@ -120616,6 +120671,7 @@
                                   "code",
                                   "retryable",
                                   "validation",
+                                  "artifacts",
                                   "completedAt",
                                   "receivedAt"
                                 ],
@@ -120705,6 +120761,68 @@
         "parameters": [
           {
             "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "security": [
+          {
+            "oauth2Bearer": []
+          },
+          {
+            "companyApiKeyBearer": []
+          }
+        ],
+        "x-auth": {
+          "allowOAuth2": true,
+          "allowApiKey": true,
+          "allowUserSession": false,
+          "requireRole": "viewer"
+        },
+        "x-scopes": [
+          "invoices:read"
+        ]
+      }
+    },
+    "/merchant-invoicing/invoices/:invoiceId/einvoice/documents/:documentId": {
+      "get": {
+        "operationId": "merchant_invoicing_einvoice_download",
+        "tags": [
+          "merchant-invoicing"
+        ],
+        "summary": "Datei der E-Rechnung (XML oder ZUGFeRD-PDF) herunterladen",
+        "description": "Laedt ein Dokument, das GET /invoices/:invoiceId/einvoice unter artifacts als available mit documentId nennt. X-Content-SHA256 traegt den geprueften Hash. Andere Dokumente, fremde Rechnungen und noch folgende Dateien 404.",
+        "responses": {
+          "200": {
+            "description": "Binary response",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "documentId",
             "in": "path",
             "required": true,
             "schema": {
